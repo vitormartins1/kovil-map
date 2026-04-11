@@ -1,0 +1,33 @@
+name: Setup Backend Python
+description: Set up Python and install backend dependencies with pip cache
+inputs:
+  python-version:
+    description: Python version to install
+    required: false
+    default: "3.12"
+  install-dev:
+    description: Install backend development dependencies
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5.2.0
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: |
+          backend/requirements.txt
+          backend/requirements-dev.txt
+
+    - name: Install backend dependencies
+      shell: bash
+      run: |
+        set -euo pipefail
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+
+        if [ "${{ inputs.install-dev }}" = "true" ]; then
+          pip install -r backend/requirements-dev.txt
+        fi

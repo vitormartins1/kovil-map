@@ -1,0 +1,33 @@
+{
+  "enabled": true,
+  "priority": 40,
+  "level_key": "sector",
+  "level_label": "Setor",
+  "dataset_id": "br_ibge_sectors_rj_2022",
+  "source": "IBGE",
+  "version": "2022",
+  "geometry_format": "kmz",
+  "crs": "EPSG:4326",
+  "path_glob": "files/*.kmz",
+  "id_fields": ["CD_SETOR", "name"],
+  "name_fields": ["NM_BAIRRO", "NM_SUBDIST", "NM_DIST", "NM_MUN", "CD_SETOR", "name"],
+  "parent_resolvers": [
+    {
+      "target_level_key": "neighborhood",
+      "target_key": "code",
+      "source_fields": ["CD_BAIRRO"]
+    },
+    {
+      "target_level_key": "city",
+      "target_key": "code",
+      "source_fields": ["CD_MUN"]
+    },
+    {
+      "target_level_key": "city",
+      "target_key": "name",
+      "source_fields": ["NM_MUN"]
+    }
+  ],
+  "depth_role": "fallback",
+  "include_in_hierarchy": false
+}

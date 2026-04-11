@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a reproducible problem in KOVIL MAP
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+        Please do not use this form for sensitive security issues. Use the process described in `SECURITY.md` instead.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include exact steps, sample files, or API calls when possible.
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, package/dev mode, backend/frontend version, and relevant tools.
+      placeholder: |
+        OS:
+        App mode:
+        Commit/version:
+        Hashcat/Aircrack/Tshark versions:
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or screenshots
+      description: Redact secrets, local paths, and sensitive operational data before posting.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched for existing issues before filing this report
+          required: true
+        - label: I removed secrets, credentials, and sensitive capture data from the report
+          required: true

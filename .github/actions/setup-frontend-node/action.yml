@@ -1,0 +1,22 @@
+name: Setup Frontend Node
+description: Set up Node and install frontend dependencies with npm cache
+inputs:
+  node-version:
+    description: Node version to install
+    required: false
+    default: "22"
+runs:
+  using: composite
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v4.1.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install frontend dependencies
+      shell: bash
+      run: |
+        set -euo pipefail
+        npm ci --prefix frontend

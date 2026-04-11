@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "priority": 10,
+  "level_key": "state",
+  "level_label": "Estado",
+  "dataset_id": "br_ibge_states_rj_2023_12",
+  "source": "IBGE",
+  "version": "2023_12",
+  "geometry_format": "shp",
+  "crs": "EPSG:4326",
+  "source_path": "data/RJ_UF_2023/RJ_UF_2023.shp",
+  "id_fields": ["CD_UF", "SIGLA_UF"],
+  "name_fields": ["SIGLA_UF", "NM_UF"],
+  "parent_resolvers": [],
+  "depth_role": "administrative",
+  "include_in_hierarchy": true
+}

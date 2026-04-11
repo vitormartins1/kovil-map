@@ -1,0 +1,11 @@
+{
+  "country_code": "br",
+  "country_name": "Brasil",
+  "default_locale": "pt-BR",
+  "labels": {
+    "state": "Estado",
+    "city": "Cidade",
+    "neighborhood": "Bairro",
+    "sector": "Setor"
+  }
+}

@@ -1,0 +1,13 @@
+﻿fastapi
+uvicorn[standard]
+paramiko
+python-multipart
+requests
+mac-vendor-lookup
+manuf
+psutil
+scp
+websockets
+scikit-learn
+shapely
+pyshp

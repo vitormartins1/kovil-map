@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+    <notes>Electron-builder Squirrel tooling binaries - false positives in SCA.</notes>
+    <filePath regex="true">.*[/\\]Squirrel(-Mono)?\.exe</filePath>
+    <cve>CVE-2015-2320</cve>
+    <cve>CVE-2015-2319</cve>
+    <cve>CVE-2015-2318</cve>
+  </suppress>
+  <suppress>
+    <notes>Electron-builder Squirrel tooling binaries - false positives in SCA.</notes>
+    <filePath regex="true">.*[/\\]Squirrel\.exe</filePath>
+    <cve>CVE-2020-10518</cve>
+    <cve>CVE-2020-10519</cve>
+    <cve>CVE-2012-2055</cve>
+  </suppress>
+  <suppress>
+    <notes>Electron-builder Squirrel tooling binaries - false positives in SCA.</notes>
+    <filePath regex="true">.*[/\\]SyncReleases\.exe</filePath>
+    <cve>CVE-2020-10518</cve>
+    <cve>CVE-2020-10519</cve>
+    <cve>CVE-2012-2055</cve>
+  </suppress>
+  <suppress>
+    <notes>ejs is pulled by electron-builder tooling (app-builder-lib), not used at runtime.</notes>
+    <cve>CVE-2023-29827</cve>
+    <cpe>cpe:2.3:a:ejs:ejs:3.1.10:*:*:*:*:*:*:*</cpe>
+  </suppress>
+</suppressions>

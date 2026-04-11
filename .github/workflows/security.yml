@@ -1,0 +1,189 @@
+name: Security
+
+on:
+  push:
+    branches: ["main", "dev"]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "docs/**/*.{png,jpg,jpeg,gif,svg,webp}"
+  pull_request:
+    branches: ["main", "dev"]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "docs/**/*.{png,jpg,jpeg,gif,svg,webp}"
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  sast:
+    name: SAST
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    uses: ./.github/workflows/reusable-security-sast.yml
+    with:
+      enable_security_tab: ${{ vars.ENABLE_SECURITY_TAB || 'false' }}
+      semgrep_version: "1.118.0"
+
+  sbom:
+    name: SBOM
+    uses: ./.github/workflows/reusable-security-sbom.yml
+
+  sca:
+    name: SCA
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    uses: ./.github/workflows/reusable-security-sca.yml
+    with:
+      enable_security_tab: ${{ vars.ENABLE_SECURITY_TAB || 'false' }}
+
+  security-summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs:
+      - sast
+      - sbom
+      - sca
+    if: always()
+    steps:
+      - name: Download SARIF artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Build unified summary
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          sarifs = [
+            ("Semgrep", Path("artifacts/semgrep-sarif")),
+            ("Trivy", Path("artifacts/trivy-sarif")),
+            ("Dependency-Check Frontend", Path("artifacts/dependency-check-sarif-frontend")),
+            ("Dependency-Check Backend", Path("artifacts/dependency-check-sarif-backend")),
+          ]
+
+          npm_audit_file = Path("artifacts/npm-audit-frontend-runtime/npm-audit-frontend-runtime.json")
+
+          def find_sarif(base: Path):
+            if base.is_file() and base.suffix == ".sarif":
+              return base
+            if not base.exists():
+              return None
+            files = sorted(base.rglob("*.sarif"))
+            return files[0] if files else None
+
+          totals = Counter()
+          for name, base in sarifs:
+            p = find_sarif(base)
+            if p is None or not p.exists():
+              totals[name] = None
+              continue
+            data = json.loads(p.read_text())
+            results = (data.get("runs") or [{}])[0].get("results") or []
+            totals[name] = len(results)
+
+          npm_audit_total = None
+          if npm_audit_file.exists():
+            try:
+              data = json.loads(npm_audit_file.read_text())
+              meta = ((data.get("metadata") or {}).get("vulnerabilities") or {})
+              if meta:
+                npm_audit_total = int(meta.get("high", 0)) + int(meta.get("critical", 0))
+              else:
+                vulns = data.get("vulnerabilities") or {}
+                npm_audit_total = 0
+                for entry in vulns.values():
+                  sev = (entry or {}).get("severity")
+                  if sev in {"high", "critical"}:
+                    npm_audit_total += 1
+            except Exception:
+              npm_audit_total = None
+
+          sbom_files = [
+            ("SBOM Backend", Path("artifacts/sbom/sbom-backend.cdx.json")),
+            ("SBOM Frontend", Path("artifacts/sbom/sbom-frontend.cdx.json")),
+          ]
+          sbom_totals = Counter()
+          sbom_missing = False
+          for name, p in sbom_files:
+            if not p.exists():
+              sbom_totals[name] = None
+              sbom_missing = True
+              continue
+            try:
+              data = json.loads(p.read_text())
+              sbom_totals[name] = len(data.get("components") or [])
+            except Exception:
+              sbom_totals[name] = None
+              sbom_missing = True
+
+          overall = 0
+          missing = False
+          for count in totals.values():
+            if count is None:
+              missing = True
+              continue
+            overall += count
+          if npm_audit_total is None:
+            missing = True
+          else:
+            overall += npm_audit_total
+          if missing and overall == 0:
+            status = "Status: Incomplete (missing artifacts) ⚠️"
+          elif overall == 0:
+            status = "Status: Clean ✅"
+          else:
+            status = f"Status: Findings detected ❌ ({overall})"
+
+          lines = [
+            "### Unified Security Summary",
+            status,
+            "",
+            "| Scanner | Findings |",
+            "| --- | ---: |",
+          ]
+          for name, count in totals.items():
+            if count is None:
+              lines.append(f"| {name} | (missing SARIF) |")
+            else:
+              lines.append(f"| {name} | {count} |")
+          if npm_audit_total is None:
+            lines.append("| NPM Audit Frontend Runtime | (missing JSON) |")
+          else:
+            lines.append(f"| NPM Audit Frontend Runtime | {npm_audit_total} |")
+
+          lines.extend(
+            [
+              "",
+              "### SBOM Overview",
+              "Status: Incomplete (missing SBOM) ⚠️" if sbom_missing else "Status: Generated",
+              "",
+              "| Scope | Components |",
+              "| --- | ---: |",
+            ]
+          )
+          for name, count in sbom_totals.items():
+            if count is None:
+              lines.append(f"| {name} | (missing SBOM) |")
+            else:
+              lines.append(f"| {name} | {count} |")
+
+          Path("/tmp/security-summary.md").write_text("\n".join(lines) + "\n")
+          PY
+          cat /tmp/security-summary.md >> "$GITHUB_STEP_SUMMARY"

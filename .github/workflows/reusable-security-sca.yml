@@ -1,0 +1,507 @@
+name: Reusable Security SCA
+
+on:
+  workflow_call:
+    inputs:
+      enable_security_tab:
+        description: "Enable uploads to GitHub Security tab"
+        required: false
+        default: "false"
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  trivy:
+    name: SCA (Trivy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up frontend Node toolchain
+        uses: ./.github/actions/setup-frontend-node
+        with:
+          node-version: "22"
+
+      - name: Set up backend Python toolchain
+        uses: ./.github/actions/setup-backend-python
+        with:
+          python-version: "3.12"
+          install-dev: "false"
+
+      - name: Trivy filesystem scan (SARIF)
+        uses: aquasecurity/trivy-action@v0.19.0
+        with:
+          scan-type: fs
+          format: sarif
+          output: trivy.sarif
+          ignore-unfixed: false
+          severity: CRITICAL,HIGH
+          scanners: vuln
+          exit-code: "1"
+
+      - name: Upload Trivy SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sarif
+          path: trivy.sarif
+
+      - name: Trivy summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          import re
+
+          p = Path("trivy.sarif")
+          if not p.exists():
+            print("Trivy SARIF not found.")
+            Path("/tmp/trivy-summary.md").write_text("### Trivy (SCA)\n- SARIF not found.\n")
+            raise SystemExit(0)
+          data = json.loads(p.read_text())
+          results = (data.get("runs") or [{}])[0].get("results") or []
+          levels = Counter((r.get("level") or "unknown") for r in results)
+          rule_ids = Counter((r.get("ruleId") or "unknown") for r in results)
+          files = Counter()
+          packages = Counter()
+          pkg_re = re.compile(r"(pkg:[^)\s]+)")
+          for r in results:
+            locs = r.get("locations") or []
+            if locs:
+              phys = (locs[0].get("physicalLocation") or {})
+              art = (phys.get("artifactLocation") or {})
+              uri = art.get("uri")
+              if uri:
+                files[uri] += 1
+            props = r.get("properties") or {}
+            pkg = props.get("package") or props.get("pkg") or ""
+            if not pkg:
+              msg = (r.get("message") or {}).get("text") or ""
+              m = pkg_re.search(msg)
+              if m:
+                pkg = m.group(1)
+            if pkg:
+              packages[pkg] += 1
+          total = len(results)
+          status = "No findings ✅" if total == 0 else f"Findings detected ❌ ({total})"
+          lines = [
+            "### Trivy (SCA)",
+            status,
+            f"- Total findings: **{total}**",
+            "",
+            "| Level | Count |",
+            "| --- | ---: |",
+          ]
+          for level in ["error", "warning", "note", "none", "unknown"]:
+            if level in levels:
+              lines.append(f"| {level} | {levels[level]} |")
+          lines.append("")
+          lines.append("| Top Rules | Count |")
+          lines.append("| --- | ---: |")
+          for rule, count in rule_ids.most_common(5):
+            lines.append(f"| {rule} | {count} |")
+          lines.append("")
+          lines.append("| Top Files | Count |")
+          lines.append("| --- | ---: |")
+          for uri, count in files.most_common(5):
+            lines.append(f"| {uri} | {count} |")
+          lines.append("")
+          lines.append("| Top Packages | Count |")
+          lines.append("| --- | ---: |")
+          if packages:
+            for pkg, count in packages.most_common(5):
+              lines.append(f"| {pkg} | {count} |")
+          else:
+            lines.append("| (not available) | 0 |")
+          Path("/tmp/trivy-summary.md").write_text("\n".join(lines) + "\n")
+          PY
+          if [ -f /tmp/trivy-summary.md ]; then
+            cat /tmp/trivy-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Trivy SARIF to Security tab
+        if: inputs.enable_security_tab == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy.sarif
+
+  npm-audit-frontend-runtime:
+    name: SCA (NPM Audit Frontend Runtime)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up frontend Node toolchain
+        uses: ./.github/actions/setup-frontend-node
+        with:
+          node-version: "22"
+
+      - name: NPM audit (runtime only)
+        id: npm_audit
+        run: |
+          set +e
+          npm audit --prefix frontend --omit=dev --audit-level=high --json > npm-audit-frontend-runtime.json
+          audit_exit_code=$?
+          echo "exit_code=$audit_exit_code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload NPM audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-frontend-runtime
+          path: npm-audit-frontend-runtime.json
+
+      - name: NPM audit summary (frontend runtime)
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          p = Path("npm-audit-frontend-runtime.json")
+          if not p.exists():
+            Path("/tmp/npm-audit-runtime-summary.md").write_text(
+              "### NPM Audit (Frontend Runtime)\n"
+              "Status: Report missing ⚠️\n"
+            )
+            raise SystemExit(0)
+          try:
+            data = json.loads(p.read_text())
+          except Exception as exc:
+            Path("/tmp/npm-audit-runtime-summary.md").write_text(
+              "### NPM Audit (Frontend Runtime)\n"
+              "Status: Report parse error ⚠️\n"
+              f"- Error: `{exc}`\n"
+            )
+            raise SystemExit(0)
+          meta = ((data.get("metadata") or {}).get("vulnerabilities") or {})
+          vulns = data.get("vulnerabilities") or {}
+
+          counts = Counter()
+          if meta:
+            for sev in ["info", "low", "moderate", "high", "critical", "total"]:
+              counts[sev] = int(meta.get(sev, 0))
+          else:
+            for entry in vulns.values():
+              sev = (entry or {}).get("severity", "unknown")
+              counts[sev] += 1
+            counts["total"] = sum(counts.values())
+
+          high_critical = counts.get("high", 0) + counts.get("critical", 0)
+          status = "No runtime findings ✅" if high_critical == 0 else f"Runtime findings detected ❌ ({high_critical})"
+
+          top_packages = Counter()
+          for name, entry in vulns.items():
+            sev = (entry or {}).get("severity")
+            if sev in {"high", "critical"}:
+              top_packages[name] += 1
+
+          lines = [
+            "### NPM Audit (Frontend Runtime)",
+            status,
+            f"- High/Critical findings: **{high_critical}**",
+            "",
+            "| Severity | Count |",
+            "| --- | ---: |",
+          ]
+          for sev in ["critical", "high", "moderate", "low", "info", "total"]:
+            if sev in counts:
+              lines.append(f"| {sev} | {counts[sev]} |")
+          lines.append("")
+          lines.append("| Top Runtime Packages (High/Critical) | Count |")
+          lines.append("| --- | ---: |")
+          if top_packages:
+            for pkg, count in top_packages.most_common(5):
+              lines.append(f"| {pkg} | {count} |")
+          else:
+            lines.append("| (none) | 0 |")
+
+          Path("/tmp/npm-audit-runtime-summary.md").write_text("\n".join(lines) + "\n")
+          PY
+          if [ -f /tmp/npm-audit-runtime-summary.md ]; then
+            cat /tmp/npm-audit-runtime-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce NPM audit gate (frontend runtime)
+        if: always()
+        run: |
+          code="${{ steps.npm_audit.outputs.exit_code }}"
+          if [ "$code" -eq 0 ]; then
+            echo "NPM runtime audit gate passed."
+            exit 0
+          fi
+          echo "NPM runtime audit gate failed with exit code: $code"
+          exit "$code"
+
+  dependency-check-frontend:
+    name: SCA (Dependency-Check Frontend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up frontend Node toolchain
+        uses: ./.github/actions/setup-frontend-node
+        with:
+          node-version: "22"
+
+      - name: Dependency-Check (SARIF)
+        uses: dependency-check/Dependency-Check_Action@1.0.0
+        with:
+          project: "kovil-map-frontend"
+          path: "frontend"
+          format: "SARIF"
+          args: "--suppression dependency-check-suppressions.xml --failOnCVSS 7 --enableRetired"
+
+      - name: Collect Dependency-Check report (frontend)
+        if: always()
+        run: |
+          mkdir -p dependency-check-report-frontend
+          if [ -f dependency-check-report-frontend/dependency-check-report.sarif ]; then
+            echo "Frontend SARIF already generated in target folder."
+          elif [ -f reports/dependency-check-report.sarif ]; then
+            cp reports/dependency-check-report.sarif dependency-check-report-frontend/dependency-check-report.sarif
+          elif [ -f dependency-check-report.sarif ]; then
+            cp dependency-check-report.sarif dependency-check-report-frontend/dependency-check-report.sarif
+          elif [ -d reports ]; then
+            found="$(find reports -type f -name '*.sarif' | head -n 1 || true)"
+            if [ -n "$found" ]; then
+              cp "$found" dependency-check-report-frontend/dependency-check-report.sarif
+            fi
+          fi
+
+      - name: Upload Dependency-Check SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-sarif-frontend
+          path: dependency-check-report-frontend
+
+      - name: Dependency-Check summary (frontend)
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          import re
+
+          candidates = sorted(Path("dependency-check-report-frontend").rglob("*.sarif"))
+          if not candidates:
+            print("Dependency-Check SARIF (frontend) not found.")
+            Path("/tmp/dc-frontend-summary.md").write_text("### Dependency-Check (Frontend)\n- SARIF not found.\n")
+            raise SystemExit(0)
+          p = candidates[0]
+          print(f"Using frontend SARIF: {p}")
+          data = json.loads(p.read_text())
+          results = (data.get("runs") or [{}])[0].get("results") or []
+          levels = Counter((r.get("level") or "unknown") for r in results)
+          rule_ids = Counter((r.get("ruleId") or "unknown") for r in results)
+          files = Counter()
+          packages = Counter()
+          pkg_re = re.compile(r"(pkg:[^)\s]+)")
+          for r in results:
+            locs = r.get("locations") or []
+            if locs:
+              phys = (locs[0].get("physicalLocation") or {})
+              art = (phys.get("artifactLocation") or {})
+              uri = art.get("uri")
+              if uri:
+                files[uri] += 1
+            props = r.get("properties") or {}
+            pkg = props.get("package") or props.get("pkg") or ""
+            if not pkg:
+              msg = (r.get("message") or {}).get("text") or ""
+              m = pkg_re.search(msg)
+              if m:
+                pkg = m.group(1)
+            if pkg:
+              packages[pkg] += 1
+          total = len(results)
+          status = "No findings ✅" if total == 0 else f"Findings detected ❌ ({total})"
+          lines = [
+            "### Dependency-Check (Frontend)",
+            status,
+            f"- Total findings: **{total}**",
+            "",
+            "| Level | Count |",
+            "| --- | ---: |",
+          ]
+          for level in ["error", "warning", "note", "none", "unknown"]:
+            if level in levels:
+              lines.append(f"| {level} | {levels[level]} |")
+          lines.append("")
+          lines.append("| Top CVEs | Count |")
+          lines.append("| --- | ---: |")
+          for rule, count in rule_ids.most_common(5):
+            lines.append(f"| {rule} | {count} |")
+          lines.append("")
+          lines.append("| Top Files | Count |")
+          lines.append("| --- | ---: |")
+          for uri, count in files.most_common(5):
+            lines.append(f"| {uri} | {count} |")
+          lines.append("")
+          lines.append("| Top Packages | Count |")
+          lines.append("| --- | ---: |")
+          if packages:
+            for pkg, count in packages.most_common(5):
+              lines.append(f"| {pkg} | {count} |")
+          else:
+            lines.append("| (not available) | 0 |")
+          Path("/tmp/dc-frontend-summary.md").write_text("\n".join(lines) + "\n")
+          PY
+          if [ -f /tmp/dc-frontend-summary.md ]; then
+            cat /tmp/dc-frontend-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Dependency-Check SARIF to Security tab
+        if: inputs.enable_security_tab == 'true' && hashFiles('dependency-check-report-frontend/*.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: dependency-check-report-frontend/dependency-check-report.sarif
+
+  dependency-check-backend:
+    name: SCA (Dependency-Check Backend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency-Check (SARIF)
+        uses: dependency-check/Dependency-Check_Action@1.0.0
+        with:
+          project: "kovil-map-backend"
+          path: "backend"
+          format: "SARIF"
+          args: "--suppression dependency-check-suppressions.xml --failOnCVSS 7 --enableRetired"
+
+      - name: Collect Dependency-Check report (backend)
+        if: always()
+        run: |
+          mkdir -p dependency-check-report-backend
+          if [ -f dependency-check-report-backend/dependency-check-report.sarif ]; then
+            echo "Backend SARIF already generated in target folder."
+          elif [ -f reports/dependency-check-report.sarif ]; then
+            cp reports/dependency-check-report.sarif dependency-check-report-backend/dependency-check-report.sarif
+          elif [ -f dependency-check-report.sarif ]; then
+            cp dependency-check-report.sarif dependency-check-report-backend/dependency-check-report.sarif
+          elif [ -d reports ]; then
+            found="$(find reports -type f -name '*.sarif' | head -n 1 || true)"
+            if [ -n "$found" ]; then
+              cp "$found" dependency-check-report-backend/dependency-check-report.sarif
+            fi
+          fi
+
+      - name: Upload Dependency-Check SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-sarif-backend
+          path: dependency-check-report-backend
+
+      - name: Dependency-Check summary (backend)
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          import re
+
+          candidates = sorted(Path("dependency-check-report-backend").rglob("*.sarif"))
+          if not candidates:
+            print("Dependency-Check SARIF (backend) not found.")
+            Path("/tmp/dc-backend-summary.md").write_text("### Dependency-Check (Backend)\n- SARIF not found.\n")
+            raise SystemExit(0)
+          p = candidates[0]
+          print(f"Using backend SARIF: {p}")
+          data = json.loads(p.read_text())
+          results = (data.get("runs") or [{}])[0].get("results") or []
+          levels = Counter((r.get("level") or "unknown") for r in results)
+          rule_ids = Counter((r.get("ruleId") or "unknown") for r in results)
+          files = Counter()
+          packages = Counter()
+          pkg_re = re.compile(r"(pkg:[^)\s]+)")
+          for r in results:
+            locs = r.get("locations") or []
+            if locs:
+              phys = (locs[0].get("physicalLocation") or {})
+              art = (phys.get("artifactLocation") or {})
+              uri = art.get("uri")
+              if uri:
+                files[uri] += 1
+            props = r.get("properties") or {}
+            pkg = props.get("package") or props.get("pkg") or ""
+            if not pkg:
+              msg = (r.get("message") or {}).get("text") or ""
+              m = pkg_re.search(msg)
+              if m:
+                pkg = m.group(1)
+            if pkg:
+              packages[pkg] += 1
+          total = len(results)
+          status = "No findings ✅" if total == 0 else f"Findings detected ❌ ({total})"
+          lines = [
+            "### Dependency-Check (Backend)",
+            status,
+            f"- Total findings: **{total}**",
+            "",
+            "| Level | Count |",
+            "| --- | ---: |",
+          ]
+          for level in ["error", "warning", "note", "none", "unknown"]:
+            if level in levels:
+              lines.append(f"| {level} | {levels[level]} |")
+          lines.append("")
+          lines.append("| Top CVEs | Count |")
+          lines.append("| --- | ---: |")
+          for rule, count in rule_ids.most_common(5):
+            lines.append(f"| {rule} | {count} |")
+          lines.append("")
+          lines.append("| Top Files | Count |")
+          lines.append("| --- | ---: |")
+          for uri, count in files.most_common(5):
+            lines.append(f"| {uri} | {count} |")
+          lines.append("")
+          lines.append("| Top Packages | Count |")
+          lines.append("| --- | ---: |")
+          if packages:
+            for pkg, count in packages.most_common(5):
+              lines.append(f"| {pkg} | {count} |")
+          else:
+            lines.append("| (not available) | 0 |")
+          Path("/tmp/dc-backend-summary.md").write_text("\n".join(lines) + "\n")
+          PY
+          if [ -f /tmp/dc-backend-summary.md ]; then
+            cat /tmp/dc-backend-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Dependency-Check SARIF to Security tab
+        if: inputs.enable_security_tab == 'true' && hashFiles('dependency-check-report-backend/*.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: dependency-check-report-backend/dependency-check-report.sarif

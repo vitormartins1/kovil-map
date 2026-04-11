@@ -1,0 +1,204 @@
+name: Auto PR Dev to Main
+
+on:
+  push:
+    branches:
+      - "dev"
+
+concurrency:
+  group: auto-pr-dev-to-main-${{ github.sha || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  create-pr:
+    if: |
+      github.actor != 'github-actions[bot]' &&
+      !github.event.deleted &&
+      !contains(github.event.head_commit.message, '[skip ci]') &&
+      github.ref_name == 'dev'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create/update PR from dev to main based on security gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { buildAutoPrBody } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/auto_pr_body_builder.js`);
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const headBranch = "dev";
+            const baseBranch = "main";
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const headSha = context.sha;
+            const managedBody = buildAutoPrBody({
+              repoRoot: process.env.GITHUB_WORKSPACE,
+              flowTemplateName: "dev_to_main.md",
+              includeManualTemplate: false,
+              context: {
+                HEAD_BRANCH: headBranch,
+                BASE_BRANCH: baseBranch,
+                HEAD_SHA: headSha,
+                RUN_URL: runUrl,
+                GATE_STATUS: "push:triggered",
+                PR_TYPE_LABEL: "promotion",
+                TITLE_SUGGESTION: "release: dev -> main",
+              },
+            });
+
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (error) {
+                if (error.status === 404) {
+                  try {
+                    await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                  } catch (createError) {
+                    if (createError.status !== 422) throw createError;
+                  }
+                } else {
+                  throw error;
+                }
+              }
+            }
+
+            async function hasLabel(issueNumber, labelName) {
+              const labels = await github.paginate(github.rest.issues.listLabelsOnIssue, {
+                owner,
+                repo,
+                issue_number: issueNumber,
+                per_page: 100,
+              });
+              return labels.some((l) => l.name === labelName);
+            }
+
+            async function removeLabel(issueNumber, labelName) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  name: labelName,
+                });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+            }
+
+            async function comment(issueNumber, body) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body,
+              });
+            }
+
+            async function markReadyForReview(pullNumber) {
+              try {
+                await github.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/ready_for_review", {
+                  owner,
+                  repo,
+                  pull_number: pullNumber,
+                });
+              } catch (error) {
+                if (![403, 404, 422].includes(error.status)) throw error;
+              }
+            }
+
+            try {
+              await github.rest.repos.getBranch({ owner, repo, branch: baseBranch });
+            } catch (error) {
+              if (error.status === 404) {
+                core.warning(`Base branch '${baseBranch}' does not exist yet. Skipping auto PR.`);
+                return;
+              }
+              throw error;
+            }
+
+            await ensureLabel("auto-pr", "1d76db", "Pull request created automatically");
+            await ensureLabel("target:main", "0052cc", "Targets the main branch");
+            await ensureLabel("promotion", "5319e7", "Branch promotion pull request");
+            await ensureLabel("blocked:security", "b60205", "Blocked by failing security gate");
+
+            const existing = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: "open",
+              base: baseBranch,
+              head: `${owner}:${headBranch}`,
+              per_page: 100,
+            });
+
+            const pr = existing.length > 0 ? existing[0] : null;
+
+            const compare = await github.rest.repos.compareCommitsWithBasehead({
+              owner,
+              repo,
+              basehead: `${baseBranch}...${headBranch}`,
+            });
+
+            if ((compare.data.ahead_by || 0) === 0) {
+              core.info(`No commits ahead of ${baseBranch}. PR will not be created or updated.`);
+              return;
+            }
+
+            if (!pr) {
+              const created = await github.rest.pulls.create({
+                owner,
+                repo,
+                head: headBranch,
+                base: baseBranch,
+                title: "release: dev -> main",
+                body: managedBody,
+                draft: false,
+                maintainer_can_modify: true,
+              });
+
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: created.data.number,
+                labels: ["auto-pr", "target:main", "promotion"],
+              });
+
+              core.info(`PR created: #${created.data.number}`);
+              return;
+            }
+
+            const wasBlocked = await hasLabel(pr.number, "blocked:security");
+            if (wasBlocked) {
+              await removeLabel(pr.number, "blocked:security");
+            }
+
+            if (pr.draft && wasBlocked) {
+              await markReadyForReview(pr.number);
+              await comment(
+                pr.number,
+                [
+                  "<!-- security-gate -->",
+                  "Security gate is passing again. PR marked as ready for review.",
+                  "",
+                  `- Branch: \`${headBranch}\``,
+                  `- Commit: \`${headSha}\``,
+                  `- Workflow run: ${runUrl}`,
+                ].join("\n")
+              );
+            }
+
+            await github.rest.pulls.update({
+              owner,
+              repo,
+              pull_number: pr.number,
+              body: managedBody,
+            });
+
+            core.info(`PR already open and body updated: #${pr.number}.`);

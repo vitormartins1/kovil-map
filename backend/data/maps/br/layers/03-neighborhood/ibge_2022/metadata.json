@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "priority": 30,
+  "level_key": "neighborhood",
+  "level_label": "Bairro",
+  "dataset_id": "br_ibge_neighborhoods_rj_2022",
+  "source": "IBGE",
+  "version": "2022",
+  "geometry_format": "shp",
+  "crs": "EPSG:4326",
+  "source_path": "data/RJ_bairros_CD2022.shp",
+  "id_fields": ["CD_BAIRRO"],
+  "name_fields": ["NM_BAIRRO"],
+  "parent_resolvers": [
+    {
+      "target_level_key": "city",
+      "target_key": "code",
+      "source_fields": ["CD_MUN"]
+    },
+    {
+      "target_level_key": "city",
+      "target_key": "name",
+      "source_fields": ["NM_MUN"]
+    }
+  ],
+  "depth_role": "administrative",
+  "include_in_hierarchy": true
+}

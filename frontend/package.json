@@ -1,0 +1,74 @@
+{
+  "name": "kovil-map",
+  "version": "1.0.0",
+  "description": "Desktop companion for Pwnagotchi",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "test:smoke:packaged": "jest --runInBand --coverage=false tests/unit/backend_runtime.test.js",
+    "lint": "npm run lint:js && npm run lint:html && npm run lint:css",
+    "lint:js": "ESLINT_USE_FLAT_CONFIG=false eslint --config .eslintrc.ci.cjs \"src/**/*.js\" --max-warnings 0",
+    "lint:html": "htmlhint src/index.html --config .htmlhintrc.ci.json",
+    "lint:css": "stylelint \"src/css/**/*.css\" --config .stylelintrc.ci.json --allow-empty-input",
+    "lint:structure": "node scripts/check_js_file_sizes.js",
+    "test:unit": "jest",
+    "test:unit:watch": "jest --watch",
+    "test:unit:coverage": "jest --coverage"
+  },
+  "author": "Vitor",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
+    "@fortawesome/fontawesome-free": "^7.2.0",
+    "babel-jest": "^29.7.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.39.4",
+    "htmlhint": "^1.9.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "leaflet": "^1.9.4",
+    "leaflet.heat": "^0.2.0",
+    "leaflet.markercluster": "^1.5.3",
+    "nouislider": "^15.8.1",
+    "stylelint": "^16.26.1"
+  },
+  "overrides": {
+    "ejs": "^3.1.10"
+  },
+  "build": {
+    "appId": "com.kovil.map",
+    "productName": "KOVIL MAP",
+    "win": {
+      "target": [
+        "portable",
+        "dir"
+      ],
+      "icon": "src/assets/icons/kovil-map-icon.ico"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "src/assets/icons/kovil-map-icon.png"
+    },
+    "extraResources": [
+      {
+        "from": "../backend/dist",
+        "to": "backend",
+        "filter": [
+          "kovil_backend",
+          "kovil_backend.exe",
+          "kovil_backend*"
+        ]
+      },
+      {
+        "from": "../backend/data",
+        "to": "backend/data",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  }
+}

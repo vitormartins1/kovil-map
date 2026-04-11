@@ -1,0 +1,3831 @@
+openapi: 3.1.0
+info:
+  title: KOVIL MAP Desktop Backend
+  version: 0.1.0
+paths:
+  /:
+    get:
+      tags:
+      - Health
+      summary: Read Root
+      operationId: read_root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/health:
+    get:
+      tags:
+      - Health
+      summary: Get Status
+      operationId: get_status_api_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/config:
+    get:
+      tags:
+      - Config
+      summary: Get Configuration
+      operationId: get_configuration_api_config_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+    put:
+      tags:
+      - Config
+      summary: Update Configuration
+      operationId: update_configuration_api_config_put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/sync:
+    post:
+      tags:
+      - Sync
+      summary: Trigger Sync
+      operationId: trigger_sync_api_sync_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncRequest'
+              default:
+                force: false
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/sync/trust-host-key:
+    post:
+      tags:
+      - Sync
+      summary: Trust Host Key
+      operationId: trust_host_key_api_sync_trust_host_key_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncTrustHostKeyRequest'
+              default:
+                replace: false
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/sync/pwnagotchi/probe:
+    post:
+      tags:
+      - Sync
+      summary: Probe Pwnagotchi Ssh
+      operationId: probe_pwnagotchi_ssh_api_sync_pwnagotchi_probe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PwnagotchiProbeRequest'
+              default: {}
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/sync/m5evil/probe:
+    post:
+      tags:
+      - Sync
+      summary: Probe M5Evil Admin Webui
+      operationId: probe_m5evil_admin_webui_api_sync_m5evil_probe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/M5EvilProbeRequest'
+              default: {}
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/sync/bruce/probe:
+    post:
+      tags:
+      - Sync
+      summary: Probe Bruce Webui
+      operationId: probe_bruce_webui_api_sync_bruce_probe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BruceProbeRequest'
+              default: {}
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/map/data:
+    get:
+      tags:
+      - Map
+      summary: Get Map Data
+      operationId: get_map_data_api_map_data_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/zones:
+    post:
+      tags:
+      - Zones
+      summary: Get Zones
+      operationId: get_zones_api_zones_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZonesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/zones/to-conquer:
+    post:
+      tags:
+      - Zones
+      summary: Get To Conquer Zones
+      operationId: get_to_conquer_zones_api_zones_to_conquer_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToConquerZonesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/vendors/{mac}:
+    get:
+      tags:
+      - Vendors
+      summary: Get Vendor
+      operationId: get_vendor_api_vendors__mac__get
+      parameters:
+      - name: mac
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mac
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+          default: maclookup
+          title: Source
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/handshakes/{mac}/files:
+    get:
+      tags:
+      - Handshakes
+      summary: List Handshake Files
+      operationId: list_handshake_files_api_handshakes__mac__files_get
+      parameters:
+      - name: mac
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mac
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/handshakes/{mac}/set:
+    get:
+      tags:
+      - Handshakes
+      summary: Get Handshake Set
+      operationId: get_handshake_set_api_handshakes__mac__set_get
+      parameters:
+      - name: mac
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mac
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/handshakes/{mac}/combine-captures:
+    post:
+      tags:
+      - Handshakes
+      summary: Combine Handshake Captures
+      operationId: combine_handshake_captures_api_handshakes__mac__combine_captures_post
+      parameters:
+      - name: mac
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mac
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - type: object
+                additionalProperties: true
+              - type: 'null'
+              title: Payload
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/handshakes/{mac}/raw-context:
+    get:
+      tags:
+      - Handshakes
+      summary: Get Handshake Raw Context
+      operationId: get_handshake_raw_context_api_handshakes__mac__raw_context_get
+      parameters:
+      - name: mac
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mac
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/handshakes/{mac}/raw-prepare:
+    post:
+      tags:
+      - Handshakes
+      summary: Prepare Handshake From Raw
+      operationId: prepare_handshake_from_raw_api_handshakes__mac__raw_prepare_post
+      parameters:
+      - name: mac
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mac
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Payload
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/handshakes/{mac}/raw-prepare-all:
+    post:
+      tags:
+      - Handshakes
+      summary: Prepare All Handshakes From Raw
+      operationId: prepare_all_handshakes_from_raw_api_handshakes__mac__raw_prepare_all_post
+      parameters:
+      - name: mac
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mac
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - type: object
+                additionalProperties: true
+              - type: 'null'
+              title: Payload
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/files/{filename}:
+    get:
+      tags:
+      - Files
+      summary: Get File Content
+      operationId: get_file_content_api_files__filename__get
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      - name: capture_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+      - name: combined_build_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combined Build Id
+      - name: mac
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wordlists/custom:
+    get:
+      tags:
+      - Wordlists
+      summary: Get Custom Wordlists
+      operationId: get_custom_wordlists_api_wordlists_custom_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/hashcat/rules:
+    get:
+      tags:
+      - Hashcat
+      summary: Get Hashcat Rules
+      operationId: get_hashcat_rules_api_hashcat_rules_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/hashcat/masks:
+    get:
+      tags:
+      - Hashcat
+      summary: Get Hashcat Masks
+      operationId: get_hashcat_masks_api_hashcat_masks_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/hashcat/devices:
+    get:
+      tags:
+      - Hashcat
+      summary: Get Hashcat Devices
+      operationId: get_hashcat_devices_api_hashcat_devices_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/hashcat/jobs:
+    post:
+      tags:
+      - Hashcat
+      summary: Start Cracking
+      operationId: start_cracking_api_hashcat_jobs_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HashcatJobRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/hashcat/association/preview:
+    post:
+      tags:
+      - Hashcat
+      summary: Preview Association
+      operationId: preview_association_api_hashcat_association_preview_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HashcatAssociationPreviewRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/aircrack/jobs:
+    post:
+      tags:
+      - Aircrack
+      summary: Start Aircrack
+      operationId: start_aircrack_api_aircrack_jobs_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AircrackJobRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/convert/hcx:
+    post:
+      tags:
+      - Convert
+      summary: Convert Pcap
+      operationId: convert_pcap_api_convert_hcx_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConvertRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/convert/hcx/batch:
+    post:
+      tags:
+      - Convert
+      summary: Convert Pcap Multi
+      operationId: convert_pcap_multi_api_convert_hcx_batch_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConvertMultiRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/batches:
+    get:
+      tags:
+      - Batches
+      summary: List Multi Files
+      operationId: list_multi_files_api_batches_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/batches/{filename}:
+    get:
+      tags:
+      - Batches
+      summary: Get Multi File Content
+      operationId: get_multi_file_content_api_batches__filename__get
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Batches
+      summary: Delete Multi File
+      operationId: delete_multi_file_api_batches__filename__delete
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/batches/{filename}/files:
+    get:
+      tags:
+      - Batches
+      summary: Get Batch Files
+      operationId: get_batch_files_api_batches__filename__files_get
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/jobs/{job_id}:
+    patch:
+      tags:
+      - Jobs
+      summary: Update Job
+      operationId: update_job_api_jobs__job_id__patch
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobPatchRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Jobs
+      summary: Get Job Status
+      operationId: get_job_status_api_jobs__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/jobs:
+    get:
+      tags:
+      - Jobs
+      summary: List Jobs
+      operationId: list_jobs_api_jobs_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/history:
+    delete:
+      tags:
+      - History
+      summary: Clear History
+      operationId: clear_history_api_history_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/fingerprint/extract:
+    post:
+      tags:
+      - Fingerprint
+      summary: Extract Fingerprint
+      operationId: extract_fingerprint_api_fingerprint_extract_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Payload
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/fingerprint/details:
+    get:
+      tags:
+      - Fingerprint
+      summary: Get Fingerprint Details
+      operationId: get_fingerprint_details_api_fingerprint_details_get
+      parameters:
+      - name: filename
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+      - name: mac
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+      - name: capture_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/rawsniffer/files:
+    get:
+      tags:
+      - RawSniffer
+      summary: List Rawsniffer Files
+      operationId: list_rawsniffer_files_api_rawsniffer_files_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/rawsniffer/files/{filename}:
+    delete:
+      tags:
+      - RawSniffer
+      summary: Delete Rawsniffer File
+      operationId: delete_rawsniffer_file_api_rawsniffer_files__filename__delete
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/rawsniffer/hashes:
+    get:
+      tags:
+      - RawSniffer
+      summary: List Rawsniffer Hashes
+      operationId: list_rawsniffer_hashes_api_rawsniffer_hashes_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/rawsniffer/metadata:
+    get:
+      tags:
+      - RawSniffer
+      summary: Get Rawsniffer Metadata
+      operationId: get_rawsniffer_metadata_api_rawsniffer_metadata_get
+      parameters:
+      - name: filename
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+      - name: raw_item_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Raw Item Id
+      - name: refresh
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Refresh
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/rawsniffer/analyze:
+    post:
+      tags:
+      - RawSniffer
+      summary: Analyze Rawsniffer Capture
+      operationId: analyze_rawsniffer_capture_api_rawsniffer_analyze_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Payload
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/rawsniffer/analysis/{raw_item_id}:
+    get:
+      tags:
+      - RawSniffer
+      summary: Get Rawsniffer Analysis
+      operationId: get_rawsniffer_analysis_api_rawsniffer_analysis__raw_item_id__get
+      parameters:
+      - name: raw_item_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Raw Item Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/rawsniffer/extract:
+    post:
+      tags:
+      - RawSniffer
+      summary: Extract Rawsniffer Metadata
+      operationId: extract_rawsniffer_metadata_api_rawsniffer_extract_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawSnifferExtractRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/data-health/summary:
+    get:
+      tags:
+      - DataHealth
+      summary: Get Data Health Summary
+      operationId: get_data_health_summary_api_data_health_summary_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/insights/score:
+    get:
+      tags:
+      - Insights
+      summary: Get Attack Score
+      operationId: get_attack_score_api_insights_score_get
+      parameters:
+      - name: mac
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+      - name: filename
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+      - name: capture_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+      - name: combined_build_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combined Build Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/insights/attack-recommendation:
+    get:
+      tags:
+      - Insights
+      summary: Get Attack Recommendation
+      operationId: get_attack_recommendation_api_insights_attack_recommendation_get
+      parameters:
+      - name: mac
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+      - name: filename
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+      - name: capture_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+      - name: combined_build_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combined Build Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/insights/handshake-readiness:
+    get:
+      tags:
+      - Insights
+      summary: Get Handshake Readiness
+      operationId: get_handshake_readiness_api_insights_handshake_readiness_get
+      parameters:
+      - name: mac
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+      - name: filename
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+      - name: capture_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+      - name: combined_build_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combined Build Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/insights/quality-gate:
+    get:
+      tags:
+      - Insights
+      summary: Get Quality Gate
+      operationId: get_quality_gate_api_insights_quality_gate_get
+      parameters:
+      - name: filename
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Filename
+      - name: attack_mode
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Attack Mode
+      - name: capture_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+      - name: combined_build_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combined Build Id
+      - name: mac
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/analytics/heatmap:
+    get:
+      tags:
+      - Analytics
+      summary: Get Analytics Heatmap
+      operationId: get_analytics_heatmap_api_analytics_heatmap_get
+      parameters:
+      - name: metric
+        in: query
+        required: false
+        schema:
+          type: string
+          default: opportunity
+          title: Metric
+      - name: time_window
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Time Window
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Source
+      - name: security
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Security
+      - name: device_type
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Device Type
+      - name: channel
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Channel
+      - name: cell_size_m
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 120
+          title: Cell Size M
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/analytics/channel-summary:
+    get:
+      tags:
+      - Analytics
+      summary: Get Analytics Channel Summary
+      operationId: get_analytics_channel_summary_api_analytics_channel_summary_get
+      parameters:
+      - name: metric
+        in: query
+        required: false
+        schema:
+          type: string
+          default: opportunity
+          title: Metric
+      - name: time_window
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Time Window
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Source
+      - name: security
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Security
+      - name: device_type
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Device Type
+      - name: channel
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Channel
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/analytics/hotspots:
+    get:
+      tags:
+      - Analytics
+      summary: Get Analytics Hotspots
+      operationId: get_analytics_hotspots_api_analytics_hotspots_get
+      parameters:
+      - name: metric
+        in: query
+        required: false
+        schema:
+          type: string
+          default: opportunity
+          title: Metric
+      - name: time_window
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Time Window
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Source
+      - name: security
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Security
+      - name: device_type
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Device Type
+      - name: channel
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Channel
+      - name: cell_size_m
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 120
+          title: Cell Size M
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 12
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/maintenance/details:
+    delete:
+      tags:
+      - Maintenance
+      summary: Clear Details Files
+      operationId: clear_details_files_api_maintenance_details_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/maintenance/cache:
+    delete:
+      tags:
+      - Maintenance
+      summary: Clear Cache
+      operationId: clear_cache_api_maintenance_cache_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/wardrive/hierarchy:
+    get:
+      tags:
+      - WarDrive
+      summary: Get Wardrive Hierarchy
+      operationId: get_wardrive_hierarchy_api_wardrive_hierarchy_get
+      parameters:
+      - name: time_window
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Time Window
+      - name: source
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Source
+      - name: session_ids
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Ids
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wardrive/inventory:
+    get:
+      tags:
+      - WarDrive
+      summary: Get Wardrive Inventory
+      operationId: get_wardrive_inventory_api_wardrive_inventory_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/wardrive/sessions:
+    get:
+      tags:
+      - WarDrive
+      summary: Get Wardrive Sessions
+      operationId: get_wardrive_sessions_api_wardrive_sessions_get
+      parameters:
+      - name: time_window
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Time Window
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wardrive/sessions/tag:
+    post:
+      tags:
+      - WarDrive
+      summary: Set Wardrive Session Tag
+      operationId: set_wardrive_session_tag_api_wardrive_sessions_tag_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WardriveSessionTagRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wardrive/sessions/tracks:
+    post:
+      tags:
+      - WarDrive
+      summary: Get Wardrive Session Tracks
+      operationId: get_wardrive_session_tracks_api_wardrive_sessions_tracks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WardriveSessionTracksRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wardrive/sessions/merge:
+    post:
+      tags:
+      - WarDrive
+      summary: Merge Wardrive Sessions Route
+      operationId: merge_wardrive_sessions_route_api_wardrive_sessions_merge_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WardriveSessionMergeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wardrive/refresh:
+    post:
+      tags:
+      - WarDrive
+      summary: Refresh Wardrive Runtime
+      operationId: refresh_wardrive_runtime_api_wardrive_refresh_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WardriveRefreshRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wardrive/zones:
+    post:
+      tags:
+      - WarDrive
+      summary: Get Wardrive Zones
+      operationId: get_wardrive_zones_api_wardrive_zones_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WardriveZonesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/kill-chain:
+    get:
+      tags:
+      - Recon
+      summary: Get Kill Chain
+      description: Aggregate all networks into kill-chain stages with PMKID/EAPOL
+        intel.
+      operationId: get_kill_chain_api_recon_kill_chain_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/cache-manifest:
+    get:
+      tags:
+      - Recon
+      summary: Get Recon Cache Manifest
+      operationId: get_recon_cache_manifest_api_recon_cache_manifest_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/kill-chain/summary:
+    get:
+      tags:
+      - Recon
+      summary: Get Kill Chain Summary
+      operationId: get_kill_chain_summary_api_recon_kill_chain_summary_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/kill-chain/stage:
+    get:
+      tags:
+      - Recon
+      summary: Get Kill Chain Stage
+      operationId: get_kill_chain_stage_api_recon_kill_chain_stage_get
+      parameters:
+      - name: stage
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Kill-chain stage
+          title: Stage
+        description: Kill-chain stage
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Search
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 200
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/vulnerability-matrix:
+    get:
+      tags:
+      - Recon
+      summary: Get Vulnerability Matrix
+      description: Per-network vulnerability profile with scoring and flags.
+      operationId: get_vulnerability_matrix_api_recon_vulnerability_matrix_get
+      parameters:
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          default: attack_score
+          title: Sort By
+      - name: sort_dir
+        in: query
+        required: false
+        schema:
+          type: string
+          default: desc
+          title: Sort Dir
+      - name: encryption
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Encryption
+      - name: stage
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Stage
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/target-detail:
+    get:
+      tags:
+      - Recon
+      summary: Get Target Detail
+      operationId: get_target_detail_api_recon_target_detail_get
+      parameters:
+      - name: mac
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          description: Target MAC address
+          title: Mac
+        description: Target MAC address
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/attack-effectiveness:
+    get:
+      tags:
+      - Recon
+      summary: Get Attack Effectiveness
+      description: 'Aggregate cracking history across all networks for effectiveness
+        stats.
+
+
+        ``period`` – ``24h | 7d | 30d | all`` – filters history entries by time.'
+      operationId: get_attack_effectiveness_api_recon_attack_effectiveness_get
+      parameters:
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          default: all
+          title: Period
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/temporal-intel:
+    get:
+      tags:
+      - Recon
+      summary: Get Temporal Intel
+      description: Analyze temporal patterns across all networks.
+      operationId: get_temporal_intel_api_recon_temporal_intel_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/audit-report:
+    get:
+      tags:
+      - Recon
+      summary: Get Audit Report
+      description: Generate a structured audit report for the current dataset.
+      operationId: get_audit_report_api_recon_audit_report_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/kill-chain/snapshot:
+    post:
+      tags:
+      - Recon
+      summary: Create Kc Snapshot
+      description: Take a point-in-time snapshot of kill-chain stage counts.
+      operationId: create_kc_snapshot_api_recon_kill_chain_snapshot_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/kill-chain/history:
+    get:
+      tags:
+      - Recon
+      summary: Get Kc History
+      description: Return kill-chain snapshot history for sparklines / trend charts.
+      operationId: get_kc_history_api_recon_kill_chain_history_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/audit-report/snapshot:
+    post:
+      tags:
+      - Recon
+      summary: Save Report Snapshot
+      description: Save current audit report as a named snapshot.
+      operationId: save_report_snapshot_api_recon_audit_report_snapshot_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/audit-report/snapshots:
+    get:
+      tags:
+      - Recon
+      summary: List Report Snapshots
+      description: List available report snapshots.
+      operationId: list_report_snapshots_api_recon_audit_report_snapshots_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/audit-report/compare:
+    get:
+      tags:
+      - Recon
+      summary: Compare Report Snapshots
+      description: Compare current report with a saved snapshot.
+      operationId: compare_report_snapshots_api_recon_audit_report_compare_get
+      parameters:
+      - name: snapshot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Snapshot ID to compare against current
+          title: Snapshot Id
+        description: Snapshot ID to compare against current
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/attack-plan:
+    post:
+      tags:
+      - Recon
+      summary: Create Attack Plan
+      description: 'Create a batch attack plan for selected targets.
+
+
+        Returns planned operations with estimated details — does NOT start jobs.'
+      operationId: create_attack_plan_api_recon_attack_plan_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttackPlanRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/comms/device-fingerprints:
+    get:
+      tags:
+      - Recon
+      summary: Get Device Fingerprints
+      description: 'C-F2: Aggregate device types by OUI / manufacturer.
+
+
+        Groups networks by device_type with encryption, channel, and RSSI
+
+        stats.  Also returns channel distribution and raw-sniffer activity
+
+        totals.'
+      operationId: get_device_fingerprints_api_recon_comms_device_fingerprints_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/comms/colocation:
+    get:
+      tags:
+      - Recon
+      summary: Get Colocation Analysis
+      description: 'C-F3: Identify networks that co-locate (appear together in space/time).
+
+
+        Groups networks sharing GPS coordinates within ~50m radius.  Returns
+
+        enriched cluster cards with radius, source breakdown, dominant
+
+        encryption, RSSI stats, and a heuristic label.'
+      operationId: get_colocation_analysis_api_recon_comms_colocation_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/comms/relationship-graph:
+    get:
+      tags:
+      - Recon
+      summary: Get Relationship Graph
+      description: 'C-F1: Network-Client relationship graph for visualization.
+
+
+        Nodes = known APs + probing clients.
+
+        Edges = probe requests linking clients to SSIDs.'
+      operationId: get_relationship_graph_api_recon_comms_relationship_graph_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/comms/spectrum:
+    get:
+      tags:
+      - Recon
+      summary: Get Spectrum Analysis
+      description: 'C-F4: WiFi channel usage, band split, and congestion analysis.
+
+
+        Aggregates channel data already loaded from wardrive CSVs and raw
+
+        sniffer metadata to produce a spectrum overview without any new
+
+        data collection pipeline.'
+      operationId: get_spectrum_analysis_api_recon_comms_spectrum_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/comms/signal-landscape:
+    get:
+      tags:
+      - Recon
+      summary: Get Signal Landscape
+      description: 'C-F5: RSSI distribution, per-encryption and per-source signal
+        stats.
+
+
+        Buckets RSSI values into ranges and highlights physically-proximate
+
+        strong-signal targets useful for operational prioritisation.'
+      operationId: get_signal_landscape_api_recon_comms_signal_landscape_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/probe-intel/derandom:
+    get:
+      tags:
+      - Recon
+      summary: Get Probe Derandomization
+      description: 'SI-F5: Heuristic MAC de-randomization analysis.
+
+
+        Groups clients by probe SSID fingerprint similarity.
+
+        Random MACs probing the same set of SSIDs are likely the same device.'
+      operationId: get_probe_derandomization_api_recon_probe_intel_derandom_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/probe-intel/geocorrelation:
+    get:
+      tags:
+      - Recon
+      summary: Get Probe Geocorrelation
+      description: 'SI-F7: Cross-reference probe SSIDs with GPS-located networks.
+
+
+        For each client, if probed SSIDs match known networks with GPS,
+
+        estimate client location radius.'
+      operationId: get_probe_geocorrelation_api_recon_probe_intel_geocorrelation_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/probe-intel:
+    get:
+      tags:
+      - Recon
+      summary: Get Probe Intel
+      description: Aggregate probe request intelligence across all available PCAPs.
+      operationId: get_probe_intel_api_recon_probe_intel_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/probe-intel/status:
+    get:
+      tags:
+      - Recon
+      summary: Get Probe Intel Status
+      description: Return cached probe-intel result and staleness info (fast).
+      operationId: get_probe_intel_status_api_recon_probe_intel_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/probe-intel/scan:
+    post:
+      tags:
+      - Recon
+      summary: Start Probe Intel Scan
+      description: Start a background probe-intel scan job.  Returns job_id.
+      operationId: start_probe_intel_scan_api_recon_probe_intel_scan_post
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/probe-intel/pcap:
+    get:
+      tags:
+      - Recon
+      summary: Get Probe Intel Pcap
+      description: Analyse probe requests from a specific PCAP file.
+      operationId: get_probe_intel_pcap_api_recon_probe_intel_pcap_get
+      parameters:
+      - name: path
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          title: Path
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/deep-analysis:
+    get:
+      tags:
+      - Recon
+      summary: Get Deep Analysis
+      description: Aggregate deauth/disassoc threat intelligence across all PCAPs.
+      operationId: get_deep_analysis_api_recon_deep_analysis_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/deep-analysis/status:
+    get:
+      tags:
+      - Recon
+      summary: Get Deep Analysis Status
+      description: Return cached deep-analysis result and staleness info (fast).
+      operationId: get_deep_analysis_status_api_recon_deep_analysis_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/recon/deep-analysis/scan:
+    post:
+      tags:
+      - Recon
+      summary: Start Deep Analysis Scan
+      description: Start a background deep-analysis scan job.  Returns job_id.
+      operationId: start_deep_analysis_scan_api_recon_deep_analysis_scan_post
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/recon/deep-analysis/pcap:
+    get:
+      tags:
+      - Recon
+      summary: Get Deep Analysis Pcap
+      description: Deep analysis of a specific PCAP file.
+      operationId: get_deep_analysis_pcap_api_recon_deep_analysis_pcap_get
+      parameters:
+      - name: path
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          title: Path
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 200
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pmk/databases:
+    get:
+      tags:
+      - PMK
+      summary: List Databases
+      operationId: list_databases_api_pmk_databases_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/pmk/databases/{db_name}/stats:
+    get:
+      tags:
+      - PMK
+      summary: Database Stats
+      operationId: database_stats_api_pmk_databases__db_name__stats_get
+      parameters:
+      - name: db_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Db Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pmk/build:
+    post:
+      tags:
+      - PMK
+      summary: Build Database
+      operationId: build_database_api_pmk_build_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PmkBuildRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pmk/attack:
+    post:
+      tags:
+      - PMK
+      summary: Attack With Pmk
+      operationId: attack_with_pmk_api_pmk_attack_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PmkAttackRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/pmk/databases/{db_name}:
+    delete:
+      tags:
+      - PMK
+      summary: Delete Database
+      operationId: delete_database_api_pmk_databases__db_name__delete
+      parameters:
+      - name: db_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Db Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/wps/attack:
+    post:
+      tags:
+      - WPS
+      summary: Wps Attack
+      operationId: wps_attack_api_wps_attack_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WpsAttackRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AircrackJobRequest:
+      properties:
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        capture_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+        raw_item_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Raw Item Id
+        bssid:
+          type: string
+          title: Bssid
+        wordlist:
+          type: string
+          title: Wordlist
+      type: object
+      required:
+      - bssid
+      - wordlist
+      title: AircrackJobRequest
+    AttackPlanRequest:
+      properties:
+        targets:
+          items:
+            type: string
+          type: array
+          title: Targets
+          description: List of MAC addresses
+        strategy:
+          type: string
+          title: Strategy
+          description: auto|dictionary|bruteforce|pmk
+          default: auto
+        wordlist:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Wordlist
+      type: object
+      required:
+      - targets
+      title: AttackPlanRequest
+    BruceProbeRequest:
+      properties:
+        bruce_sync_enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Bruce Sync Enabled
+        bruce_host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Host
+        bruce_port:
+          anyOf:
+          - type: integer
+            maximum: 65535.0
+            minimum: 1.0
+          - type: 'null'
+          title: Bruce Port
+        bruce_web_protocol:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Web Protocol
+        bruce_web_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Web User
+        bruce_web_password:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Web Password
+      type: object
+      title: BruceProbeRequest
+    ConfigUpdateRequest:
+      properties:
+        pwn_sync_enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Pwn Sync Enabled
+        pwn_host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pwn Host
+        pwn_port:
+          anyOf:
+          - type: integer
+            maximum: 65535.0
+            minimum: 1.0
+          - type: 'null'
+          title: Pwn Port
+        pwn_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pwn User
+        pwn_pass:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pwn Pass
+        remote_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Remote Path
+        pwn_force_sync:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Pwn Force Sync
+        m5_sync_enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: M5 Sync Enabled
+        m5_force_sync:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: M5 Force Sync
+        m5_host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Host
+        m5_port:
+          anyOf:
+          - type: integer
+            maximum: 65535.0
+            minimum: 1.0
+          - type: 'null'
+          title: M5 Port
+        m5_web_protocol:
+          anyOf:
+          - type: string
+            enum:
+            - http
+            - https
+          - type: 'null'
+          title: M5 Web Protocol
+        m5_admin_base_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Admin Base Path
+        m5_web_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Web User
+        m5_web_password:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Web Password
+        m5_handshake_remote_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Handshake Remote Path
+        m5_wardrive_remote_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Wardrive Remote Path
+        bruce_sync_enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Bruce Sync Enabled
+        bruce_force_sync:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Bruce Force Sync
+        bruce_host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Host
+        bruce_port:
+          anyOf:
+          - type: integer
+            maximum: 65535.0
+            minimum: 1.0
+          - type: 'null'
+          title: Bruce Port
+        bruce_web_protocol:
+          anyOf:
+          - type: string
+            enum:
+            - http
+            - https
+          - type: 'null'
+          title: Bruce Web Protocol
+        bruce_web_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Web User
+        bruce_web_password:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Web Password
+        hashcat_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hashcat Path
+        hcxpcapngtool_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hcxpcapngtool Path
+        aircrack_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Aircrack Path
+        tshark_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tshark Path
+        custom_wordlists_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Wordlists Path
+        custom_rules_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Rules Path
+        custom_masks_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Masks Path
+        ssh_known_hosts_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ssh Known Hosts Path
+        use_wsl:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Use Wsl
+        attack_mode:
+          anyOf:
+          - type: string
+            enum:
+            - straight
+            - rules
+            - passphrase
+            - association
+            - association_hint_first
+            - association_hint_rule
+            - combinator
+            - combinator_passphrase
+            - digits
+            - mask
+            - mask_profile
+            - hybrid
+            - hybrid_reverse
+            - hybrid_mask_profile
+            - hybrid_reverse_mask_profile
+          - type: 'null'
+          title: Attack Mode
+        workload_profile:
+          anyOf:
+          - type: string
+            enum:
+            - '1'
+            - '2'
+            - '3'
+            - '4'
+          - type: 'null'
+          title: Workload Profile
+        hashcat_optimized:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Hashcat Optimized
+        hashcat_slow:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Hashcat Slow
+        hashcat_potfile:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Hashcat Potfile
+        hashcat_device_default:
+          anyOf:
+          - type: string
+            pattern: ^(all|\d+)$
+          - type: 'null'
+          title: Hashcat Device Default
+        map_tile:
+          anyOf:
+          - type: string
+            enum:
+            - carto_dark
+            - carto_dark_nolabels
+            - osm
+            - opentopomap
+            - esri_sat
+            - carto_light
+          - type: 'null'
+          title: Map Tile
+        map_cluster_mode:
+          anyOf:
+          - type: string
+            enum:
+            - performance
+            - ultra
+            - spread
+            - tight
+          - type: 'null'
+          title: Map Cluster Mode
+        force_sync:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Force Sync
+        rawsniffer_include_raw_only_networks:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Rawsniffer Include Raw Only Networks
+        ui_hide_passwords:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Ui Hide Passwords
+        ui_visual_theme:
+          anyOf:
+          - type: string
+            enum:
+            - cyberpunk
+            - professional
+            - synthwave
+            - military
+          - type: 'null'
+          title: Ui Visual Theme
+        ui_theme:
+          anyOf:
+          - type: string
+            enum:
+            - cyan
+            - purple
+            - green
+            - pink
+            - orange
+            - steel
+            - slate
+            - forest
+            - amber
+            - rose
+            - sunset
+            - vapor
+            - miami
+            - retro
+            - plasma
+            - tactical
+            - desert
+            - nightvision
+            - command
+            - stealth
+          - type: 'null'
+          title: Ui Theme
+        ui_icon_pwned:
+          anyOf:
+          - type: string
+            enum:
+            - fa-skull
+            - fa-ghost
+            - fa-gem
+          - type: 'null'
+          title: Ui Icon Pwned
+        ui_icon_locked:
+          anyOf:
+          - type: string
+            enum:
+            - fa-shield-halved
+            - fa-lock
+            - fa-house-lock
+            - fa-vault
+          - type: 'null'
+          title: Ui Icon Locked
+        ui_icon_open:
+          anyOf:
+          - type: string
+            enum:
+            - fa-bolt
+            - fa-wifi
+            - fa-unlock
+            - fa-signal
+          - type: 'null'
+          title: Ui Icon Open
+        ui_icon_wardrive:
+          anyOf:
+          - type: string
+            enum:
+            - fa-tower-broadcast
+            - fa-satellite-dish
+            - fa-location-crosshairs
+            - fa-signal
+          - type: 'null'
+          title: Ui Icon Wardrive
+        ui_wardrive_color:
+          anyOf:
+          - type: string
+            enum:
+            - teal
+            - cyan
+            - purple
+            - yellow
+            - green
+            - orange
+          - type: 'null'
+          title: Ui Wardrive Color
+        ui_wardrive_style:
+          anyOf:
+          - type: string
+            enum:
+            - icon
+            - badge
+            - pulse
+          - type: 'null'
+          title: Ui Wardrive Style
+        ui_hud_density:
+          anyOf:
+          - type: string
+            enum:
+            - compact
+            - balanced
+            - comfortable
+          - type: 'null'
+          title: Ui Hud Density
+        ui_sidebar_preset:
+          anyOf:
+          - type: string
+            enum:
+            - narrow
+            - standard
+            - wide
+          - type: 'null'
+          title: Ui Sidebar Preset
+        ui_font_scale:
+          anyOf:
+          - type: string
+            enum:
+            - '90'
+            - '100'
+            - '110'
+          - type: 'null'
+          title: Ui Font Scale
+        ui_cracking_accordion_mode:
+          anyOf:
+          - type: string
+            enum:
+            - multi
+            - single
+          - type: 'null'
+          title: Ui Cracking Accordion Mode
+        ui_wardrive_replay_speed_default:
+          anyOf:
+          - type: string
+            enum:
+            - '0.05'
+            - '0.1'
+            - '0.25'
+            - '0.5'
+            - '1'
+            - '1.5'
+            - '2'
+            - '2.5'
+            - '4'
+            - '8'
+          - type: 'null'
+          title: Ui Wardrive Replay Speed Default
+        ui_wardrive_replay_autoplay:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Ui Wardrive Replay Autoplay
+        ui_wardrive_replay_auto_focus:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Ui Wardrive Replay Auto Focus
+        ui_wardrive_replay_follow_camera_default:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Ui Wardrive Replay Follow Camera Default
+        ui_wardrive_replay_follow_zoom_default:
+          anyOf:
+          - type: string
+            enum:
+            - current
+            - '13'
+            - '15'
+            - '17'
+            - '19'
+          - type: 'null'
+          title: Ui Wardrive Replay Follow Zoom Default
+        ui_wardrive_replay_timing_mode_default:
+          anyOf:
+          - type: string
+            enum:
+            - real_time
+            - compress_idle
+            - uniform_path
+          - type: 'null'
+          title: Ui Wardrive Replay Timing Mode Default
+        ui_wardrive_sessions_sort_by:
+          anyOf:
+          - type: string
+            enum:
+            - none
+            - date
+            - duration
+            - distance
+            - nets
+          - type: 'null'
+          title: Ui Wardrive Sessions Sort By
+        ui_wardrive_sessions_sort_direction:
+          anyOf:
+          - type: string
+            enum:
+            - asc
+            - desc
+          - type: 'null'
+          title: Ui Wardrive Sessions Sort Direction
+        ui_wardrive_merge_confirmation:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Ui Wardrive Merge Confirmation
+        ui_wardrive_route_accent_color:
+          anyOf:
+          - type: string
+            enum:
+            - theme
+            - teal
+            - cyan
+            - purple
+            - yellow
+            - green
+            - orange
+            - pink
+            - amber
+            - red
+            - white
+          - type: 'null'
+          title: Ui Wardrive Route Accent Color
+        ui_wardrive_primary_zone_accent_color:
+          anyOf:
+          - type: string
+            enum:
+            - theme
+            - teal
+            - cyan
+            - purple
+            - yellow
+            - green
+            - orange
+            - pink
+            - amber
+            - red
+            - white
+          - type: 'null'
+          title: Ui Wardrive Primary Zone Accent Color
+        ui_wardrive_secondary_accent_color:
+          anyOf:
+          - type: string
+            enum:
+            - theme
+            - teal
+            - cyan
+            - purple
+            - yellow
+            - green
+            - orange
+            - pink
+            - amber
+            - red
+            - white
+          - type: 'null'
+          title: Ui Wardrive Secondary Accent Color
+      additionalProperties: false
+      type: object
+      title: ConfigUpdateRequest
+    ConvertMultiRequest:
+      properties:
+        filenames:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Filenames
+        capture_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Capture Ids
+      type: object
+      title: ConvertMultiRequest
+    ConvertRequest:
+      properties:
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        capture_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+        raw_item_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Raw Item Id
+      type: object
+      title: ConvertRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HashcatAssociationPreviewRequest:
+      properties:
+        filename:
+          type: string
+          title: Filename
+        capture_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+        combined_build_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combined Build Id
+        mac:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+        mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mode
+          default: association
+        association_hint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Association Hint
+        association_hints:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Association Hints
+      type: object
+      required:
+      - filename
+      title: HashcatAssociationPreviewRequest
+    HashcatJobRequest:
+      properties:
+        filename:
+          type: string
+          title: Filename
+        capture_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+        combined_build_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Combined Build Id
+        mac:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mac
+        attack_mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Attack Mode
+        workload_profile:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Workload Profile
+        wordlist:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Wordlist
+        rule_file:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rule File
+        custom_mask:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Mask
+        is_optimized:
+          type: boolean
+          title: Is Optimized
+          default: false
+        is_slow:
+          type: boolean
+          title: Is Slow
+          default: false
+        device_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Device Id
+        enable_potfile:
+          type: boolean
+          title: Enable Potfile
+          default: false
+        wordlist_2:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Wordlist 2
+        enable_increment:
+          type: boolean
+          title: Enable Increment
+          default: false
+        increment_min:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Increment Min
+        increment_max:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Increment Max
+        mask_file:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mask File
+        association_hint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Association Hint
+        association_hints:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Association Hints
+        skip_quality_gate:
+          type: boolean
+          title: Skip Quality Gate
+          default: false
+      type: object
+      required:
+      - filename
+      title: HashcatJobRequest
+    JobPatchRequest:
+      properties:
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - status
+      title: JobPatchRequest
+    M5EvilProbeRequest:
+      properties:
+        m5_sync_enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: M5 Sync Enabled
+        m5_host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Host
+        m5_port:
+          anyOf:
+          - type: integer
+            maximum: 65535.0
+            minimum: 1.0
+          - type: 'null'
+          title: M5 Port
+        m5_web_protocol:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Web Protocol
+        m5_admin_base_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Admin Base Path
+        m5_web_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Web User
+        m5_web_password:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Web Password
+        m5_handshake_remote_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Handshake Remote Path
+        m5_wardrive_remote_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Wardrive Remote Path
+      type: object
+      title: M5EvilProbeRequest
+    PmkAttackRequest:
+      properties:
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        capture_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Capture Id
+        raw_item_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Raw Item Id
+        bssid:
+          type: string
+          title: Bssid
+        db_name:
+          type: string
+          title: Db Name
+      type: object
+      required:
+      - bssid
+      - db_name
+      title: PmkAttackRequest
+    PmkBuildRequest:
+      properties:
+        essid:
+          type: string
+          title: Essid
+        wordlist:
+          type: string
+          title: Wordlist
+        db_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Db Name
+      type: object
+      required:
+      - essid
+      - wordlist
+      title: PmkBuildRequest
+    PwnagotchiProbeRequest:
+      properties:
+        pwn_host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pwn Host
+        pwn_port:
+          anyOf:
+          - type: integer
+            maximum: 65535.0
+            minimum: 1.0
+          - type: 'null'
+          title: Pwn Port
+        pwn_user:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pwn User
+        pwn_pass:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pwn Pass
+        remote_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Remote Path
+      type: object
+      title: PwnagotchiProbeRequest
+    RawSnifferExtractRequest:
+      properties:
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        force:
+          type: boolean
+          title: Force
+          default: false
+        only_pending:
+          type: boolean
+          title: Only Pending
+          default: false
+      type: object
+      title: RawSnifferExtractRequest
+    SyncRequest:
+      properties:
+        force:
+          type: boolean
+          title: Force
+          default: false
+        pwn_force_sync:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Pwn Force Sync
+        m5_force_sync:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: M5 Force Sync
+        bruce_force_sync:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Bruce Force Sync
+        pwn_handshakes_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pwn Handshakes Process Id
+        m5_handshakes_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Handshakes Process Id
+        m5_rawsniffer_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Rawsniffer Process Id
+        m5_mastersniffer_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Mastersniffer Process Id
+        m5_wardrive_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: M5 Wardrive Process Id
+        bruce_handshakes_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Handshakes Process Id
+        bruce_rawsniffer_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Rawsniffer Process Id
+        bruce_wardrive_process_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bruce Wardrive Process Id
+      type: object
+      title: SyncRequest
+    SyncTrustHostKeyRequest:
+      properties:
+        host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Host
+        port:
+          anyOf:
+          - type: integer
+            maximum: 65535.0
+            minimum: 1.0
+          - type: 'null'
+          title: Port
+        replace:
+          type: boolean
+          title: Replace
+          default: false
+        target:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Target
+      type: object
+      title: SyncTrustHostKeyRequest
+    ToConquerZonesRequest:
+      properties:
+        conquered_points:
+          items: {}
+          type: array
+          title: Conquered Points
+        to_conquer_points:
+          items: {}
+          type: array
+          title: To Conquer Points
+        eps_m:
+          type: number
+          title: Eps M
+          default: 200
+        min_samples:
+          type: integer
+          title: Min Samples
+          default: 3
+        acc_segments:
+          type: integer
+          title: Acc Segments
+          default: 8
+        min_zone_points:
+          type: integer
+          title: Min Zone Points
+          default: 2
+      type: object
+      title: ToConquerZonesRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    WardriveRefreshRequest:
+      properties:
+        reload_data:
+          type: boolean
+          title: Reload Data
+          default: true
+        reload_maps:
+          type: boolean
+          title: Reload Maps
+          default: false
+      type: object
+      title: WardriveRefreshRequest
+    WardriveSessionMergeRequest:
+      properties:
+        session_ids:
+          items:
+            type: string
+          type: array
+          title: Session Ids
+      additionalProperties: false
+      type: object
+      title: WardriveSessionMergeRequest
+    WardriveSessionTagRequest:
+      properties:
+        session_id:
+          type: string
+          minLength: 1
+          title: Session Id
+        transport_mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transport Mode
+      additionalProperties: false
+      type: object
+      required:
+      - session_id
+      title: WardriveSessionTagRequest
+    WardriveSessionTracksRequest:
+      properties:
+        session_ids:
+          items:
+            type: string
+          type: array
+          title: Session Ids
+      additionalProperties: false
+      type: object
+      title: WardriveSessionTracksRequest
+    WardriveZonesRequest:
+      properties:
+        region_id:
+          type: string
+          minLength: 1
+          title: Region Id
+        eps_m:
+          type: number
+          title: Eps M
+          default: 200
+        min_samples:
+          type: integer
+          title: Min Samples
+          default: 3
+        time_window:
+          type: string
+          title: Time Window
+          default: all
+        source:
+          type: string
+          title: Source
+          default: all
+        session_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Session Ids
+        comparison_mode:
+          type: string
+          enum:
+          - standard
+          - focus_active
+          title: Comparison Mode
+          default: standard
+        active_session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Active Session Id
+      type: object
+      required:
+      - region_id
+      title: WardriveZonesRequest
+    WpsAttackRequest:
+      properties:
+        bssid:
+          type: string
+          title: Bssid
+        channel:
+          type: string
+          title: Channel
+        interface:
+          type: string
+          title: Interface
+        tool:
+          type: string
+          title: Tool
+          default: reaver
+        pixie_dust:
+          type: boolean
+          title: Pixie Dust
+          default: false
+        delay:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Delay
+      type: object
+      required:
+      - bssid
+      - channel
+      - interface
+      title: WpsAttackRequest
+    ZonesRequest:
+      properties:
+        points:
+          items: {}
+          type: array
+          title: Points
+        eps_m:
+          type: number
+          title: Eps M
+          default: 200
+        min_samples:
+          type: integer
+          title: Min Samples
+          default: 3
+      type: object
+      title: ZonesRequest
+tags:
+- name: Health
+  description: Healthcheck and backend status
+- name: Config
+  description: Configuration management
+- name: Sync
+  description: Pwnagotchi sync operations
+- name: Map
+  description: Map data
+- name: Zones
+  description: Zone generation
+- name: Vendors
+  description: MAC vendor lookup
+- name: Geolocation
+  description: Backend geolocation
+- name: Handshakes
+  description: Handshake file discovery
+- name: Files
+  description: File access
+- name: Wordlists
+  description: Custom wordlists
+- name: Hashcat
+  description: Hashcat resources and jobs
+- name: Aircrack
+  description: Aircrack-ng jobs
+- name: Convert
+  description: HCX conversions
+- name: Batches
+  description: Batch (multi) files
+- name: Jobs
+  description: Job management
+- name: History
+  description: History cleanup
+- name: Fingerprint
+  description: Passive fingerprint extraction from PCAPs
+- name: RawSniffer
+  description: Bruce raw sniffer PCAP analysis
+- name: DataHealth
+  description: Dataset quality and diagnostics summary
+- name: Insights
+  description: Attack score, recommendations and quality gate
+- name: Analytics
+  description: Geospatial tactical analytics and heatmaps
+- name: Maintenance
+  description: Maintenance cleanup operations
+- name: WarDrive
+  description: WarDrive regional hierarchy and zones

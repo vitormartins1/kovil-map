@@ -1,0 +1,12 @@
+[run]
+source =
+    app/api
+    app/core
+    app/schemas
+    app/services
+    app/utils
+omit =
+    app/tests/*
+
+[report]
+show_missing = True

@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "priority": 20,
+  "level_key": "city",
+  "level_label": "Cidade",
+  "dataset_id": "br_ibge_cities_rj_2023_12",
+  "source": "IBGE",
+  "version": "2023_12",
+  "geometry_format": "shp",
+  "crs": "EPSG:4326",
+  "source_path": "data/RJ_Municipios_2023/RJ_Municipios_2023.shp",
+  "id_fields": ["CD_MUN"],
+  "name_fields": ["NM_MUN"],
+  "parent_resolvers": [
+    {
+      "target_level_key": "state",
+      "target_key": "code",
+      "source_fields": ["CD_UF"]
+    },
+    {
+      "target_level_key": "state",
+      "target_key": "name",
+      "source_fields": ["SIGLA_UF", "NM_UF"]
+    }
+  ],
+  "depth_role": "administrative",
+  "include_in_hierarchy": true
+}

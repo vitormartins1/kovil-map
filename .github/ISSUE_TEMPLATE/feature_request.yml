@@ -1,0 +1,47 @@
+name: Feature request
+description: Suggest an improvement or new capability for KOVIL MAP
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What workflow or limitation are you trying to improve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior, UI, API, or workflow you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing workarounds, related tools, or tradeoffs you already evaluated.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Frontend / UX
+        - Backend / API
+        - Recon Center
+        - WarDrive
+        - Sync / Integrations
+        - Cracking / Tooling
+        - Docs / Community
+        - CI / Release
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked the backlog and roadmap pages first
+          required: true

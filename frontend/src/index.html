@@ -1,0 +1,1713 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://127.0.0.1:8000 ws://127.0.0.1:8000; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.openstreetmap.org https://*.basemaps.cartocdn.com https://*.opentopomap.org https://server.arcgisonline.com; font-src 'self' data:;">
+    <title>KOVIL MAP</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="vendor/leaflet/leaflet.css"/>
+    <link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.css"/>
+    <link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.Default.css"/>
+    
+    <!-- noUiSlider CSS -->
+    <link rel="stylesheet" href="vendor/nouislider/nouislider.min.css">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- CUSTOM TITLE BAR -->
+    <div id="title-bar">
+        <div class="app-title">
+            <i class="fa-solid fa-ghost"></i> KOVIL MAP
+        </div>
+        <div class="window-controls">
+            <button type="button" class="control-btn" id="btn-min" aria-label="Minimize window"><i class="fa-solid fa-minus"></i></button>
+            <button type="button" class="control-btn" id="btn-max" aria-label="Maximize window"><i class="fa-regular fa-square"></i></button>
+            <button type="button" class="control-btn close" id="btn-close" aria-label="Close window"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+
+    <div class="scanlines"></div>
+
+    <div id="loading">
+        <div class="boot-ambient" aria-hidden="true"></div>
+        <div class="boot-container">
+            <div class="boot-brand">
+                <div class="boot-brand-mark">
+                    <img src="assets/icons/kovil-map-icon.png" class="boot-logo" alt="Logo">
+                </div>
+                <div class="boot-brand-copy">
+                    <div class="boot-eyebrow">WIRELESS RECON OPERATIONS</div>
+                    <div class="boot-title">KOVIL MAP</div>
+                    <div class="boot-subtitle" id="boot-subtitle">Preparing backend services, telemetry caches and the map workspace.</div>
+                </div>
+            </div>
+
+            <div class="boot-main-grid">
+                <section class="boot-panel boot-panel--primary" aria-label="Startup progress">
+                    <div class="boot-status-row">
+                        <div>
+                            <div class="boot-panel-title">System Status</div>
+                            <div class="boot-status" id="boot-status">INITIALIZING...</div>
+                        </div>
+                        <div class="boot-status-pill" id="boot-status-pill">BOOT</div>
+                    </div>
+
+                    <div class="boot-progress-track" aria-hidden="true">
+                        <div class="boot-progress-bar" id="boot-progress-bar" style="width: 12%;"></div>
+                    </div>
+                    <div class="boot-progress-meta">
+                        <span id="boot-progress-label">Starting startup pipeline</span>
+                        <span id="boot-progress-value">12%</span>
+                    </div>
+
+                    <div class="boot-steps" id="boot-steps">
+                        <div class="boot-step is-active" data-boot-step="backend">
+                            <span class="boot-step-dot" aria-hidden="true"></span>
+                            <div class="boot-step-copy">
+                                <span class="boot-step-title">Backend</span>
+                                <span class="boot-step-meta" id="boot-step-backend-meta">Waiting for local API</span>
+                            </div>
+                        </div>
+                        <div class="boot-step" data-boot-step="dataset">
+                            <span class="boot-step-dot" aria-hidden="true"></span>
+                            <div class="boot-step-copy">
+                                <span class="boot-step-title">Dataset</span>
+                                <span class="boot-step-meta" id="boot-step-dataset-meta">Network inventory not loaded yet</span>
+                            </div>
+                        </div>
+                        <div class="boot-step" data-boot-step="workspace">
+                            <span class="boot-step-dot" aria-hidden="true"></span>
+                            <div class="boot-step-copy">
+                                <span class="boot-step-title">Workspace</span>
+                                <span class="boot-step-meta" id="boot-step-workspace-meta">Waiting to render cockpit</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="boot-panel boot-panel--secondary" aria-label="Startup log">
+                    <div class="boot-panel-head">
+                        <div class="boot-panel-title">Live Boot Log</div>
+                        <div class="boot-panel-copy">Automatic retries stay enabled until the backend and dataset come online.</div>
+                    </div>
+                    <div class="boot-log" id="boot-log">
+                        <div class="boot-log-entry"><span class="boot-log-tag">INIT</span><span class="boot-log-msg">System power on.</span></div>
+                        <div class="boot-log-entry"><span class="boot-log-tag">INIT</span><span class="boot-log-msg">Loading interface shell.</span></div>
+                    </div>
+                    <div class="boot-tip-card">
+                        <div class="boot-tip-label">What happens next</div>
+                        <div class="boot-tip-copy" id="boot-tip-copy">The app checks the backend first, then loads discovered networks and finally renders the main cockpit.</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="modal-overlay" style="display: none;">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h3>SYSTEM CONFIGURATION</h3>
+                <button type="button" class="close-icon" id="btn-close-settings" aria-label="Close settings">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="settings-body">
+                <div class="settings-layout">
+                    <aside class="settings-nav" aria-label="Configuration sections">
+                        <button type="button" class="settings-nav-btn active" data-settings-section-target="appearance">
+                            <i class="fa-solid fa-swatchbook"></i>
+                            <span>APPEARANCE & LAYOUT</span>
+                        </button>
+                        <button type="button" class="settings-nav-btn" data-settings-section-target="map">
+                            <i class="fa-solid fa-map"></i>
+                            <span>MAP & LAYERS</span>
+                        </button>
+                        <button type="button" class="settings-nav-btn" data-settings-section-target="wardrive">
+                            <i class="fa-solid fa-route"></i>
+                            <span>WARDRIVE WORKSPACE</span>
+                        </button>
+                        <button type="button" class="settings-nav-btn" data-settings-section-target="cracking">
+                            <i class="fa-solid fa-cat"></i>
+                            <span>CRACKING WORKSPACE</span>
+                        </button>
+                        <button type="button" class="settings-nav-btn" data-settings-section-target="sync">
+                            <i class="fa-solid fa-network-wired"></i>
+                            <span>DEVICE SYNC</span>
+                        </button>
+                        <button type="button" class="settings-nav-btn" data-settings-section-target="tools">
+                            <i class="fa-solid fa-gear"></i>
+                            <span>TOOLS & PATHS</span>
+                        </button>
+                    </aside>
+
+                    <div class="settings-panels">
+                        <section class="settings-section" data-settings-panel="appearance">
+                            <div class="settings-section-header">
+                                <div>
+                                    <div class="section-title">
+                                        <i class="fa-solid fa-swatchbook"></i> APPEARANCE & LAYOUT
+                                    </div>
+                                    <div class="settings-section-copy">Theme, visual density and readability controls that change the overall cockpit feel.</div>
+                                </div>
+                            </div>
+                            <div class="settings-grid settings-grid--two">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-palette"></i> VISUAL IDENTITY</div>
+                                    <div class="form-group">
+                                        <label>VISUAL THEME</label>
+                                        <select id="conf-ui-visual-theme" class="settings-select">
+                                            <option value="cyberpunk">Cyberpunk</option>
+                                            <option value="professional">Professional (Default)</option>
+                                            <option value="synthwave">Synthwave</option>
+                                            <option value="military">Military</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>COLOR PRESET</label>
+                                        <select id="conf-ui-theme" class="settings-select">
+                                            <option value="purple">Neon Purple (Default)</option>
+                                            <option value="cyan">Cyber Cyan</option>
+                                            <option value="green">Matrix Green</option>
+                                            <option value="pink">Hot Pink</option>
+                                            <option value="orange">Electric Orange</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group-checkbox">
+                                        <input type="checkbox" id="conf-hide-passwords">
+                                        <label for="conf-hide-passwords">HIDE PWNED PASSWORDS BY DEFAULT</label>
+                                    </div>
+                                </div>
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-sliders"></i> LAYOUT CONTROLS</div>
+                                    <div class="form-group">
+                                        <label>HUD DENSITY</label>
+                                        <select id="conf-ui-hud-density" class="settings-select">
+                                            <option value="compact">Compact</option>
+                                            <option value="balanced">Balanced (Default)</option>
+                                            <option value="comfortable">Comfortable</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>SIDEBAR WIDTH PRESET</label>
+                                        <select id="conf-ui-sidebar-preset" class="settings-select">
+                                            <option value="narrow">Narrow</option>
+                                            <option value="standard">Standard (Default)</option>
+                                            <option value="wide">Wide</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>UI FONT SCALE</label>
+                                        <select id="conf-ui-font-scale" class="settings-select">
+                                            <option value="90">90%</option>
+                                            <option value="100">100% (Default)</option>
+                                            <option value="110">110%</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-section" data-settings-panel="map" style="display:none;">
+                            <div class="settings-section-header">
+                                <div>
+                                    <div class="section-title">
+                                        <i class="fa-solid fa-map"></i> MAP & LAYERS
+                                    </div>
+                                    <div class="settings-section-copy">Map rendering, clustering and iconography for the live network view.</div>
+                                </div>
+                            </div>
+                            <div class="settings-grid settings-grid--two">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-layer-group"></i> MAP RENDERING</div>
+                                    <div class="form-group">
+                                        <label>MAP TILE PROVIDER</label>
+                                        <select id="conf-map-tile" class="settings-select">
+                                            <option value="carto_dark">CartoDB Dark Matter (Default)</option>
+                                            <option value="carto_dark_nolabels">CartoDB Dark (No Labels)</option>
+                                            <option value="osm">OpenStreetMap (Standard)</option>
+                                            <option value="opentopomap">OpenTopoMap</option>
+                                            <option value="esri_sat">Esri World Imagery (Satellite)</option>
+                                            <option value="carto_light">CartoDB Positron (Light)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>MAP CLUSTER MODE</label>
+                                        <select id="conf-map-cluster" class="settings-select">
+                                            <option value="performance">⚡ Aggressive (Default) - r=80</option>
+                                            <option value="ultra"> Ultra - r=120</option>
+                                            <option value="spread">🌊 Spread - r=100</option>
+                                            <option value="tight">🔒 Tight - r=35</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-location-dot"></i> NETWORK ICONS</div>
+                                    <div class="form-group">
+                                        <label>PWNED NETWORK ICON</label>
+                                        <select id="conf-icon-pwned" class="settings-select">
+                                            <option value="fa-skull">Skull (Default)</option>
+                                            <option value="fa-ghost">Ghost</option>
+                                            <option value="fa-gem">Gem</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>LOCKED NETWORK ICON</label>
+                                        <select id="conf-icon-locked" class="settings-select">
+                                            <option value="fa-shield-halved">Shield (Default)</option>
+                                            <option value="fa-lock">Lock</option>
+                                            <option value="fa-house-lock">House Lock</option>
+                                            <option value="fa-vault">Vault</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>OPEN NETWORK ICON</label>
+                                        <select id="conf-icon-open" class="settings-select">
+                                            <option value="fa-bolt">Bolt (Default)</option>
+                                            <option value="fa-wifi">WiFi</option>
+                                            <option value="fa-unlock">Unlock</option>
+                                            <option value="fa-signal">Signal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-section" data-settings-panel="wardrive" style="display:none;">
+                            <div class="settings-section-header">
+                                <div>
+                                    <div class="section-title">
+                                        <i class="fa-solid fa-route"></i> WARDRIVE WORKSPACE
+                                    </div>
+                                    <div class="settings-section-copy">Replay, compare and session browsing defaults for the WarDrive workspace.</div>
+                                </div>
+                            </div>
+                            <div class="settings-grid settings-grid--two">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-satellite-dish"></i> WARDRIVE VISUALS</div>
+                                    <div class="form-group">
+                                        <label>WARDRIVE NETWORK ICON</label>
+                                        <select id="conf-icon-wardrive" class="settings-select">
+                                            <option value="fa-tower-broadcast">Tower (Default)</option>
+                                            <option value="fa-satellite-dish">Satellite</option>
+                                            <option value="fa-location-crosshairs">Crosshairs</option>
+                                            <option value="fa-signal">Signal</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>WARDRIVE COLOR</label>
+                                        <select id="conf-wardrive-color" class="settings-select">
+                                            <option value="teal">Neon Teal (Default)</option>
+                                            <option value="cyan">Neon Cyan</option>
+                                            <option value="purple">Neon Purple</option>
+                                            <option value="yellow">Neon Yellow</option>
+                                            <option value="green">Neon Green</option>
+                                            <option value="orange">Neon Orange</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>WARDRIVE STYLE</label>
+                                        <select id="conf-wardrive-style" class="settings-select">
+                                            <option value="icon">Icon Only (Default)</option>
+                                            <option value="badge">Icon + Badge</option>
+                                            <option value="pulse">Icon + Pulse</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>ACTIVE ROUTE ACCENT</label>
+                                        <select id="conf-wardrive-route-accent-color" class="settings-select">
+                                            <option value="theme">Follow Theme (Default)</option>
+                                            <option value="teal">Teal</option>
+                                            <option value="cyan">Cyan</option>
+                                            <option value="purple">Purple</option>
+                                            <option value="yellow">Yellow</option>
+                                            <option value="green">Green</option>
+                                            <option value="orange">Orange</option>
+                                            <option value="pink">Pink</option>
+                                            <option value="amber">Amber</option>
+                                            <option value="red">Red</option>
+                                            <option value="white">White</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>PRIMARY ZONE ACCENT</label>
+                                        <select id="conf-wardrive-primary-zone-accent-color" class="settings-select">
+                                            <option value="theme">Follow Theme (Default)</option>
+                                            <option value="teal">Teal</option>
+                                            <option value="cyan">Cyan</option>
+                                            <option value="purple">Purple</option>
+                                            <option value="yellow">Yellow</option>
+                                            <option value="green">Green</option>
+                                            <option value="orange">Orange</option>
+                                            <option value="pink">Pink</option>
+                                            <option value="amber">Amber</option>
+                                            <option value="red">Red</option>
+                                            <option value="white">White</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>COMPARE SECONDARY ACCENT</label>
+                                        <select id="conf-wardrive-secondary-accent-color" class="settings-select">
+                                            <option value="amber">Amber (Default)</option>
+                                            <option value="theme">Follow Theme</option>
+                                            <option value="teal">Teal</option>
+                                            <option value="cyan">Cyan</option>
+                                            <option value="purple">Purple</option>
+                                            <option value="yellow">Yellow</option>
+                                            <option value="green">Green</option>
+                                            <option value="orange">Orange</option>
+                                            <option value="pink">Pink</option>
+                                            <option value="red">Red</option>
+                                            <option value="white">White</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="settings-column">
+                                    <div class="settings-card">
+                                        <div class="section-title"><i class="fa-solid fa-play"></i> REPLAY DEFAULTS</div>
+                                        <div class="form-group">
+                                            <label>DEFAULT REPLAY SPEED</label>
+                                            <select id="conf-wardrive-replay-speed-default" class="settings-select">
+                                                <option value="0.05">0.05x · Very Slow</option>
+                                                <option value="0.1">0.1x · Slow</option>
+                                                <option value="0.25">0.25x</option>
+                                                <option value="0.5">0.5x</option>
+                                                <option value="1">1x (Default)</option>
+                                                <option value="1.5">1.5x</option>
+                                                <option value="2">2x</option>
+                                                <option value="2.5">2.5x</option>
+                                                <option value="4">4x</option>
+                                                <option value="8">8x · Ultra</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>DEFAULT TIMING MODE</label>
+                                            <select id="conf-wardrive-replay-timing-mode-default" class="settings-select">
+                                                <option value="real_time">Real Time</option>
+                                                <option value="compress_idle">Compress Idle</option>
+                                                <option value="uniform_path">Uniform Path</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>DEFAULT FOLLOW ZOOM</label>
+                                            <select id="conf-wardrive-replay-follow-zoom-default" class="settings-select">
+                                                <option value="current">Current</option>
+                                                <option value="13">City (13)</option>
+                                                <option value="15">Street (15)</option>
+                                                <option value="17">Close (17)</option>
+                                                <option value="19">Very Close (19)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="conf-wardrive-replay-autoplay">
+                                            <label for="conf-wardrive-replay-autoplay">AUTOPLAY WHEN SWITCHING ACTIVE ROUTE</label>
+                                        </div>
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="conf-wardrive-replay-auto-focus">
+                                            <label for="conf-wardrive-replay-auto-focus">FOCUS ACTIVE TRACK WHEN SWITCHING ROUTE</label>
+                                        </div>
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="conf-wardrive-replay-follow-camera-default">
+                                            <label for="conf-wardrive-replay-follow-camera-default">FOLLOW CAMERA DURING REPLAY BY DEFAULT</label>
+                                        </div>
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="conf-wardrive-merge-confirmation">
+                                            <label for="conf-wardrive-merge-confirmation">ASK CONFIRMATION BEFORE MERGING SESSIONS</label>
+                                        </div>
+                                    </div>
+                                    <div class="settings-card">
+                                        <div class="section-title"><i class="fa-solid fa-arrow-down-wide-short"></i> SESSION LIST DEFAULTS</div>
+                                        <div class="form-group">
+                                            <label>DEFAULT SORT</label>
+                                            <select id="conf-wardrive-sessions-sort-by-default" class="settings-select">
+                                                <option value="none">None</option>
+                                                <option value="date">Date</option>
+                                                <option value="duration">Duration</option>
+                                                <option value="distance">Distance</option>
+                                                <option value="nets">Networks</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>DEFAULT SORT DIRECTION</label>
+                                            <select id="conf-wardrive-sessions-sort-direction-default" class="settings-select">
+                                                <option value="desc">Descending (Default)</option>
+                                                <option value="asc">Ascending</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-section" data-settings-panel="cracking" style="display:none;">
+                            <div class="settings-section-header">
+                                <div>
+                                    <div class="section-title">
+                                        <i class="fa-solid fa-cat"></i> CRACKING WORKSPACE
+                                    </div>
+                                    <div class="settings-section-copy">Hashcat defaults and workspace behavior used by the cracking panel.</div>
+                                </div>
+                            </div>
+                            <div class="settings-grid settings-grid--two">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-bolt"></i> ATTACK PRESET</div>
+                                    <div class="form-group">
+                                        <label>DEFAULT ATTACK MODE</label>
+                                        <select id="conf-attack-mode" class="settings-select">
+                                            <option value="straight">Straight</option>
+                                            <option value="rules">Rules</option>
+                                            <option value="passphrase">Passphrase</option>
+                                            <option value="association">Association SSID / Hint</option>
+                                            <option value="association_hint_first">Association Multi-Hint</option>
+                                            <option value="combinator">Combinator</option>
+                                            <option value="combinator_passphrase">Combinator Passphrase</option>
+                                            <option value="digits">8-Digit</option>
+                                            <option value="mask">Mask</option>
+                                            <option value="mask_profile">Mask Profile</option>
+                                            <option value="hybrid">Hybrid</option>
+                                            <option value="hybrid_reverse">Hybrid Reverse</option>
+                                            <option value="hybrid_mask_profile">Wordlist + Mask Profile</option>
+                                            <option value="hybrid_reverse_mask_profile">Mask Profile + Wordlist</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>DEFAULT WORKLOAD PROFILE</label>
+                                        <select id="conf-workload-profile" class="settings-select">
+                                            <option value="1">1 // Low</option>
+                                            <option value="2">2 // Economic</option>
+                                            <option value="3">3 // Balanced (Default)</option>
+                                            <option value="4">4 // High</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>DEFAULT DEVICE</label>
+                                        <select id="conf-hashcat-device" class="settings-select">
+                                            <option value="all">Auto / All</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-microchip"></i> HASHCAT FLAGS</div>
+                                    <div class="form-group-checkbox">
+                                        <input type="checkbox" id="conf-optimized">
+                                        <label for="conf-optimized">DEFAULT OPTIMIZED KERNEL (-O)</label>
+                                    </div>
+                                    <div class="form-group-checkbox">
+                                        <input type="checkbox" id="conf-slow">
+                                        <label for="conf-slow">DEFAULT SLOW CANDIDATES (-S)</label>
+                                    </div>
+                                    <div class="form-group-checkbox">
+                                        <input type="checkbox" id="conf-potfile">
+                                        <label for="conf-potfile">ENABLE POTFILE (Remember Cracked)</label>
+                                    </div>
+                                </div>
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-table-columns"></i> CRACKING PANEL BEHAVIOR</div>
+                                    <div class="form-group">
+                                        <label>ACCORDION BEHAVIOR</label>
+                                        <select id="conf-ui-cracking-accordion-mode" class="settings-select">
+                                            <option value="multi">Keep Multiple Open (Default)</option>
+                                            <option value="single">Single Open Branch</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-section" data-settings-panel="sync" style="display:none;">
+                            <div class="settings-section-header">
+                                <div>
+                                    <div class="section-title">
+                                        <i class="fa-solid fa-network-wired"></i> DEVICE SYNC
+                                    </div>
+                                    <div class="settings-section-copy">Remote target access, sync behavior and platform integration settings.</div>
+                                </div>
+                            </div>
+                            <div class="settings-grid settings-grid--two settings-grid--sync">
+                                <div class="settings-column">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-plug"></i> PWNAGOTCHI SSH SYNC</div>
+                                    <div class="settings-action-bar">
+                                        <div class="settings-action-options" aria-label="Pwnagotchi sync options">
+                                            <div class="form-group-checkbox">
+                                                <input type="checkbox" id="conf-pwn-enabled">
+                                                <label for="conf-pwn-enabled">ENABLE SYNC</label>
+                                            </div>
+                                            <div class="form-group-checkbox">
+                                                <input type="checkbox" id="conf-force-sync">
+                                                <label for="conf-force-sync">DOWNLOAD ALL</label>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="secondary-btn" id="btn-conf-pwn-test">
+                                            <i class="fa-solid fa-satellite-dish"></i> TEST CONNECTION
+                                        </button>
+                                    </div>
+                                    <div class="settings-inline-status" id="conf-pwn-test-status" aria-live="polite"></div>
+                                    <div class="settings-grid settings-grid--compact">
+                                        <div class="form-group">
+                                            <label>TARGET IP</label>
+                                            <input type="text" id="conf-ip" placeholder="10.0.0.2">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>SSH PORT</label>
+                                            <input type="number" id="conf-port" min="1" max="65535" placeholder="22">
+                                        </div>
+                                    </div>
+                                    <div class="settings-grid settings-grid--compact">
+                                        <div class="form-group">
+                                            <label>SSH USER</label>
+                                            <input type="text" id="conf-user" placeholder="pi">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>SSH PASSWORD</label>
+                                            <input type="password" id="conf-pass" placeholder="******">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>REMOTE PATH</label>
+                                        <input type="text" id="conf-path" placeholder="/home/pi/handshakes">
+                                    </div>
+                                    <div class="settings-help-card" aria-label="Pwnagotchi SSH sync setup help">
+                                        <div class="settings-help-title"><i class="fa-solid fa-circle-info"></i> USB SSH SETUP</div>
+                                        <div class="settings-help-grid">
+                                            <div class="settings-help-item">
+                                                <div class="settings-help-item-title">SAME-HOST SSH OVER USB</div>
+                                                <p class="settings-note">Recommended workflow. Connect the Pwnagotchi to the desktop via USB, wait for the USB/RNDIS network interface to come up, then use the IP that the device exposes on that mapped network here in <code>TARGET IP</code>.</p>
+                                            </div>
+                                            <div class="settings-help-item">
+                                                <div class="settings-help-item-title">WHAT TO VERIFY</div>
+                                                <p class="settings-note">Make sure the desktop can reach the Pwnagotchi over the USB-mapped network before testing. <code>TEST CONNECTION</code> validates SSH access and the configured remote path only; it does not configure the network for you.</p>
+                                            </div>
+                                        </div>
+                                        <p class="settings-note">If you need a reference for the host/user/path setup, check the Pwnagotchi project configuration docs and use the values exposed by your USB networking setup.</p>
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="settings-column">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-globe"></i> M5EVIL ADMIN WEBUI</div>
+                                    <div class="settings-action-bar">
+                                        <div class="settings-action-options" aria-label="M5Evil sync options">
+                                            <div class="form-group-checkbox">
+                                                <input type="checkbox" id="conf-m5-enabled">
+                                                <label for="conf-m5-enabled">ENABLE SYNC</label>
+                                            </div>
+                                            <div class="form-group-checkbox">
+                                                <input type="checkbox" id="conf-m5-force-sync">
+                                                <label for="conf-m5-force-sync">DOWNLOAD ALL</label>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="secondary-btn" id="btn-conf-m5-test">
+                                            <i class="fa-solid fa-satellite-dish"></i> TEST CONNECTION
+                                        </button>
+                                    </div>
+                                    <div class="settings-inline-status" id="conf-m5-test-status" aria-live="polite"></div>
+                                    <div class="settings-grid settings-grid--compact">
+                                        <div class="form-group">
+                                            <label>M5EVIL HOST / IP</label>
+                                            <input type="text" id="conf-m5-host" placeholder="IP shown by the Cardputer">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>WEB PORT</label>
+                                            <input type="number" id="conf-m5-port" min="1" max="65535" placeholder="80">
+                                        </div>
+                                    </div>
+                                    <div class="settings-grid settings-grid--compact">
+                                        <div class="form-group">
+                                            <label>WEB USERNAME</label>
+                                            <input type="text" id="conf-m5-user" placeholder="evil">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>WEB PASSWORD</label>
+                                            <input type="password" id="conf-m5-password" placeholder="test">
+                                        </div>
+                                    </div>
+                                    <div class="settings-help-card" aria-label="M5Evil Admin WebUI setup help">
+                                        <div class="settings-help-title"><i class="fa-solid fa-circle-info"></i> REACHABILITY MODES</div>
+                                        <div class="settings-help-grid">
+                                            <div class="settings-help-item">
+                                                <div class="settings-help-item-title">SAME-NETWORK WEBUI</div>
+                                                <p class="settings-note">Recommended workflow. Connect the Cardputer to the same Wi-Fi/network as the desktop, use the IP shown by the Cardputer here in <code>M5EVIL HOST</code>, then run <code>Start Captive Portal</code> and sign in with the configured WebUI credentials.</p>
+                                            </div>
+                                            <div class="settings-help-item">
+                                                <div class="settings-help-item-title">REMOTE EXPOSURE</div>
+                                                <p class="settings-note"><code>UPnP NAT</code> exposes internal port <code>80</code> on another reachable port like <code>50080</code>. <code>Reverse TCP Tunnel</code> requires <code>tcp_host=</code> and <code>tcp_port=</code> in the device <code>config.txt</code>. If the device shows <code>Error check TCP host in config file</code>, your <code>tcp_host</code> is missing.</p>
+                                            </div>
+                                        </div>
+                                        <div class="settings-help-title settings-help-title--secondary"><i class="fa-solid fa-file-lines"></i> CONFIG OWNERSHIP</div>
+                                        <p class="settings-note">Device-side <code>config.txt</code>: <code>wifi_ssid</code>, <code>wifi_password</code>, <code>tcp_host</code>, <code>tcp_port</code>, <code>webpassword</code>. KOVIL MAP-side fields: host, port, username, password. <code>TEST CONNECTION</code> validates the endpoint configured here only; it does not configure UPnP NAT or Reverse TCP Tunnel for you.</p>
+                                        <p class="settings-note">Use <code>webpassword=...</code> in the device <code>config.txt</code> as the source of truth for the WebUI password. The preset keeps <code>test</code> as your current configured default, but firmware builds may differ.</p>
+                                    </div>
+                                </div>
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-fish"></i> BRUCE WEBUI</div>
+                                    <div class="settings-action-bar">
+                                        <div class="settings-action-options" aria-label="Bruce sync options">
+                                            <div class="form-group-checkbox">
+                                                <input type="checkbox" id="conf-bruce-enabled">
+                                                <label for="conf-bruce-enabled">ENABLE SYNC</label>
+                                            </div>
+                                            <div class="form-group-checkbox">
+                                                <input type="checkbox" id="conf-bruce-force-sync">
+                                                <label for="conf-bruce-force-sync">DOWNLOAD ALL</label>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="secondary-btn" id="btn-conf-bruce-test">
+                                            <i class="fa-solid fa-satellite-dish"></i> TEST CONNECTION
+                                        </button>
+                                    </div>
+                                    <div class="settings-inline-status" id="conf-bruce-test-status" aria-live="polite"></div>
+                                    <div class="settings-grid settings-grid--compact">
+                                        <div class="form-group">
+                                            <label>BRUCE HOST / IP</label>
+                                            <input type="text" id="conf-bruce-host" placeholder="bruce.local">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>WEB PORT</label>
+                                            <input type="number" id="conf-bruce-port" min="1" max="65535" placeholder="80">
+                                        </div>
+                                    </div>
+                                    <div class="settings-grid settings-grid--compact">
+                                        <div class="form-group">
+                                            <label>WEB USERNAME</label>
+                                            <input type="text" id="conf-bruce-user" placeholder="admin">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>WEB PASSWORD</label>
+                                            <input type="password" id="conf-bruce-password" placeholder="bruce">
+                                        </div>
+                                    </div>
+                                    <div class="settings-help-card" aria-label="Bruce WebUI setup help">
+                                        <div class="settings-help-title"><i class="fa-solid fa-circle-info"></i> BRUCE WEBUI ACCESS</div>
+                                        <p class="settings-note">Use the Bruce WebUI host/IP and credentials configured on your device. <code>TEST CONNECTION</code> checks authentication and validates the configured remote directories.</p>
+                                            <p class="settings-note">Fixed paths: <code>/BrucePCAP/handshakes</code> for handshakes, <code>/BrucePCAP</code> for RAW sniffer captures, and <code>/BruceWardriving</code> for wardrive CSVs.</p>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-section" data-settings-panel="tools" style="display:none;">
+                            <div class="settings-section-header">
+                                <div>
+                                    <div class="section-title">
+                                        <i class="fa-solid fa-gear"></i> TOOLS & PATHS
+                                    </div>
+                                    <div class="settings-section-copy">Binary locations, custom resources and advanced filesystem paths.</div>
+                                </div>
+                            </div>
+                            <div class="settings-grid settings-grid--two">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-screwdriver-wrench"></i> BINARIES / TOOLS</div>
+                                    <div class="form-group">
+                                        <label>HASHCAT BINARY PATH</label>
+                                        <input type="text" id="conf-hashcat" placeholder="hashcat">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>HCXTOOLS BINARY PATH</label>
+                                        <input type="text" id="conf-hcx" placeholder="hcxpcapngtool">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>AIRCRACK-NG BINARY PATH</label>
+                                        <input type="text" id="conf-aircrack" placeholder="aircrack-ng">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>TSHARK BINARY PATH</label>
+                                        <input type="text" id="conf-tshark" placeholder="/opt/homebrew/bin/tshark">
+                                    </div>
+                                </div>
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-solid fa-folder-tree"></i> CUSTOM DICTIONARIES</div>
+                                    <div class="form-group">
+                                        <label>CUSTOM WORDLISTS DIR</label>
+                                        <input type="text" id="conf-custom-wordlists" placeholder="C:\wordlists\custom">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CUSTOM RULES DIR</label>
+                                        <input type="text" id="conf-custom-rules" placeholder="C:\hashcat\rules\custom">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CUSTOM MASKS DIR</label>
+                                        <input type="text" id="conf-custom-masks" placeholder="C:\hashcat\masks\custom">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-grid settings-grid--two">
+                                <div class="settings-card">
+                                    <div class="section-title"><i class="fa-brands fa-linux"></i> SYSTEM INTEGRATION</div>
+                                    <div class="form-group-checkbox">
+                                        <input type="checkbox" id="conf-wsl">
+                                        <label for="conf-wsl">USE WSL (Windows Subsystem for Linux)</label>
+                                    </div>
+                                    <p class="settings-note">Keep this enabled when your cracking or conversion tools run inside WSL and the UI runs on Windows.</p>
+                                </div>
+                            </div>
+
+                            <details class="settings-advanced" id="settings-advanced">
+                                <summary>
+                                    <span><i class="fa-solid fa-flask"></i> ADVANCED</span>
+                                    <span class="settings-advanced-hint">Rare or technical options</span>
+                                </summary>
+                                <div class="settings-grid settings-grid--two settings-grid--advanced">
+                                    <div class="settings-card">
+                                        <div class="section-title"><i class="fa-solid fa-shield-halved"></i> SSH TRUST</div>
+                                        <div class="form-group">
+                                            <label>KNOWN HOSTS PATH</label>
+                                            <input type="text" id="conf-known-hosts" placeholder="/Users/you/.ssh/known_hosts">
+                                        </div>
+                                        <p class="settings-note">Use this if you need a custom SSH trust store instead of the default known hosts resolution.</p>
+                                    </div>
+                                </div>
+                            </details>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="settings-maintenance-row">
+                    <div class="section-title section-title--danger">
+                        <i class="fa-solid fa-trash"></i> MAINTENANCE
+                    </div>
+                    <div class="settings-maintenance-actions">
+                        <button class="cyber-button-small bg-red fg-white settings-maintenance-button" id="btn-clear-history">
+                            <i class="fa-solid fa-trash-can"></i> CLEAR HISTORY (.try FILES)
+                        </button>
+                        <button class="cyber-button-small bg-red fg-white settings-maintenance-button" id="btn-clear-details">
+                            <i class="fa-solid fa-file-circle-xmark"></i> CLEAR DETAILS (.details FILES)
+                        </button>
+                        <button class="cyber-button-small bg-red fg-white settings-maintenance-button" id="btn-clear-cache">
+                            <i class="fa-solid fa-broom"></i> CLEAR CACHE
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-footer">
+                <button class="btn-cancel" id="btn-cancel-settings">CANCEL</button>
+                <button class="btn-action" id="btn-save-settings">SAVE CONFIG</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="hud-layer">
+        <!-- LEFT SIDEBAR -->
+        <div class="left-sidebar">
+            <div class="controls-row">
+                <div class="search-container">
+                    <span class="prompt">&gt;</span>
+                    <input type="text" id="filter-input" placeholder="SEARCH_TARGET..." autocomplete="off" />
+                    <button type="button" id="btn-filter-clear" class="search-clear-btn" aria-label="Clear search" title="Clear search" hidden>
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div class="btn-group btn-group--map-actions">
+                    <button class="action-btn" id="btn-intelligence" title="Toggle Intelligence Zones" aria-label="Toggle Intelligence Zones">
+                        <i class="fa-solid fa-brain"></i>
+                    </button>
+                    <button class="action-btn" id="btn-heat" title="Toggle Heatmap" aria-label="Toggle Heatmap">
+                        <i class="fa-solid fa-fire"></i>
+                    </button>
+                    <button class="action-btn" id="btn-zones" title="Toggle Zones Panel" aria-label="Toggle Zones Panel">
+                        <i class="fa-solid fa-book-atlas"></i>
+                    </button>
+                    <button class="action-btn" id="btn-conquered" title="Toggle Conquered Zones" aria-label="Toggle Conquered Zones">
+                        <i class="fa-solid fa-flag"></i>
+                    </button>
+                    <button class="action-btn" id="btn-to-conquer" title="Toggle To Conquer Zones" aria-label="Toggle To Conquer Zones">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </button>
+                    <button class="action-btn" id="btn-discovered" title="Toggle Discovered Zones" aria-label="Toggle Discovered Zones">
+                        <i class="fa-solid fa-tower-broadcast"></i>
+                    </button>
+                    <button class="action-btn" id="btn-targets" title="Toggle Targets" aria-label="Toggle Targets">
+                        <i class="fa-solid fa-crosshairs"></i>
+                    </button>
+                    <button class="action-btn" id="btn-favs" title="Toggle Favorites" aria-label="Toggle Favorites">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button class="action-btn" id="btn-sync" title="Sync Data" aria-label="Sync Data">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                    <button class="action-btn" id="btn-settings" title="Settings" aria-label="Open Settings">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panels-container">
+                <div class="side-panel wardrive-left-panel wardrive-left-sessions-panel" id="wardrive-right-sessions-panel" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-route"></i>
+                            <span>WARDRIVE SESSIONS</span>
+                        </div>
+                        <div class="btn-group btn-group--tight">
+                            <button class="cyber-button-small bg-red fg-white compact-btn" id="btn-wardrive-sessions-clear">
+                                CLEAR
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <div class="wardrive-right-summary" id="wardrive-sessions-summary">No sessions loaded.</div>
+                        <div class="wardrive-sessions-filters">
+                            <select id="wardrive-sessions-sort-by" class="raw-select wardrive-sessions-filter-select">
+                                <option value="none">SORT: NONE</option>
+                                <option value="date">SORT: DATE</option>
+                                <option value="duration">SORT: DURATION</option>
+                                <option value="distance">SORT: DISTANCE</option>
+                                <option value="nets">SORT: NETS</option>
+                            </select>
+                            <button type="button" class="action-btn wardrive-sort-dir-btn" id="btn-wardrive-sessions-sort-dir" title="Toggle sort direction">DESC</button>
+                        </div>
+                        <div id="wardrive-sessions-list" class="wardrive-right-scroll">
+                            <div class="wardrive-empty">Loading sessions...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="side-panel zones-panel" id="zones-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-book-atlas"></i>
+                            <span>ZONES</span>
+                        </div>
+                    </div>
+                    <div class="panel-content" id="zones-list">
+                        <div class="zones-section-divider zones-section-divider--conquered" id="conquered-zones-divider" style="display: none;">
+                            <span>CONQUERED</span>
+                            <span id="conquered-zone-count">0</span>
+                        </div>
+                        <div id="conquered-zones-section"></div>
+                        <div class="zones-section-divider zones-section-divider--to-conquer" id="to-conquer-zones-divider" style="display: none;">
+                            <span>TO CONQUER</span>
+                            <span id="to-conquer-zone-count">0</span>
+                        </div>
+                        <div id="to-conquer-zones-section"></div>
+                        <div class="zones-section-divider zones-section-divider--discovered" id="discovered-zones-divider" style="display: none;">
+                            <span>DISCOVERED</span>
+                            <span id="discovered-zone-count">0</span>
+                        </div>
+                        <div id="discovered-zones-section"></div>
+                        <div class="zones-section-divider zones-section-divider--intelligence" id="intelligence-zones-divider" style="display: none;">
+                            <span>INTELLIGENCE</span>
+                            <span id="intelligence-zone-count">0</span>
+                        </div>
+                        <div id="intelligence-zones-section"></div>
+                    </div>
+                </div>
+
+                <div class="side-panel targets-panel" id="targets-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-crosshairs"></i>
+                            <span>TARGET LIST</span>
+                        </div>
+                        <span id="target-count">0</span>
+                    </div>
+                    <div class="panel-content" id="targets-list"></div>
+                </div>
+
+                <div class="side-panel favorites-panel" id="favorites-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-star"></i>
+                            <span>FAVORITES</span>
+                        </div>
+                        <span id="fav-count">0</span>
+                    </div>
+                    <div class="panel-content" id="favs-list"></div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- CENTER PANEL (NO-GPS LIST) -->
+        <div class="center-panel-container" id="no-gps-panel" style="display: none;">
+            <div class="no-gps-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-house-signal"></i>
+                        <span>NO-GPS NETWORKS</span>
+                    </div>
+                </div>
+                <div class="panel-toolbar no-gps-toolbar">
+                    <input id="no-gps-filter-search" class="raw-input" type="text" placeholder="Search SSID/MAC..." aria-label="Search No-GPS networks">
+                    <select id="no-gps-filter-device" class="raw-select" aria-label="Filter No-GPS by device source">
+                        <option value="all">ALL DEV</option>
+                        <option value="pwn">PWNAGOTCHI</option>
+                        <option value="bruce">BRUCEGOTCHI</option>
+                        <option value="m5">M5EVIL</option>
+                        <option value="ward">WARDRIVE</option>
+                        <option value="raw">RAWSNIFFER</option>
+                        <option value="unknown">UNKNOWN</option>
+                    </select>
+                    <select id="no-gps-filter-status" class="raw-select" aria-label="Filter No-GPS by status">
+                        <option value="all">ALL STATUS</option>
+                        <option value="cracked">CRACKED</option>
+                        <option value="locked">LOCKED</option>
+                        <option value="open">OPEN</option>
+                    </select>
+                    <select id="no-gps-filter-visibility" class="raw-select" aria-label="Filter No-GPS by hidden status">
+                        <option value="all">ALL NAMES</option>
+                        <option value="hidden">HIDDEN</option>
+                        <option value="named">NAMED</option>
+                    </select>
+                    <select id="no-gps-filter-artifact" class="raw-select" aria-label="Filter No-GPS by artifacts">
+                        <option value="all">ALL FILES</option>
+                        <option value="has_pcap">HAS PCAP</option>
+                        <option value="has_22000">HAS 22000</option>
+                        <option value="no_artifacts">NO FILES</option>
+                    </select>
+                    <button class="action-btn compact-btn" id="btn-no-gps-filter-reset" type="button" title="Reset No-GPS filters">RESET</button>
+                    <span id="no-gps-filter-count" class="raw-count-info">0/0</span>
+                </div>
+                <div class="panel-content panel-split-content">
+                    <div class="panel-split-col panel-split-col--half">
+                        <div class="panel-subheader panel-subheader--green">
+                            <span>CRACKED</span>
+                        </div>
+                        <div id="no-gps-list-pwned" class="panel-scroll-list">
+                            <!-- Pwned Items -->
+                        </div>
+                    </div>
+                    <div class="panel-split-divider"></div>
+                    <div class="panel-split-col panel-split-col--half">
+                        <div class="panel-subheader panel-subheader--red">
+                            <span>LOCKED</span>
+                        </div>
+                        <div id="no-gps-list-locked" class="panel-scroll-list">
+                            <!-- Locked Items -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER PANEL (MULTI-CRACK) -->
+        <div class="center-panel-container" id="multi-panel" style="display: none;">
+            <div class="no-gps-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>BATCH CRACKING</span>
+                    </div>
+                </div>
+                <div class="panel-content panel-split-content">
+                    <div class="panel-split-col panel-split-col--wide">
+                        <div class="panel-subheader panel-subheader--between">
+                            <div class="panel-subheader-title">
+                                <i class="fa-solid fa-list-check"></i> SELECT NETWORKS
+                            </div>
+                            <div class="panel-header-actions">
+                                <div class="btn-group btn-group--tight" id="multi-filter-toggle">
+                                    <button class="action-btn compact-btn active" id="btn-multi-filter-all">ALL</button>
+                                    <button class="action-btn compact-btn" id="btn-multi-filter-locked">LOCKED</button>
+                                </div>
+                                <button class="cyber-button-small bg-yellow fg-black compact-btn" id="btn-multi-create">
+                                    <i class="fa-solid fa-hashtag"></i> CREATE BATCH (22000)
+                                </button>
+                                <button class="cyber-button-small bg-red fg-white compact-btn" id="btn-multi-clear">
+                                    CLEAR
+                                </button>
+                            </div>
+                        </div>
+                        <div class="multi-count-row panel-counter-row">
+                            <span class="raw-count-info" id="multi-selected-count" title="selected">S 0</span>
+                            <span class="raw-count-info" id="multi-visible-count" title="visible">V 0</span>
+                            <span class="raw-count-info" id="multi-eligible-count" title="eligible">E 0</span>
+                            <span class="raw-count-info" id="multi-excluded-open-count" title="hidden open/wep">X 0</span>
+                        </div>
+                        <div class="panel-toolbar">
+                            <input type="text" id="multi-filter-search" class="raw-input" placeholder="search ssid/mac/security/source...">
+                            <select id="multi-filter-location" class="raw-select">
+                                <option value="all">ALL LOC</option>
+                                <option value="gps">GPS</option>
+                                <option value="no-gps">NO-GPS</option>
+                            </select>
+                            <select id="multi-filter-source" class="raw-select">
+                                <option value="all">ALL SRC</option>
+                                <option value="pwn">PWNAGOTCHI</option>
+                                <option value="bruce">BRUCEGOTCHI</option>
+                                <option value="m5">M5Evil</option>
+                                <option value="ward">WARDRIVE</option>
+                                <option value="raw">RAWSNIFFER</option>
+                            </select>
+                            <select id="multi-filter-artifact" class="raw-select">
+                                <option value="all">ALL FILES</option>
+                                <option value="has_pcap">HAS PCAP</option>
+                                <option value="has_22000">HAS 22000</option>
+                                <option value="no_22000">NO 22000</option>
+                            </select>
+                        </div>
+                        <div id="multi-all-list" class="panel-scroll-list">
+                            <!-- Multi selection list -->
+                        </div>
+                    </div>
+                    <div class="panel-split-divider"></div>
+                    <div class="panel-split-col panel-split-col--narrow">
+                        <div class="panel-subheader">
+                            <i class="fa-solid fa-file-waveform"></i> GENERATED BATCHES
+                        </div>
+                        <div id="multi-files-list" class="panel-scroll-list">
+                            <!-- Multi files -->
+                        </div>
+                        <div class="panel-split-divider panel-split-divider--horizontal"></div>
+                        <div class="panel-subheader">
+                            <i class="fa-solid fa-network-wired"></i> BATCH CONTENTS
+                        </div>
+                        <div id="multi-contents-list" class="panel-scroll-list">
+                            <!-- Multi file contents -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER PANEL (RAW SNIFFER) -->
+        <div class="center-panel-container" id="raw-panel" style="display: none;">
+            <div class="no-gps-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-wave-square"></i>
+                        <span>RAW SNIFFER</span>
+                    </div>
+                </div>
+                <div class="panel-content panel-split-content">
+                    <div class="panel-split-col panel-split-col--raw-left">
+                        <div class="panel-subheader panel-subheader--between">
+                            <div class="panel-subheader-title">
+                                <i class="fa-solid fa-file-waveform"></i> RAW FILES
+                                <span class="raw-count-info" id="raw-files-count-info">0/0</span>
+                            </div>
+                            <div class="panel-header-actions">
+                                <button type="button" class="action-btn wardrive-header-refresh" id="btn-raw-refresh" title="Refresh RAW Files" aria-label="Refresh RAW Files">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="raw-toolbar">
+                            <input type="text" id="raw-file-search" class="raw-input" placeholder="search file...">
+                            <select id="raw-file-status" class="raw-select">
+                                <option value="all">ALL</option>
+                                <option value="pending">PENDING</option>
+                                <option value="cached">CACHED</option>
+                            </select>
+                            <select id="raw-file-sort" class="raw-select">
+                                <option value="modified_desc">RECENT</option>
+                                <option value="modified_asc">OLDEST</option>
+                                <option value="size_desc">SIZE DESC</option>
+                                <option value="size_asc">SIZE ASC</option>
+                                <option value="networks_desc">NETS DESC</option>
+                                <option value="name_asc">NAME</option>
+                            </select>
+                        </div>
+                        <div id="raw-files-list" class="panel-scroll-list">
+                            <!-- RAW files -->
+                        </div>
+                        <div class="panel-split-divider panel-split-divider--horizontal"></div>
+                        <div class="panel-subheader">
+                            <i class="fa-solid fa-hashtag"></i> RAW HASHES (22000)
+                        </div>
+                        <div id="raw-hashes-list" class="panel-scroll-list panel-scroll-list--hashes">
+                            <!-- RAW hashes -->
+                        </div>
+                    </div>
+
+                    <div class="panel-split-divider"></div>
+
+                    <div class="panel-split-col panel-split-col--raw-right">
+                        <div class="panel-subheader panel-subheader--between">
+                            <div class="panel-subheader-title">
+                                <i class="fa-solid fa-magnifying-glass-chart"></i> METADATA & ANALYSIS
+                                <span class="raw-count-info" id="raw-net-count-info">0/0</span>
+                            </div>
+                            <div class="panel-header-actions">
+                                <button class="cyber-button-small bg-cyan fg-black compact-btn" id="btn-raw-analyze-selected">
+                                    ANALYZE SELECTED
+                                </button>
+                                <button class="cyber-button-small bg-red fg-black compact-btn" id="btn-raw-delete-selected">
+                                    DELETE SELECTED
+                                </button>
+                                <button class="cyber-button-small bg-green fg-black compact-btn" id="btn-raw-reprocess-selected">
+                                    REPROCESS SELECTED
+                                </button>
+                                <button class="cyber-button-small bg-yellow fg-black compact-btn" id="btn-raw-reprocess-pending">
+                                    REPROCESS PENDING
+                                </button>
+                            </div>
+                        </div>
+                        <div class="raw-toolbar">
+                            <input type="text" id="raw-network-search" class="raw-input" placeholder="search bssid/ssid...">
+                            <select id="raw-network-sort" class="raw-select">
+                                <option value="beacon_desc">BEACON DESC</option>
+                                <option value="eapol_desc">EAPOL DESC</option>
+                                <option value="probe_desc">PROBES DESC</option>
+                                <option value="ssid_asc">SSID</option>
+                                <option value="bssid_asc">BSSID</option>
+                            </select>
+                        </div>
+                        <div id="raw-details-view" class="raw-details-panel">
+                            Select a RAW file to inspect metadata and analysis.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER PANEL (RECON CENTER) -->
+        <div class="center-panel-container" id="analytics-panel" style="display: none;">
+            <div class="no-gps-panel recon-center">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fa-solid fa-crosshairs"></i>
+                        <span>RECON CENTER</span>
+                    </div>
+                    <button type="button" class="action-btn wardrive-header-refresh" id="btn-recon-refresh" title="Refresh Recon Data" aria-label="Refresh Recon Data">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
+                <div class="panel-content panel-split-content">
+                    <!-- Left Column: Tabs + Content -->
+                    <div class="panel-split-col panel-split-col--recon-left">
+                        <div class="recon-tabs">
+                            <button class="recon-tab active" data-tab="attack-surface"><i class="fa-solid fa-shield-halved"></i> SURFACE</button>
+                            <button class="recon-tab" data-tab="target-intel"><i class="fa-solid fa-bullseye"></i> INTEL</button>
+                            <button class="recon-tab" data-tab="operations"><i class="fa-solid fa-rocket"></i> OPS</button>
+                            <button class="recon-tab" data-tab="geoint"><i class="fa-solid fa-earth-americas"></i> GEO</button>
+                            <button class="recon-tab" data-tab="sigint"><i class="fa-solid fa-tower-broadcast"></i> SIGINT</button>
+                            <button class="recon-tab" data-tab="reports"><i class="fa-solid fa-file-lines"></i> REPORT</button>
+                            <button class="recon-tab" data-tab="comms"><i class="fa-solid fa-diagram-project"></i> COMMS</button>
+                        </div>
+                        <div id="recon-tab-content" class="recon-tab-content">
+                            <div class="recon-loading">Loading…</div>
+                        </div>
+                    </div>
+
+                    <div class="panel-split-divider"></div>
+
+                    <!-- Right Column: Target Details (used by non-drawer tabs) -->
+                    <div class="panel-split-col panel-split-col--recon-right">
+                        <div class="panel-subheader">
+                            <i class="fa-solid fa-terminal"></i> TARGET DETAILS
+                        </div>
+                        <div id="recon-right-content" class="recon-right-content panel-scroll-list">
+                            <div class="recon-right-empty">Select a target for detailed intel.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Drawer: Target Details for Surface/Intel tabs -->
+                <div id="recon-drawer" class="recon-drawer recon-drawer--hidden">
+                    <div class="recon-drawer-handle" id="recon-drawer-toggle">
+                        <span class="recon-drawer-title"><i class="fa-solid fa-terminal"></i> TARGET DETAILS</span>
+                        <button class="recon-drawer-close" id="recon-drawer-close" title="Close drawer"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div id="recon-drawer-content" class="recon-drawer-content panel-scroll-list">
+                        <div class="recon-right-empty">Select a target for detailed intel.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR (Refatorada) -->
+        <div class="right-sidebar">
+            <div class="stats-container-wrapper">
+                <!-- VIEW SWITCHES -->
+                <div class="right-sidebar-switches">
+                    <div class="btn-group btn-group--equal">
+                        <button class="action-btn active" id="btn-map-view">MAP</button>
+                        <button class="action-btn" id="btn-no-gps-view">NO-GPS</button>
+                        <button class="action-btn" id="btn-multi-view">BATCH</button>
+                    </div>
+                    <div class="btn-group btn-group--equal btn-group--view-modes">
+                        <button class="action-btn action-btn--workspace" id="btn-analytics-view">RECON</button>
+                        <button class="action-btn action-btn--workspace" id="btn-wardrive" title="Toggle WarDrive Workspace" aria-label="Toggle WarDrive Workspace">WARDRIVE</button>
+                        <button class="action-btn action-btn--workspace" id="btn-raw-view">SNIFFER</button>
+                    </div>
+                    <div class="btn-group btn-group--equal">
+                        <button class="action-btn" id="btn-toggle-cracking" title="Toggle Cracking Panel" aria-label="Toggle Cracking Panel">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                        </button>
+                        <button class="action-btn" id="btn-process" title="Toggle Processes" aria-label="Toggle Processes Panel">
+                            <i class="fa-solid fa-microchip"></i>
+                        </button>
+                        <button class="action-btn active" id="btn-logs" title="Toggle Logs" aria-label="Toggle Log Panel">
+                            <i class="fa-solid fa-bars-staggered"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unified Stats Panel -->
+                <div class="stats-panel stats-panel--gps" id="stats-panel-gps">
+                    <div class="stat-row"><span class="stat-label">TOTAL</span><span class="stat-val" id="count-total">0</span></div>
+                    <div class="stat-row"><span class="stat-label">PWNED</span><span class="stat-val c-green" id="count-cracked">0</span></div>
+                    <div class="stat-row"><span class="stat-label">OPEN</span><span class="stat-val c-yellow" id="count-open">0</span></div>
+                    <div class="stat-row"><span class="stat-label">WARDRIVE</span><span class="stat-val c-wardrive" id="count-wardrive">0</span></div>
+                    <div class="stat-row"><span class="stat-label">LOCKED</span><span class="stat-val c-red" id="count-locked">0</span></div>
+                </div>
+            </div>
+
+            <!-- Container Flexível para Painéis (Cresce de baixo para cima) -->
+            <div class="right-panels-container">
+                <div class="side-panel wardrive-panel wardrive-workspace-panel" id="wardrive-panel" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                            <span>WARDRIVE WORKSPACE</span>
+                        </div>
+                        <div class="wardrive-header-controls">
+                            <div class="btn-group btn-group--tight wardrive-header-switch">
+                                <button class="action-btn wardrive-header-tab active" id="btn-wardrive-tab-workspace">WORKSPACE</button>
+                                <button class="action-btn wardrive-header-tab" id="btn-wardrive-tab-inventory">MAP INVENTORY</button>
+                            </div>
+                            <button type="button" class="action-btn wardrive-header-refresh" id="btn-wardrive-refresh" title="Refresh WarDrive Workspace" aria-label="Refresh WarDrive Workspace">
+                                <i class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-content wardrive-panel-content">
+                        <div class="wardrive-workspace-view" id="wardrive-workspace-main">
+                            <div class="wardrive-section wardrive-section--replay">
+                                <div class="wardrive-section-title">ROUTE REPLAY</div>
+                                <div class="wardrive-summary-card wardrive-route-replay-card" id="wardrive-route-replay">
+                                    <div class="wardrive-empty">Select 1-3 sessions to replay or compare their routes.</div>
+                                </div>
+                            </div>
+                            <div class="wardrive-section wardrive-section--summary">
+                                <div class="wardrive-section-title">ACTIVE REGION</div>
+                                <div class="wardrive-summary-card" id="wardrive-region-summary">
+                                    <div class="wardrive-empty">Select a region to load zones.</div>
+                                </div>
+                            </div>
+                            <div class="wardrive-section wardrive-section--explorer">
+                                <div class="wardrive-section-title">
+                                    <span>WORKSPACE EXPLORER</span>
+                                    <div class="btn-group btn-group--tight wardrive-explorer-switch" role="tablist" aria-label="Wardrive Workspace Explorer">
+                                        <button class="action-btn wardrive-explorer-tab active" id="btn-wardrive-pane-regions" role="tab" aria-selected="true">
+                                            REGIONS
+                                        </button>
+                                        <button class="action-btn wardrive-explorer-tab" id="btn-wardrive-pane-zones" role="tab" aria-selected="false">
+                                            <span>ZONES</span>
+                                            <span class="wardrive-explorer-tab-count" id="wardrive-zone-count">0</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="wardrive-explorer-body">
+                                    <div class="wardrive-explorer-pane" id="wardrive-explorer-pane-regions">
+                                        <div class="wardrive-list wardrive-list--regions" id="wardrive-regions-list"></div>
+                                    </div>
+                                    <div class="wardrive-explorer-pane wardrive-explorer-pane--zones" id="wardrive-explorer-pane-zones" style="display: none;">
+                                        <div class="wardrive-summary-card wardrive-zones-summary" id="wardrive-zones-summary">
+                                            <div class="wardrive-empty">Select a region to inspect DBSCAN zones.</div>
+                                        </div>
+                                        <div class="wardrive-list wardrive-zones-list" id="wardrive-zones-list"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wardrive-workspace-view wardrive-workspace-view--inventory" id="wardrive-workspace-inventory" style="display: none;">
+                            <div id="wardrive-inventory-content" class="wardrive-inventory-scroll">
+                                <div class="wardrive-empty">Open MAP INVENTORY tab to load datasets.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CRACKING PANEL (Meio) -->
+                <div class="side-panel cracking-panel" id="cracking-panel" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                            <span>CRACKING OPERATIONS</span>
+                        </div>
+                        <button type="button" class="close-panel" aria-label="Close Cracking Panel">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="crack-target-info">
+                            <div class="crack-network-header">
+                                <h4 id="crack-ssid">NETWORK_NAME</h4>
+                                <div class="crack-network-meta">
+                                    <span class="crack-network-separator" aria-hidden="true">•</span>
+                                    <span id="crack-mac">00:00:00:00:00:00</span>
+                                </div>
+                            </div>
+                            <!-- Password Display -->
+                            <div id="crack-password-display" class="crack-password-display" style="display:none;">
+                                <i class="fa-solid fa-key"></i> <span id="crack-password-text"></span>
+                            </div>
+                        </div>
+                        
+                        <div id="crack-handshake-set-summary" class="crack-handshake-set-summary" style="display:none;"></div>
+                        <div id="crack-file-list" class="file-list"></div>
+                            <div id="crack-actions" class="crack-actions" style="display: none;">
+                                <div class="cyber-razor-top bg-cyan" style="margin: 10px 0;"></div>
+                                
+                                <div class="action-header" style="position: relative;">
+                                    <div id="selected-file-info" class="selected-file-name"></div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    <div class="file-type-badge" id="file-type-badge">PCAP</div>
+                                    <i class="fa-solid fa-gear config-edit-btn" id="btn-quick-settings" title="Edit Global Config" style="cursor: pointer; color: var(--neon-cyan);"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Config Preview (Only for .22000) -->
+                            <div id="crack-config-preview" class="crack-config-preview" style="display: flex; flex-direction: row; gap: 10px; align-items: stretch;">
+                                
+                                <!-- Left Column: Inputs -->
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding-right: 10px;">
+                                    <!-- MODE ROW -->
+                                    <div class="config-row" style="width: 100%; align-items: center;">
+                                        <span class="config-label">MODE:</span>
+                                        <div id="custom-mode-container" style="display: flex; flex: 1; align-items: center;">
+                                            <span id="custom-mode-label" class="config-val" style="margin-right: 5px;">STRAIGHT</span>
+                                            <select id="custom-mode-select" class="settings-select" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                                <option value="straight" selected>Wordlist Only</option>
+                                                <option value="rules">Wordlist + Rules</option>
+                                                <option value="passphrase">Passphrase (Wordlist + Dual Rules)</option>
+                                                <option value="association">Association (SSID + Fallback Hint)</option>
+                                                <option value="association_hint_first">Association (Multi-Hints Priority)</option>
+                                                <option value="association_hint_rule">Association (Hint + Rule)</option>
+                                                <option value="combinator">Combinator</option>
+                                                <option value="combinator_passphrase">Combinator Passphrase</option>
+                                                <option value="hybrid">Hybrid (Wordlist + Mask)</option>
+                                                <option value="hybrid_reverse">Hybrid (Mask + Wordlist)</option>
+                                                <option value="hybrid_mask_profile">Wordlist + MaskProfile</option>
+                                                <option value="hybrid_reverse_mask_profile">MaskProfile + Wordlist</option>
+                                                <option value="digits">8-Digit Brute Force</option>
+                                                <option value="mask">Mask Brute Force</option>
+                                                <option value="mask_profile">Mask Profile (.hcmask)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- DEVICE ROW (Novo) -->
+                                    <div class="config-row" id="crack-device-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">DEVICE:</span>
+                                        <select id="crack-device-select" class="settings-select" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                            <option value="all">Auto / All</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- RULE FILE ROW -->
+                                    <div class="config-row" id="crack-rule-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label" id="crack-rule-label">RULE:</span>
+                                        <select id="crack-rule-select" class="settings-select" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                            <option value="default">Best64 (Default)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- PASSphrase RULE #2 ROW -->
+                                    <div class="config-row" id="crack-rule-2-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">RULE #2:</span>
+                                        <select id="crack-rule-2-select" class="settings-select" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                            <option value="default">Best64 (Default)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- MASK ROW -->
+                                    <div class="config-row" id="crack-mask-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">MASK:</span>
+                                        <div style="flex: 1; display: flex; gap: 5px;">
+                                            <input type="text" id="crack-mask-input" class="settings-select" placeholder="?a?a?a?a?a?a?a?a" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                            <button id="mask-help-btn" class="cyber-button-small" style="padding: 0 5px; font-size: 0.7em;" title="Mask Help">?</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- MASK PROFILE ROW -->
+                                    <div class="config-row" id="crack-mask-profile-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">MASK FILE:</span>
+                                        <select id="crack-mask-profile-select" class="settings-select" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                            <option value="">No .hcmask found</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- ASSOCIATION HINT ROW -->
+                                    <div class="config-row" id="crack-association-hint-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">ASSOC HINT:</span>
+                                        <input type="text" id="crack-association-hint-input" class="settings-select" placeholder="Fallback hint (used when SSID is absent/unreliable)" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                    </div>
+
+                                    <!-- ASSOCIATION HINTS (HINT-FIRST) ROW -->
+                                    <div class="config-row" id="crack-association-hints-row" style="width: 100%; align-items: flex-start; display: none;">
+                                        <span class="config-label" style="padding-top: 4px;">ASSOC HINTS:</span>
+                                        <textarea id="crack-association-hints-input" class="settings-select" placeholder="One hint per line (all hints are considered in order)" style="flex: 1; padding: 4px; font-size: 0.8em; min-height: 56px; resize: vertical;"></textarea>
+                                    </div>
+
+                                    <div class="config-row" id="crack-association-preview-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">ASSOC TOOLS:</span>
+                                        <button class="cyber-button-small" id="btn-association-preview" style="padding: 4px 8px; font-size: 0.72em;">
+                                            <i class="fa-solid fa-list-check"></i> PREVIEW CANDIDATES
+                                        </button>
+                                    </div>
+
+                                    <!-- WORDLIST ROW -->
+                                    <div class="config-row" id="crack-wordlist-row" style="width: 100%; align-items: center;">
+                                        <span class="config-label">WORDLIST:</span>
+                                        <select id="crack-wordlist-select" class="settings-select" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                        </select>
+                                    </div>
+
+                                    <!-- WORDLIST 2 ROW (Novo) -->
+                                    <div class="config-row" id="crack-wordlist-2-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">RIGHT WL:</span>
+                                        <select id="crack-wordlist-2-select" class="settings-select" style="flex: 1; padding: 2px; font-size: 0.8em;">
+                                        </select>
+                                    </div>
+
+                                    <!-- WORKLOAD ROW -->
+                                    <div class="config-row" style="width: 100%; align-items: center;">
+                                        <span class="config-label">WORKLOAD:</span>
+                                        <div id="custom-workload-container" style="display: flex; flex: 1; align-items: center;">
+                                            <span id="custom-workload-val" class="config-val" style="min-width: 15px; margin-right: 5px;">3</span>
+                                            <input type="range" id="custom-workload-slider" min="1" max="4" value="3" step="1" style="flex: 1;">
+                                        </div>
+                                    </div>
+
+                                    <!-- INCREMENT ROW (Substituído por Slider) -->
+                                    <div class="config-row" id="crack-increment-row" style="width: 100%; align-items: center; display: none;">
+                                        <span class="config-label">INC:</span>
+                                        <div style="flex: 1; padding: 0 10px;">
+                                            <div id="increment-slider"></div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 0.7em; color: #666; margin-top: 5px;">
+                                                <span id="inc-val-min">1</span>
+                                                <span id="inc-val-max">20</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Checkboxes -->
+                                <div style="width: 150px; display: flex; flex-direction: column; gap: 8px; border-left: 1px solid rgba(0, 243, 255, 0.2); padding-left: 10px; justify-content: center;">
+                                    
+                                    <!-- Custom Flags Container -->
+                                    <div id="custom-flags-container" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div class="form-group-checkbox" style="margin: 0;">
+                                            <input type="checkbox" id="flag-optimized">
+                                            <label for="flag-optimized" style="font-size: 0.7em; color: #888;">OPTIMIZED (-O)</label>
+                                        </div>
+                                        <div class="form-group-checkbox" style="margin: 0;">
+                                            <input type="checkbox" id="flag-slow">
+                                            <label for="flag-slow" style="font-size: 0.7em; color: #888;">SLOW CANDIDATES (-S)</label>
+                                        </div>
+                                        <div class="form-group-checkbox" style="margin: 0; display: none;" id="flag-increment-container">
+                                            <input type="checkbox" id="flag-increment">
+                                            <label for="flag-increment" style="font-size: 0.7em; color: #888;">INCREMENT</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Aircrack Options (Only for .pcap) -->
+                            <!-- File Conversions (Always visible for PCAP selection) -->
+                            <div id="crack-pcap-conversions" style="display:none; flex-direction: column; gap: 10px;">
+                                <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
+                                    <span class="config-label" style="font-size: 0.7em; color: var(--neon-cyan); letter-spacing: 1px; font-weight: bold;">FILE CONVERSIONS</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; width: 100%;">
+                                    <button class="cyber-button-small bg-yellow fg-black" id="btn-pcap-generate-hash" style="flex: 1; padding: 8px; font-size: 11px;">
+                                        <i class="fa-solid fa-hashtag"></i> HASH (22000)
+                                    </button>
+                                </div>
+                                <div style="display: flex; gap: 10px; width: 100%;">
+                                    <button class="cyber-button-small bg-green fg-black" id="btn-extract-details" style="display:none; flex: 1; padding: 8px; font-size: 11px;">
+                                        <i class="fa-solid fa-magnifying-glass-chart"></i> EXTRACT DETAILS
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="legacy-toggle-row" id="aircrack-legacy-toggle" data-expanded="false" style="display:none; margin-bottom: 10px;">
+                                <span class="legacy-toggle-title">
+                                    LEGACY AIRCRACK-NG
+                                    <span class="legacy-badge">LEGACY</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down legacy-toggle-arrow"></i>
+                            </div>
+
+                            <div id="crack-aircrack-options" style="display:none; flex-direction: column; gap: 10px; padding-bottom: 10px;">
+                                <!-- Aircrack Attack -->
+                                <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
+                                    <span class="config-label" style="font-size: 0.7em; color: var(--neon-red); letter-spacing: 1px; font-weight: bold;">AIRCRACK-NG ATTACK</span>
+                                    
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">WORDLIST:</span>
+                                        <select id="wordlist-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
+                                        </select>
+                                    </div>
+                                </div>
+                                    <button class="cyber-button-small bg-blue fg-black" id="btn-quick-attack" style="width: 100%; padding: 8px; font-size: 11px;">
+                                        <i class="fa-solid fa-wind"></i> QUICK ATTACK
+                                    </button>
+                            </div>
+
+                            <button class="cyber-button-small bg-yellow fg-black" id="btn-convert-hash">
+                                <i class="fa-solid fa-file-half-dashed"></i> GENERATE HASH
+                            </button>
+
+                            <!-- PMK Database Section -->
+                            <div class="legacy-toggle-row" id="pmk-section-toggle" data-expanded="false" style="display:none; margin-bottom: 10px;">
+                                <span class="legacy-toggle-title">
+                                    PMK DATABASE
+                                    <span class="pmk-badge">ACCELERATOR</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down legacy-toggle-arrow"></i>
+                            </div>
+
+                            <div id="crack-pmk-options" style="display:none; flex-direction: column; gap: 10px; padding-bottom: 10px;">
+                                <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
+                                    <span class="config-label" style="font-size: 0.7em; color: var(--neon-cyan); letter-spacing: 1px; font-weight: bold;">AIROLIB-NG PMK PRE-COMPUTATION</span>
+
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">PMK DB:</span>
+                                        <select id="pmk-db-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
+                                            <option value="">-- no databases --</option>
+                                        </select>
+                                        <button class="cyber-button-tiny" id="btn-pmk-refresh" title="Refresh databases" style="margin-left: 4px; padding: 2px 6px;">
+                                            <i class="fa-solid fa-arrows-rotate" style="font-size: 0.7em;"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">ESSID:</span>
+                                        <input type="text" id="pmk-essid-input" class="settings-input" placeholder="Target ESSID" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    </div>
+
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">WORDLIST:</span>
+                                        <select id="pmk-wordlist-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 6px; width: 100%;">
+                                    <button class="cyber-button-small bg-cyan fg-black" id="btn-pmk-build" style="flex: 1; padding: 8px; font-size: 11px;">
+                                        <i class="fa-solid fa-database"></i> BUILD PMK DB
+                                    </button>
+                                    <button class="cyber-button-small bg-blue fg-black" id="btn-pmk-attack" style="flex: 1; padding: 8px; font-size: 11px;">
+                                        <i class="fa-solid fa-bolt"></i> PMK ATTACK
+                                    </button>
+                                </div>
+
+                                <div id="pmk-status-text" class="crack-progress-text" style="display:none; font-size: 0.7em; color: #8cb7c2;"></div>
+                            </div>
+
+                            <!-- WPS Attack Section -->
+                            <div class="legacy-toggle-row" id="wps-section-toggle" data-expanded="false" style="display:none; margin-bottom: 10px;">
+                                <span class="legacy-toggle-title">
+                                    WPS ATTACK
+                                    <span class="wps-badge">PIN BRUTE</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down legacy-toggle-arrow"></i>
+                            </div>
+
+                            <div id="crack-wps-options" style="display:none; flex-direction: column; gap: 10px; padding-bottom: 10px;">
+                                <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
+                                    <span class="config-label" style="font-size: 0.7em; color: var(--neon-magenta); letter-spacing: 1px; font-weight: bold;">REAVER / BULLY WPS PIN ATTACK</span>
+
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">TOOL:</span>
+                                        <select id="wps-tool-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
+                                            <option value="reaver" selected>reaver</option>
+                                            <option value="bully">bully</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">IFACE:</span>
+                                        <input type="text" id="wps-iface-input" class="settings-input" placeholder="wlan0mon" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    </div>
+
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">CHANNEL:</span>
+                                        <input type="text" id="wps-channel-input" class="settings-input" placeholder="Channel" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    </div>
+
+                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
+                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">DELAY:</span>
+                                        <input type="number" id="wps-delay-input" class="settings-input" placeholder="Pin delay (s)" min="0" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    </div>
+
+                                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75em; color: #aab; cursor: pointer;">
+                                        <input type="checkbox" id="wps-pixie-dust" />
+                                        Pixie-Dust (offline attack)
+                                    </label>
+                                </div>
+
+                                <button class="cyber-button-small bg-magenta fg-black" id="btn-wps-attack" style="width: 100%; padding: 8px; font-size: 11px;">
+                                    <i class="fa-solid fa-wifi"></i> WPS ATTACK
+                                </button>
+
+                                <div id="wps-status-text" class="crack-progress-text" style="display:none; font-size: 0.7em; color: #c28cb7;"></div>
+                            </div>
+                            
+                            <div class="crack-status-container">
+                                <div id="crack-progress-text" class="crack-progress-text">READY</div>
+                                <div class="mini-progress-bar">
+                                    <div id="crack-mini-bar" class="mini-bar-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <!-- File Feedback (For other files) -->
+                            <div id="crack-file-feedback" class="crack-config-preview" style="display:none; justify-content: center; align-items: center; gap: 10px; color: #888; margin-bottom: 10px;">
+                                <!-- Content injected via JS -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM PANELS CONTAINER -->
+                <div class="bottom-panels">
+                    <!-- PROCESS PANEL (Novo) -->
+                    <div class="side-panel process-panel" id="process-panel" style="display: none;">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fa-solid fa-microchip"></i>
+                                <span>ACTIVE PROCESSES</span>
+                            </div>
+                            <div class="panel-header-actions process-panel-actions">
+                                <button type="button" class="cyber-button-small compact-btn" id="btn-process-clear" aria-label="Clear Finished Processes">
+                                    CLEAR
+                                </button>
+                                <button type="button" class="close-panel" aria-label="Close Process Panel">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content" id="process-list">
+                            <!-- Process items will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- LOG PANEL (Fundo) -->
+                    <div class="log-panel" id="log-panel">
+                        <div class="log-entry"><span class="log-time">--:--:--</span> <span class="log-msg">WAITING FOR DATA STREAM...</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Scripts -->
+    <script src="vendor/leaflet/leaflet.js"></script>
+    <script src="vendor/leaflet.markercluster/leaflet.markercluster.js"></script>
+    <script src="vendor/leaflet.heat/leaflet-heat.js"></script>
+    
+    <!-- noUiSlider JS -->
+    <script src="vendor/nouislider/nouislider.min.js"></script>
+
+    <!-- App Logic (Module) -->
+    <script type="module" src="renderer.js"></script>
+</body>
+</html>

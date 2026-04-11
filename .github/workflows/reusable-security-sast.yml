@@ -1,0 +1,162 @@
+name: Reusable Security SAST
+
+on:
+  workflow_call:
+    inputs:
+      enable_security_tab:
+        description: "Enable uploads to GitHub Security tab"
+        required: false
+        default: "false"
+        type: string
+      semgrep_version:
+        description: "Semgrep version"
+        required: false
+        default: "1.118.0"
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  gitleaks:
+    name: Secrets (Gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "true"
+
+  semgrep:
+    name: SAST (Semgrep CE)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Semgrep version input
+        env:
+          SEMGREP_VERSION_INPUT: ${{ inputs.semgrep_version }}
+        run: |
+          if ! printf '%s' "$SEMGREP_VERSION_INPUT" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Invalid semgrep_version input: $SEMGREP_VERSION_INPUT"
+            exit 1
+          fi
+          echo "SEMGREP_VERSION=$SEMGREP_VERSION_INPUT" >> "$GITHUB_ENV"
+
+      - name: Install Semgrep
+        run: |
+          # Semgrep 1.118.x (via opentelemetry instrumentation) still imports pkg_resources.
+          # setuptools>=81 removed pkg_resources, so keep setuptools pinned below that.
+          python -m pip install --upgrade pip wheel
+          pip install "setuptools<81"
+          pip install "semgrep==${SEMGREP_VERSION}"
+
+      - name: Validate Semgrep runtime deps
+        run: |
+          python - <<'PY'
+          import setuptools
+          import pkg_resources
+          import semgrep
+          print("setuptools:", setuptools.__version__)
+          print("pkg_resources:", pkg_resources.__file__)
+          print("semgrep:", semgrep.__file__)
+          PY
+
+      - name: Semgrep scan (SARIF)
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
+        run: |
+          semgrep scan \
+            --config p/ci \
+            --metrics=off \
+            --sarif \
+            --sarif-output=semgrep.sarif \
+            --exclude frontend/node_modules \
+            --exclude backend/.venv \
+            --exclude .venv
+
+      - name: Upload Semgrep SARIF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-sarif
+          path: semgrep.sarif
+
+      - name: Semgrep summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          p = Path("semgrep.sarif")
+          if not p.exists():
+            print("Semgrep SARIF not found.")
+            Path("/tmp/semgrep-summary.md").write_text("### Semgrep (SAST)\n- SARIF not found.\n")
+            raise SystemExit(0)
+          data = json.loads(p.read_text())
+          results = (data.get("runs") or [{}])[0].get("results") or []
+          levels = Counter((r.get("level") or "unknown") for r in results)
+          rule_ids = Counter((r.get("ruleId") or "unknown") for r in results)
+          files = Counter()
+          for r in results:
+            locs = r.get("locations") or []
+            if not locs:
+              continue
+            phys = (locs[0].get("physicalLocation") or {})
+            art = (phys.get("artifactLocation") or {})
+            uri = art.get("uri")
+            if uri:
+              files[uri] += 1
+          total = len(results)
+          status = "No findings ✅" if total == 0 else f"Findings detected ❌ ({total})"
+          lines = [
+            "### Semgrep (SAST)",
+            status,
+            f"- Total findings: **{total}**",
+            "",
+            "| Level | Count |",
+            "| --- | ---: |",
+          ]
+          for level in ["error", "warning", "note", "none", "unknown"]:
+            if level in levels:
+              lines.append(f"| {level} | {levels[level]} |")
+          lines.append("")
+          lines.append("| Top Rules | Count |")
+          lines.append("| --- | ---: |")
+          for rule, count in rule_ids.most_common(5):
+            lines.append(f"| {rule} | {count} |")
+          lines.append("")
+          lines.append("| Top Files | Count |")
+          lines.append("| --- | ---: |")
+          for uri, count in files.most_common(5):
+            lines.append(f"| {uri} | {count} |")
+          Path("/tmp/semgrep-summary.md").write_text("\n".join(lines) + "\n")
+          PY
+          if [ -f /tmp/semgrep-summary.md ]; then
+            cat /tmp/semgrep-summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload Semgrep SARIF to Security tab
+        if: inputs.enable_security_tab == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif

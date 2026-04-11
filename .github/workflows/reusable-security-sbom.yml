@@ -1,0 +1,148 @@
+name: Reusable Security SBOM
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  sbom:
+    name: SBOM (Syft)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            backend/requirements.txt
+
+      - name: Build backend dependency layer for SBOM
+        run: |
+          python -m pip install --upgrade pip
+          rm -rf backend/.sbom_site_packages
+          mkdir -p backend/.sbom_site_packages
+          pip install -r backend/requirements.txt --target backend/.sbom_site_packages
+
+      - name: Set up frontend Node toolchain
+        uses: ./.github/actions/setup-frontend-node
+        with:
+          node-version: "22"
+
+      - name: Generate SBOM (backend)
+        uses: anchore/sbom-action@v0.15.0
+        with:
+          syft-version: latest
+          path: backend/.sbom_site_packages
+          format: cyclonedx-json
+          output-file: sbom-backend.cdx.json
+          upload-artifact: false
+
+      - name: Generate SBOM (frontend)
+        uses: anchore/sbom-action@v0.15.0
+        with:
+          syft-version: latest
+          path: frontend
+          format: cyclonedx-json
+          output-file: sbom-frontend.cdx.json
+          upload-artifact: false
+
+      - name: Validate SBOM files
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = {
+            "backend": Path("sbom-backend.cdx.json"),
+            "frontend": Path("sbom-frontend.cdx.json"),
+          }
+
+          errors = []
+          for scope, path in files.items():
+            if not path.exists():
+              errors.append(f"{scope}: file not found ({path})")
+              continue
+
+            try:
+              data = json.loads(path.read_text())
+            except Exception as exc:
+              errors.append(f"{scope}: invalid JSON ({exc})")
+              continue
+
+            components = data.get("components")
+            if not isinstance(components, list):
+              errors.append(f"{scope}: 'components' is missing or not a list")
+              continue
+
+            if len(components) == 0:
+              errors.append(f"{scope}: SBOM has zero components")
+
+          if errors:
+            print("SBOM validation failed:")
+            for e in errors:
+              print(f"- {e}")
+            raise SystemExit(1)
+
+          print("SBOM validation passed.")
+          PY
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            sbom-backend.cdx.json
+            sbom-frontend.cdx.json
+
+      - name: SBOM summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = {
+            "Backend": Path("sbom-backend.cdx.json"),
+            "Frontend": Path("sbom-frontend.cdx.json"),
+          }
+
+          rows = []
+          missing = []
+          for name, path in files.items():
+            if not path.exists():
+              missing.append(name)
+              rows.append((name, "(missing)", "missing"))
+              continue
+            try:
+              data = json.loads(path.read_text())
+              components = data.get("components") or []
+              rows.append((name, str(len(components)), "generated"))
+            except Exception:
+              rows.append((name, "(parse error)", "error"))
+
+          if missing:
+            status = "SBOM incomplete (missing files)"
+          else:
+            status = "SBOM generated"
+
+          lines = [
+            "### SBOM (Syft)",
+            status,
+            "",
+            "| Scope | Components | Status |",
+            "| --- | ---: | --- |",
+          ]
+          for name, count, state in rows:
+            lines.append(f"| {name} | {count} | {state} |")
+
+          Path("/tmp/sbom-summary.md").write_text("\n".join(lines) + "\n")
+          PY
+          cat /tmp/sbom-summary.md >> "$GITHUB_STEP_SUMMARY"

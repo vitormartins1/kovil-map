@@ -1,0 +1,348 @@
+name: Quality
+
+on:
+  push:
+    branches: ["main", "dev", "feature/**", "fix/**", "chore/**", "docs/**"]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "docs/**/*.{png,jpg,jpeg,gif,svg,webp}"
+  pull_request:
+    branches: ["main", "dev"]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "docs/**/*.{png,jpg,jpeg,gif,svg,webp}"
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  artifact-guardrails:
+    name: Artifact Guardrails
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.0
+
+      - name: Block generated coverage badge artifacts
+        run: |
+          set -euo pipefail
+          legacy_files=(
+            "backend/coverage-badge.json"
+            "backend/coverage-badge.svg"
+            "frontend/coverage-badge.json"
+            "frontend/coverage-badge.svg"
+            "frontend/badges/badge-branches.svg"
+            "frontend/badges/badge-functions.svg"
+            "frontend/badges/badge-lines.svg"
+            "frontend/badges/badge-statements.svg"
+          )
+
+          for file in "${legacy_files[@]}"; do
+            if git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
+              echo "ERROR: legacy artifact is tracked: $file"
+              echo "Coverage badges now come from native GitHub workflow status badges and must not be versioned."
+              exit 1
+            fi
+
+            if [ -e "$file" ]; then
+              echo "ERROR: legacy artifact exists in workspace: $file"
+              echo "Remove it before merging to avoid recurrent release conflicts."
+              exit 1
+            fi
+          done
+
+  backend-lint:
+    name: Backend Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.0
+
+      - name: Set up backend Python toolchain
+        uses: ./.github/actions/setup-backend-python
+        with:
+          python-version: "3.12"
+          install-dev: "true"
+
+      - name: Lint (ruff)
+        run: ruff check backend/app
+
+      - name: Format check (black)
+        run: black --check backend/app
+
+  backend-unit-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.0
+
+      - name: Set up backend Python toolchain
+        uses: ./.github/actions/setup-backend-python
+        with:
+          python-version: "3.12"
+          install-dev: "true"
+
+      - name: Unit tests (PR light)
+        if: github.event_name == 'pull_request'
+        id: unit_tests_light
+        working-directory: backend
+        env:
+          PYTHONPATH: .
+        run: pytest app/tests -q
+
+      - name: Unit tests with coverage (push/workflow_dispatch)
+        if: github.event_name != 'pull_request'
+        id: unit_tests_full
+        working-directory: backend
+        env:
+          PYTHONPATH: .
+        run: pytest app/tests --cov=app/api --cov=app/core --cov=app/schemas --cov=app/services --cov=app/utils --cov-report=term-missing --cov-report=json:coverage.json --cov-fail-under=90
+
+      - name: Upload backend coverage artifact
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-json
+          path: backend/coverage.json
+          if-no-files-found: warn
+
+  backend-openapi:
+    name: Backend OpenAPI
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up backend Python toolchain
+        uses: ./.github/actions/setup-backend-python
+        with:
+          python-version: "3.12"
+          install-dev: "true"
+
+      - name: Export OpenAPI (current)
+        run: |
+          python backend/scripts/export_openapi.py backend/openapi-current.json
+          python backend/scripts/export_openapi.py backend/openapi-current.yaml
+
+      - name: Contract drift check (repo vs generated)
+        run: |
+          test -f backend/openapi.json
+          python backend/scripts/openapi_normalize.py backend/openapi.json /tmp/openapi-repo.json
+          python backend/scripts/openapi_normalize.py backend/openapi-current.json /tmp/openapi-current.json
+          diff -u /tmp/openapi-repo.json /tmp/openapi-current.json
+
+      - name: Lint OpenAPI (warn only)
+        run: python backend/scripts/openapi_lint.py backend/openapi-current.json
+
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-current
+          path: |
+            backend/openapi-current.json
+            backend/openapi-current.yaml
+
+  frontend-lint:
+    name: Frontend Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.0
+
+      - name: Set up frontend Node toolchain
+        uses: ./.github/actions/setup-frontend-node
+        with:
+          node-version: "22"
+
+      - name: Install lint tooling
+        run: |
+          npm --prefix frontend install --no-save eslint@8.57.1 htmlhint@1.6.3 stylelint@16.15.0
+
+      - name: Lint JavaScript (ESLint)
+        run: |
+          mapfile -d '' files < <(find frontend -type f -name "*.js" ! -path "frontend/node_modules/*" ! -path "frontend/src/vendor/*" -print0)
+          npm --prefix frontend exec -- eslint --config frontend/.eslintrc.ci.cjs --max-warnings 0 "${files[@]}"
+
+      - name: Lint HTML (HTMLHint)
+        run: npm --prefix frontend exec -- htmlhint frontend/src/index.html --config frontend/.htmlhintrc.ci.json
+
+      - name: Lint CSS (Stylelint)
+        run: npm --prefix frontend exec -- stylelint "frontend/src/css/**/*.css" --config frontend/.stylelintrc.ci.json --allow-empty-input
+
+      - name: Frontend structure guardrails
+        run: npm --prefix frontend run lint:structure
+
+  frontend-unit-tests:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.0
+
+      - name: Set up frontend Node toolchain
+        uses: ./.github/actions/setup-frontend-node
+        with:
+          node-version: "22"
+
+      - name: Run frontend unit tests (PR light)
+        if: github.event_name == 'pull_request'
+        id: unit_tests_light
+        run: npm --prefix frontend run test:unit
+
+      - name: Run frontend unit tests with coverage (push/workflow_dispatch)
+        if: github.event_name != 'pull_request'
+        id: unit_tests_full
+        run: npm --prefix frontend run test:unit:coverage
+
+      - name: Frontend unit test coverage summary
+        if: always() && github.event_name != 'pull_request'
+        env:
+          TEST_OUTCOME: ${{ steps.unit_tests_full.outcome }}
+        run: |
+          node - <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+
+          const config = require("./frontend/jest.config.cjs");
+          const gate = (config.coverageThreshold && config.coverageThreshold.global) || {};
+          const summaryPath = path.join("frontend", "coverage", "coverage-summary.json");
+          const testOutcome = process.env.TEST_OUTCOME || "unknown";
+
+          const metrics = ["lines", "statements", "functions", "branches"];
+          const labels = {
+            lines: "Lines",
+            statements: "Statements",
+            functions: "Functions",
+            branches: "Branches",
+          };
+
+          function getGateValue(metric) {
+            const v = gate[metric];
+            return typeof v === "number" ? v : null;
+          }
+
+          const lines = [];
+          lines.push("### Frontend Unit Tests (Jest)");
+
+          if (!fs.existsSync(summaryPath)) {
+            lines.push("Status: Incomplete (coverage summary missing) ⚠️");
+            lines.push("");
+            lines.push(`- Test step outcome: **${testOutcome}**`);
+            lines.push(`- Expected coverage file: \`${summaryPath}\``);
+            fs.writeFileSync("/tmp/frontend-tests-summary.md", lines.join("\n") + "\n");
+            process.exit(0);
+          }
+
+          const coverage = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
+          const total = coverage.total || {};
+
+          let gatePassed = true;
+          lines.push(testOutcome === "success" ? "Status: Passed ✅" : "Status: Failed ❌");
+          lines.push("");
+          lines.push("| Metric | Coverage | Gate (min) | Gate Result |");
+          lines.push("| --- | ---: | ---: | --- |");
+
+          for (const metric of metrics) {
+            const pct = total[metric] && typeof total[metric].pct === "number" ? total[metric].pct : null;
+            const gateValue = getGateValue(metric);
+            const metricPassed = pct !== null && gateValue !== null ? pct >= gateValue : false;
+            if (!metricPassed) gatePassed = false;
+
+            const pctText = pct === null ? "n/a" : `${pct.toFixed(2)}%`;
+            const gateText = gateValue === null ? "n/a" : `${gateValue}%`;
+            const resultText = metricPassed ? "pass" : "fail";
+            lines.push(`| ${labels[metric]} | ${pctText} | ${gateText} | ${resultText} |`);
+          }
+
+          lines.push("");
+          lines.push(`- Gate threshold policy: **${metrics.map((m) => `${labels[m]} >= ${getGateValue(m)}%`).join(", ")}**`);
+          lines.push(`- Overall coverage gate: **${gatePassed ? "passed ✅" : "failed ❌"}**`);
+          lines.push(`- Test step outcome: **${testOutcome}**`);
+
+          fs.writeFileSync("/tmp/frontend-tests-summary.md", lines.join("\n") + "\n");
+          NODE
+          cat /tmp/frontend-tests-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload frontend coverage artifact
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+          if-no-files-found: warn
+
+  frontend-validate:
+    name: Frontend Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up frontend Node toolchain
+        uses: ./.github/actions/setup-frontend-node
+        with:
+          node-version: "22"
+
+      - name: JavaScript syntax check
+        run: |
+          while IFS= read -r file; do
+            node --check "$file"
+          done < <(find frontend -type f -name "*.js" ! -path "frontend/node_modules/*" | sort)
+
+      - name: Validate Electron project structure
+        run: |
+          node - <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+
+          const root = process.cwd();
+          const pkgPath = path.join(root, "frontend", "package.json");
+          const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+
+          function assert(cond, msg) {
+            if (!cond) {
+              throw new Error(msg);
+            }
+          }
+
+          assert(pkg.main === "main.js", "frontend/package.json: 'main' should be 'main.js'");
+          assert(pkg.scripts && pkg.scripts.start, "frontend/package.json: missing script 'start'");
+          assert(pkg.scripts && pkg.scripts.dist, "frontend/package.json: missing script 'dist'");
+          assert(pkg.build && pkg.build.appId, "frontend/package.json: missing build.appId");
+
+          const requiredFiles = [
+            "frontend/main.js",
+            "frontend/src/index.html",
+            "frontend/src/renderer.js",
+            "frontend/src/css/styles.css",
+            "frontend/src/modules/api.js",
+            "frontend/src/modules/socket.js",
+          ];
+
+          for (const rel of requiredFiles) {
+            const abs = path.join(root, rel);
+            assert(fs.existsSync(abs), `Missing required file: ${rel}`);
+          }
+
+          console.log("Frontend Electron structure validation passed.");
+          NODE
+
+      - name: Packaged backend smoke helpers
+        run: npm --prefix frontend run test:smoke:packaged
