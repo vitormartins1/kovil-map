@@ -7,34 +7,32 @@
 
 [English](README.md) | Portugues (BR)
 
+<p align="center">
+  <img src="docs/assets/illustrations/wardrive-rio-de-janeiro-hero.png" alt="Ilustracao de wardriving no Rio de Janeiro" />
+</p>
+
 KOVIL MAP e um centro de comando desktop local-first para reconhecimento Wi-Fi, analise de WarDrive, sync remoto de capturas, enriquecimento RAW/PCAP e fluxos de cracking.
 
 Ele combina um frontend Electron com um backend FastAPI para que o operador consiga inspecionar redes em um mapa tatico, entrar em workspaces especializados, executar jobs locais de longa duracao e manter o estado operacional em um unico lugar.
 
-As superficies principais atuais sao o Mapa Tatico, o Recon Center, o WarDrive Workspace e o Raw Sniffer. Alguns nomes internos ainda usam `analytics`, mas nao existe mais uma tela separada de Analytics na UI atual.
+O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Recon, WarDrive e Raw Sniffer.
 
-## Wardrive no Rio de Janeiro
+## WarDrive Workspace
 
-<table>
-  <tr>
-    <td width="58%">
-      <img src="docs/assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png" alt="Workspace de WarDrive do KOVIL MAP reproduzindo uma sessao no Rio de Janeiro" />
-    </td>
-    <td width="42%">
-      <img src="docs/assets/illustrations/wardrive-rio-de-janeiro-hero.png" alt="Imagem ilustrativa de wardriving ambientada no Rio de Janeiro" />
-    </td>
-  </tr>
-  <tr>
-    <td>Vista real do WarDrive Workspace com replay de rota, contexto de regiao ativa e workspace explorer sobre dados do Rio de Janeiro.</td>
-    <td>Arte ilustrativa para contextualizar visualmente o fluxo de Wardrive no Rio de Janeiro.</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png" alt="Workspace de WarDrive do KOVIL MAP reproduzindo uma sessao no Rio de Janeiro" />
+</p>
+
+- hierarquia de sessoes e exploracao regional para conjuntos grandes de rotas em CSV
+- replay de rota com pace, zoom, focus track e timeline controlada pelo operador
+- contexto da regiao ativa com totais de redes e distribuicao entre abertas, cracked e locked
+- workspace explorer para regioes e zonas, com handoff para visoes de map inventory
+- fluxo local-first para revisar sessoes de wardrive e depois voltar ao mapa tatico e ao restante da operacao
 
 ## O Que o Projeto Faz
 
 - **Mapa Tatico** para redes conhecidas, clusters, zonas, favoritos, alvos e acoes de popup.
 - **Recon Center** para revisao de superficie de ataque, target intel, SIGINT, COMMS, GEO, OPS e fluxos de relatorios.
-- **WarDrive Workspace** para hierarquia de sessoes CSV, replay, exploracao de regioes ativas e map inventory.
 - **Raw Sniffer** para ingestao de capturas RAW, analise de metadados, enriquecimento e preparacao de artefatos prontos para cracking.
 - **Operacoes de cracking** com Hashcat, Aircrack-ng, conversao HCX, helpers de PMK/WPS, execucao em lote, historico e acompanhamento de processos.
 - **Sync remoto** para Pwnagotchi via SSH/SFTP e para Bruce/M5Evil via fluxos baseados em WebUI.
@@ -120,6 +118,56 @@ Entradas principais:
 ## Uso Responsavel
 
 KOVIL MAP e voltado para pesquisa autorizada, laboratorio, auditoria e aprendizado. Muitas capacidades sao de uso dual. Use o projeto apenas em redes, capturas, dispositivos e sistemas seus ou explicitamente autorizados.
+
+### Conformidade Juridica, Etica e Responsabilidade Civil
+
+Este software e classificado como uma ferramenta de Uso Dual (`Dual-Use`). Embora desenvolvido para fins educacionais e de auditoria de seguranca (`Pentest`), seu uso indevido pode acarretar serias consequencias legais.
+
+Abaixo, detalhamos o enquadramento juridico no Brasil para promover a conscientizacao e o uso etico. Este resumo tem carater informativo e nao substitui orientacao juridica profissional.
+
+#### 1. Esfera Penal (Crimes Ciberneticos)
+
+O uso nao autorizado desta ferramenta pode configurar crimes tipificados no Codigo Penal Brasileiro e em tratados internacionais dos quais o Brasil e signatario, como a Convencao de Budapeste sobre Cibercrime.
+
+**Invasao de Dispositivo (`Lei 12.737/2012` - `Lei Carolina Dieckmann`)**  
+Art. 154-A: invadir dispositivo informatico alheio, incluindo roteadores e redes, conectado ou nao a rede, mediante violacao indevida de mecanismo de seguranca.
+
+Atencao:
+a simples tentativa de "quebrar" a senha, como uma chave WPA2, sem autorizacao, ja pode configurar o ato de violacao de mecanismo de seguranca.
+
+**Interrupcao de Servico (`Art. 266` do Codigo Penal)**  
+O uso de ataques de `Deauth` para capturar handshakes pode ser enquadrado como crime contra a seguranca de servico de utilidade publica, caso afete a conectividade de terceiros.
+
+#### 2. Esfera Civil e Privacidade (Danos e Indenizacoes)
+
+Alem de responder criminalmente, com pena de prisao e ou multa, o invasor esta sujeito a Responsabilidade Civil, devendo reparar danos materiais e morais.
+
+**Lei Geral de Protecao de Dados (`LGPD` - `Lei 13.709/2018`)**  
+Dados tecnicos como Endereco MAC e Handshakes, que contem trafego criptografado, podem ser considerados dados pessoais, pois identificam ou tornam identificavel uma pessoa fisica. A coleta e o tratamento desses dados sem base legal, como o consentimento do titular ou legitimo interesse comprovado, podem caracterizar violacao sujeita a sancoes.
+
+**Marco Civil da Internet (`Lei 12.965/2014`)**  
+Assegura a inviolabilidade da intimidade e da vida privada, garantindo indenizacao por danos decorrentes da violacao do sigilo das comunicacoes.
+
+#### 3. O Mito da "Rede Aberta" e o Consentimento
+
+Juridicamente, o fato de uma rede Wi-Fi estar aberta, sem senha, ou usar criptografia fraca, como WEP, nao constitui autorizacao tacita para invasao, interceptacao de trafego ou ataques.
+
+**Consentimento Expresso**  
+Para realizar testes de intrusao (`Pentest`) legalmente, e necessario um contrato ou autorizacao formal e escrita do proprietario da rede.
+
+**Expectativa de Privacidade**  
+Usuarios de redes, mesmo abertas, possuem uma expectativa juridicamente protegida de privacidade sobre seus dados.
+
+### Codigo de Conduta do Usuario
+
+Ao utilizar o KOVIL MAP, voce concorda em aderir aos seguintes principios eticos:
+
+- **Principio da Autorizacao:** jamais atacar redes, dispositivos ou infraestruturas sem permissao explicita do proprietario.
+- **Principio da Privacidade:** nao coletar, armazenar ou divulgar dados pessoais de terceiros obtidos acidentalmente.
+- **Principio da Nao-Destruicao:** nao realizar acoes que possam degradar, interromper ou destruir servicos, como DoS persistente.
+- **Responsabilidade:** assumir total responsabilidade legal por suas acoes. O desconhecimento da lei nao isenta o usuario de pena (`Ignorantia juris non excusat`).
+
+KOVIL MAP — The world is yours to audit, ethically.
 
 ## Comunidade
 
