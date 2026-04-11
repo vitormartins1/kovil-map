@@ -91,9 +91,7 @@ def polygon_to_zone_parts(poly) -> List[Dict]:
     return [p for p in parts if p and p.get("ring") and len(p["ring"]) >= 3]
 
 
-def _split_parts_to_zones(
-    parts: List[Dict], base_id: int, count: int
-) -> List[Dict]:
+def _split_parts_to_zones(parts: List[Dict], base_id: int, count: int) -> List[Dict]:
     zones: List[Dict] = []
     if not parts:
         return zones

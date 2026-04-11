@@ -6,8 +6,6 @@ import os
 import re
 from typing import Any
 
-logger = logging.getLogger(__name__)
-
 from app.core.config import (
     BRUCE_HANDSHAKES_DIR,
     BRUCE_PCAP_DIR,
@@ -20,6 +18,8 @@ from app.utils.handshake_artifacts import (
     list_combined_candidates,
     read_json,
 )
+
+logger = logging.getLogger(__name__)
 
 _HS_RE = re.compile(r"^HS_([0-9A-Fa-f]{12})")
 _TRAILING_MAC_RE = re.compile(r"^(?P<ssid>.+?)_(?P<mac>[0-9A-Fa-f]{12})$")
@@ -500,11 +500,10 @@ def _scan_capture_candidates() -> list[dict[str, Any]]:
             seen_paths.add(normalized_path)
 
             from app.utils.pcap import validate_pcap_file
+
             valid, reason = validate_pcap_file(full_path)
             if not valid:
-                logger.warning(
-                    "Skipping invalid capture PCAP %s: %s", filename, reason
-                )
+                logger.warning("Skipping invalid capture PCAP %s: %s", filename, reason)
                 continue
 
             capture = _build_capture_record(

@@ -181,7 +181,9 @@ def test_metadata_signature_and_aggregate_builder_skip_invalid_entries(
     tmp_path, monkeypatch
 ):
     service, raw_dir, _ = _service_with_dirs(tmp_path, monkeypatch)
-    metadata_path = raw_dir.parent / ".metadata" / "brucegotchi__rawsniffer__raw_1.pcap.json"
+    metadata_path = (
+        raw_dir.parent / ".metadata" / "brucegotchi__rawsniffer__raw_1.pcap.json"
+    )
     metadata_path.write_text(
         json.dumps(
             {

@@ -1987,7 +1987,8 @@ class WardriveRegionsService:
             return "wardrive" in normalized
         if source_filter == "raw":
             return any(
-                source in {
+                source
+                in {
                     "bruce_raw",
                     "bruce_raw_sniffing",
                     "m5evil_raw_sniffing",

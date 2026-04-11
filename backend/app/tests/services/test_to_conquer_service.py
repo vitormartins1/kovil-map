@@ -56,7 +56,9 @@ def test_build_to_conquer_zones_basic():
     assert zones
 
 
-def test_build_to_conquer_zones_filters_small_components_by_min_zone_points(monkeypatch):
+def test_build_to_conquer_zones_filters_small_components_by_min_zone_points(
+    monkeypatch,
+):
     monkeypatch.setattr(
         tc_module,
         "cluster_points",

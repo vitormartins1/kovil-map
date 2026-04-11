@@ -16,9 +16,7 @@ import struct
 
 import pytest
 
-from app.api.routers import analysis as analysis_router_module
 from app.services import packet_analysis_service as pa_service_module
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -36,13 +34,13 @@ _VALID_PCAP_HEADER = (
 
 # Valid pcapng Section Header Block (28 bytes)
 _VALID_PCAPNG_HEADER = (
-    b"\x0a\x0d\x0d\x0a"               # block type
-    + b"\x1c\x00\x00\x00"              # block total length = 28
-    + b"\x1a\x2b\x3c\x4d"              # byte-order magic
-    + b"\x01\x00"                       # major version
-    + b"\x00\x00"                       # minor version
+    b"\x0a\x0d\x0d\x0a"  # block type
+    + b"\x1c\x00\x00\x00"  # block total length = 28
+    + b"\x1a\x2b\x3c\x4d"  # byte-order magic
+    + b"\x01\x00"  # major version
+    + b"\x00\x00"  # minor version
     + b"\xff\xff\xff\xff\xff\xff\xff\xff"  # section length = -1
-    + b"\x1c\x00\x00\x00"              # block total length repeated
+    + b"\x1c\x00\x00\x00"  # block total length repeated
 )
 
 
@@ -92,7 +90,6 @@ def patch_analysis(monkeypatch, tmp_path):
 @pytest.fixture()
 def patch_tshark_deauth(monkeypatch):
     """Patch _run_tshark to return sample deauth/disassoc data based on filter."""
-    original_run = pa_service_module.packet_analysis_service._run_tshark
 
     def _fake_run(base_cmd):
         cmd_str = " ".join(base_cmd)
@@ -243,19 +240,49 @@ class TestPacketAnalysisInternals:
         assert frames[0]["reason_code"] == 8
 
     def test_build_threat_intel_empty(self):
-        result = pa_service_module.packet_analysis_service._build_threat_intel([], [], 0, 100)
+        result = pa_service_module.packet_analysis_service._build_threat_intel(
+            [], [], 0, 100
+        )
         assert result["available"] is True
         assert result["summary"]["total_deauth"] == 0
         assert result["summary"]["total_disassoc"] == 0
 
     def test_build_threat_intel_aggregates(self):
         deauth = [
-            {"timestamp": 1000.0, "src": "a1", "dst": "b1", "bssid": "aa:bb:cc:01", "reason_code": 7, "reason_text": "test"},
-            {"timestamp": 1001.0, "src": "a2", "dst": "b2", "bssid": "aa:bb:cc:01", "reason_code": 7, "reason_text": "test"},
-            {"timestamp": 1002.0, "src": "a1", "dst": "b1", "bssid": "aa:bb:cc:02", "reason_code": 1, "reason_text": "test"},
+            {
+                "timestamp": 1000.0,
+                "src": "a1",
+                "dst": "b1",
+                "bssid": "aa:bb:cc:01",
+                "reason_code": 7,
+                "reason_text": "test",
+            },
+            {
+                "timestamp": 1001.0,
+                "src": "a2",
+                "dst": "b2",
+                "bssid": "aa:bb:cc:01",
+                "reason_code": 7,
+                "reason_text": "test",
+            },
+            {
+                "timestamp": 1002.0,
+                "src": "a1",
+                "dst": "b1",
+                "bssid": "aa:bb:cc:02",
+                "reason_code": 1,
+                "reason_text": "test",
+            },
         ]
         disassoc = [
-            {"timestamp": 1003.0, "src": "a1", "dst": "b1", "bssid": "aa:bb:cc:01", "reason_code": 8, "reason_text": "test"},
+            {
+                "timestamp": 1003.0,
+                "src": "a1",
+                "dst": "b1",
+                "bssid": "aa:bb:cc:01",
+                "reason_code": 8,
+                "reason_text": "test",
+            },
         ]
         result = pa_service_module.packet_analysis_service._build_threat_intel(
             deauth, disassoc, 1, 100
@@ -272,7 +299,14 @@ class TestPacketAnalysisInternals:
     def test_flood_detection(self):
         """More than 50 deauth frames should trigger flood indicator."""
         deauth = [
-            {"timestamp": 1000.0 + i, "src": "attacker", "dst": "target", "bssid": "aa:bb:cc:01", "reason_code": 7, "reason_text": "test"}
+            {
+                "timestamp": 1000.0 + i,
+                "src": "attacker",
+                "dst": "target",
+                "bssid": "aa:bb:cc:01",
+                "reason_code": 7,
+                "reason_text": "test",
+            }
             for i in range(60)
         ]
         result = pa_service_module.packet_analysis_service._build_threat_intel(
@@ -283,7 +317,14 @@ class TestPacketAnalysisInternals:
 
     def test_no_flood_below_threshold(self):
         deauth = [
-            {"timestamp": 1000.0 + i, "src": "a1", "dst": "b1", "bssid": "aa:bb:cc:01", "reason_code": 7, "reason_text": "test"}
+            {
+                "timestamp": 1000.0 + i,
+                "src": "a1",
+                "dst": "b1",
+                "bssid": "aa:bb:cc:01",
+                "reason_code": 7,
+                "reason_text": "test",
+            }
             for i in range(10)
         ]
         result = pa_service_module.packet_analysis_service._build_threat_intel(
@@ -293,7 +334,14 @@ class TestPacketAnalysisInternals:
 
     def test_limit_respected(self):
         deauth = [
-            {"timestamp": 1000.0, "src": "a", "dst": "b", "bssid": f"aa:bb:cc:{i:02x}", "reason_code": 7, "reason_text": "t"}
+            {
+                "timestamp": 1000.0,
+                "src": "a",
+                "dst": "b",
+                "bssid": f"aa:bb:cc:{i:02x}",
+                "reason_code": 7,
+                "reason_text": "t",
+            }
             for i in range(10)
         ]
         result = pa_service_module.packet_analysis_service._build_threat_intel(
@@ -307,9 +355,15 @@ class TestPacketAnalysisInternals:
         pcap = _write_pcap(patch_analysis, "corrupt.pcap")
 
         def _fake_run(cmd, **kwargs):
-            return subprocess.CompletedResult if False else subprocess.CompletedProcess(
-                cmd, returncode=2, stdout="",
-                stderr='tshark: The file "corrupt.pcap" appears to be damaged or corrupt.'
+            return (
+                subprocess.CompletedResult
+                if False
+                else subprocess.CompletedProcess(
+                    cmd,
+                    returncode=2,
+                    stdout="",
+                    stderr='tshark: The file "corrupt.pcap" appears to be damaged or corrupt.',
+                )
             )
 
         monkeypatch.setattr(pa_service_module.subprocess, "run", _fake_run)
@@ -337,10 +391,18 @@ class TestFTVulnFlag:
 
         net = {"ssid": "TestNet", "encryption": "WPA2"}
         score_data = {"readiness_status": "ready"}
-        flags, _ = recon_module._build_vuln_flags(mac, net, score_data, hash_info={
-            "has_hash": False, "has_pmkid": False, "has_eapol_hash": False,
-            "pmkid_count": 0, "eapol_count": 0,
-        })
+        flags, _ = recon_module._build_vuln_flags(
+            mac,
+            net,
+            score_data,
+            hash_info={
+                "has_hash": False,
+                "has_pmkid": False,
+                "has_eapol_hash": False,
+                "pmkid_count": 0,
+                "eapol_count": 0,
+            },
+        )
         ft_flags = [f for f in flags if f["id"] == "ft_enabled"]
         assert len(ft_flags) == 1
         assert "FT/PSK" in ft_flags[0]["description"]
@@ -358,10 +420,18 @@ class TestFTVulnFlag:
 
         net = {"ssid": "TestNet", "encryption": "WPA2"}
         score_data = {"readiness_status": "ready"}
-        flags, _ = recon_module._build_vuln_flags(mac, net, score_data, hash_info={
-            "has_hash": False, "has_pmkid": False, "has_eapol_hash": False,
-            "pmkid_count": 0, "eapol_count": 0,
-        })
+        flags, _ = recon_module._build_vuln_flags(
+            mac,
+            net,
+            score_data,
+            hash_info={
+                "has_hash": False,
+                "has_pmkid": False,
+                "has_eapol_hash": False,
+                "pmkid_count": 0,
+                "eapol_count": 0,
+            },
+        )
         ft_flags = [f for f in flags if f["id"] == "ft_enabled"]
         assert len(ft_flags) == 0
 
@@ -373,10 +443,18 @@ class TestFTVulnFlag:
         mac = "11:22:33:44:55:66"
         net = {"ssid": "NoDetails", "encryption": "WPA2"}
         score_data = {"readiness_status": "not_ready"}
-        flags, _ = recon_module._build_vuln_flags(mac, net, score_data, hash_info={
-            "has_hash": False, "has_pmkid": False, "has_eapol_hash": False,
-            "pmkid_count": 0, "eapol_count": 0,
-        })
+        flags, _ = recon_module._build_vuln_flags(
+            mac,
+            net,
+            score_data,
+            hash_info={
+                "has_hash": False,
+                "has_pmkid": False,
+                "has_eapol_hash": False,
+                "pmkid_count": 0,
+                "eapol_count": 0,
+            },
+        )
         ft_flags = [f for f in flags if f["id"] == "ft_enabled"]
         assert len(ft_flags) == 0
 
@@ -403,10 +481,14 @@ class TestDeepAnalysisStatusEndpoint:
         assert data["cached"] is False
         assert data["pcap_count"] == 1
 
-    def test_status_returns_cached_after_scan(self, client, patch_analysis, patch_tshark_deauth):
+    def test_status_returns_cached_after_scan(
+        self, client, patch_analysis, patch_tshark_deauth
+    ):
         _write_pcap(patch_analysis, "test.pcap")
         pcaps = pa_service_module.packet_analysis_service._find_pcaps()
-        pa_service_module.packet_analysis_service.analyse_with_progress(pcaps, limit=200)
+        pa_service_module.packet_analysis_service.analyse_with_progress(
+            pcaps, limit=200
+        )
 
         resp = client.get("/api/recon/deep-analysis/status")
         data = resp.json()["data"]
@@ -415,10 +497,14 @@ class TestDeepAnalysisStatusEndpoint:
         assert data["result"] is not None
         assert data["result"]["summary"]["total_deauth"] == 4
 
-    def test_status_stale_after_new_pcap(self, client, patch_analysis, patch_tshark_deauth):
+    def test_status_stale_after_new_pcap(
+        self, client, patch_analysis, patch_tshark_deauth
+    ):
         _write_pcap(patch_analysis, "test.pcap")
         pcaps = pa_service_module.packet_analysis_service._find_pcaps()
-        pa_service_module.packet_analysis_service.analyse_with_progress(pcaps, limit=200)
+        pa_service_module.packet_analysis_service.analyse_with_progress(
+            pcaps, limit=200
+        )
         # Add new PCAP → stale
         _write_pcap(patch_analysis, "new.pcap")
         resp = client.get("/api/recon/deep-analysis/status")
@@ -429,7 +515,9 @@ class TestDeepAnalysisStatusEndpoint:
     def test_invalidate_cache(self, patch_analysis, patch_tshark_deauth):
         _write_pcap(patch_analysis, "test.pcap")
         pcaps = pa_service_module.packet_analysis_service._find_pcaps()
-        pa_service_module.packet_analysis_service.analyse_with_progress(pcaps, limit=200)
+        pa_service_module.packet_analysis_service.analyse_with_progress(
+            pcaps, limit=200
+        )
         assert pa_service_module.packet_analysis_service._cache is not None
         pa_service_module.packet_analysis_service.invalidate_cache()
         assert pa_service_module.packet_analysis_service._cache is None
@@ -448,18 +536,29 @@ class TestDeepAnalysisScanEndpoint:
         assert data["job_id"] is None
         assert data["pcap_count"] == 0
 
-    def test_scan_starts_job(self, client, patch_analysis, patch_tshark_deauth, monkeypatch):
+    def test_scan_starts_job(
+        self, client, patch_analysis, patch_tshark_deauth, monkeypatch
+    ):
         _write_pcap(patch_analysis, "test.pcap")
         from app.jobs import recon_jobs as recon_jobs_module
 
         captured = {}
 
-        def fake_start(worker, job_type="", total_steps=1, meta=None, on_complete=None, on_start=None):
+        def fake_start(
+            worker,
+            job_type="",
+            total_steps=1,
+            meta=None,
+            on_complete=None,
+            on_start=None,
+        ):
             captured["job_type"] = job_type
             captured["total_steps"] = total_steps
             return "fake-deep-job-id"
 
-        monkeypatch.setattr(recon_jobs_module.job_manager, "start_multi_job", fake_start)
+        monkeypatch.setattr(
+            recon_jobs_module.job_manager, "start_multi_job", fake_start
+        )
 
         resp = client.post("/api/recon/deep-analysis/scan")
         assert resp.status_code == 200
@@ -478,7 +577,9 @@ class TestDeepAnalyseWithProgress:
     def test_populates_cache(self, patch_analysis, patch_tshark_deauth):
         _write_pcap(patch_analysis, "test.pcap")
         pcaps = pa_service_module.packet_analysis_service._find_pcaps()
-        result = pa_service_module.packet_analysis_service.analyse_with_progress(pcaps, limit=200)
+        result = pa_service_module.packet_analysis_service.analyse_with_progress(
+            pcaps, limit=200
+        )
         assert result["available"] is True
         assert result["summary"]["total_deauth"] == 4
         assert pa_service_module.packet_analysis_service._cache is not None
@@ -490,14 +591,22 @@ class TestDeepAnalyseWithProgress:
         emissions = []
         fake_job = {
             "id": "test-job",
-            "progress_data": {"current_step": 0, "percentage": 0, "stage": "", "extra": ""},
+            "progress_data": {
+                "current_step": 0,
+                "percentage": 0,
+                "stage": "",
+                "extra": "",
+            },
         }
 
         def fake_emit(event, data):
             emissions.append((event, data.copy()))
 
         pa_service_module.packet_analysis_service.analyse_with_progress(
-            pcaps, limit=200, emit=fake_emit, job=fake_job,
+            pcaps,
+            limit=200,
+            emit=fake_emit,
+            job=fake_job,
         )
         assert len(emissions) >= 2
         assert all(e[0] == "job_progress" for e in emissions)
@@ -507,10 +616,14 @@ class TestDeepAnalyseWithProgress:
         monkeypatch.setattr(
             pa_service_module.packet_analysis_service, "_check_tshark", lambda: None
         )
-        result = pa_service_module.packet_analysis_service.analyse_with_progress([], limit=200)
+        result = pa_service_module.packet_analysis_service.analyse_with_progress(
+            [], limit=200
+        )
         assert result["available"] is False
 
     def test_empty_pcaps(self, patch_analysis, patch_tshark_deauth):
-        result = pa_service_module.packet_analysis_service.analyse_with_progress([], limit=200)
+        result = pa_service_module.packet_analysis_service.analyse_with_progress(
+            [], limit=200
+        )
         assert result["available"] is True
         assert result["summary"]["total_deauth"] == 0

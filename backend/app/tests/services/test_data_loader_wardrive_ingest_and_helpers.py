@@ -20,10 +20,14 @@ def reset_data_loader_runtime(monkeypatch, tmp_path):
     monkeypatch.setattr(dl_module, "_WARDRIVE_MANIFEST", None)
     monkeypatch.setattr(dl_module, "_WARDRIVE_MANIFEST_PATH", None)
     monkeypatch.setattr(dl_module, "WARDRIVE_DIR", str(tmp_path / "wardrive_empty"))
-    monkeypatch.setattr(dl_module, "BRUCE_HANDSHAKES_DIR", str(tmp_path / "bruce_empty"))
+    monkeypatch.setattr(
+        dl_module, "BRUCE_HANDSHAKES_DIR", str(tmp_path / "bruce_empty")
+    )
     monkeypatch.setattr(dl_module, "BRUCE_PCAP_DIR", str(tmp_path / "bruce_empty"))
     monkeypatch.setattr(dl_module, "M5EVIL_DIR", str(tmp_path / "m5_empty"))
-    monkeypatch.setattr(dl_module, "M5EVIL_HANDSHAKES_DIR", str(tmp_path / "m5_empty" / "handshakes"))
+    monkeypatch.setattr(
+        dl_module, "M5EVIL_HANDSHAKES_DIR", str(tmp_path / "m5_empty" / "handshakes")
+    )
 
 
 def test_data_loader_reload_data_with_hs_file(tmp_path, monkeypatch):

@@ -46,7 +46,11 @@ def emit_m5evil_progress(
 
     upper_stage = str(stage).upper()
     if safe_total <= 0:
-        percentage = 100 if upper_stage in {"UP TO DATE", "COMPLETED", "PARTIAL", "ERROR"} else 15
+        percentage = (
+            100
+            if upper_stage in {"UP TO DATE", "COMPLETED", "PARTIAL", "ERROR"}
+            else 15
+        )
     elif upper_stage in {"COMPLETED", "PARTIAL", "ERROR"}:
         percentage = 100
     else:
@@ -309,7 +313,9 @@ def navigate_m5evil_directory(
         url_used=current_page["url"],
     )
     segments = [
-        segment for segment in normalize_m5evil_remote_path(remote_path).split("/") if segment
+        segment
+        for segment in normalize_m5evil_remote_path(remote_path).split("/")
+        if segment
     ]
     traversed = []
     for segment in segments:
@@ -597,7 +603,9 @@ def find_m5evil_download_url(
             ),
         }
 
-    if not looks_like_html(fetched.get("payload") or b"", fetched.get("content_type") or ""):
+    if not looks_like_html(
+        fetched.get("payload") or b"", fetched.get("content_type") or ""
+    ):
         return {"status": "success", "download_url": file_url}
 
     page = (fetched.get("payload") or b"").decode("utf-8", errors="replace")
@@ -612,7 +620,9 @@ def find_m5evil_download_url(
         if not tokens or filename.lower() in tokens:
             return {
                 "status": "success",
-                "download_url": urllib_parse_module.urljoin(fetched.get("url") or file_url, href),
+                "download_url": urllib_parse_module.urljoin(
+                    fetched.get("url") or file_url, href
+                ),
             }
     return {
         "status": "error",
@@ -640,14 +650,20 @@ def probe_m5evil_admin_webui(
     host = profile["host"]
     handshake_remote_path = str(profile["handshake_path"] or "").strip()
     wardrive_remote_path = str(profile["wardrive_path"] or "").strip()
-    rawsniffer_remote_path = str(profile.get("rawsniffer_path") or rawsniffer_default_path).strip()
+    rawsniffer_remote_path = str(
+        profile.get("rawsniffer_path") or rawsniffer_default_path
+    ).strip()
     if not host:
         return {
             "status": "error",
             "code": "host_missing",
             "message": "M5Evil Admin WebUI host missing",
         }
-    if not handshake_remote_path or not wardrive_remote_path or not rawsniffer_remote_path:
+    if (
+        not handshake_remote_path
+        or not wardrive_remote_path
+        or not rawsniffer_remote_path
+    ):
         return {
             "status": "error",
             "code": "paths_missing",
@@ -793,7 +809,9 @@ def perform_m5evil_sync(
     host = profile["host"]
     handshake_remote_path = str(profile["handshake_path"] or "").strip()
     wardrive_remote_path = str(profile["wardrive_path"] or "").strip()
-    rawsniffer_remote_path = str(profile.get("rawsniffer_path") or rawsniffer_default_path).strip()
+    rawsniffer_remote_path = str(
+        profile.get("rawsniffer_path") or rawsniffer_default_path
+    ).strip()
     if not host:
         return {
             "status": "error",
@@ -809,7 +827,11 @@ def perform_m5evil_sync(
                 "target": profile["target"],
             },
         }
-    if not handshake_remote_path or not wardrive_remote_path or not rawsniffer_remote_path:
+    if (
+        not handshake_remote_path
+        or not wardrive_remote_path
+        or not rawsniffer_remote_path
+    ):
         return {
             "status": "error",
             "message": "M5Evil Admin WebUI SD paths missing",
@@ -834,22 +856,64 @@ def perform_m5evil_sync(
     last_failure_details = None
     started_at = time_module.perf_counter()
     stats = {
-        "handshakes": {"remote_files_found": 0, "files_to_download": 0, "downloaded": 0, "failed": 0},
-        "rawsniffer": {"remote_files_found": 0, "files_to_download": 0, "downloaded": 0, "failed": 0},
-        "mastersniffer": {"remote_files_found": 0, "files_to_download": 0, "downloaded": 0, "failed": 0},
-        "wardrive": {"remote_files_found": 0, "files_to_download": 0, "downloaded": 0, "failed": 0},
+        "handshakes": {
+            "remote_files_found": 0,
+            "files_to_download": 0,
+            "downloaded": 0,
+            "failed": 0,
+        },
+        "rawsniffer": {
+            "remote_files_found": 0,
+            "files_to_download": 0,
+            "downloaded": 0,
+            "failed": 0,
+        },
+        "mastersniffer": {
+            "remote_files_found": 0,
+            "files_to_download": 0,
+            "downloaded": 0,
+            "failed": 0,
+        },
+        "wardrive": {
+            "remote_files_found": 0,
+            "files_to_download": 0,
+            "downloaded": 0,
+            "failed": 0,
+        },
     }
 
     try:
         for remote_path, local_dir, collector, mode in (
-            (handshake_remote_path, profile["local_handshakes_dir"], downloaded_handshakes, "handshakes"),
-            (handshake_remote_path, profile["local_mastersniffer_dir"], downloaded_mastersniffer, "mastersniffer"),
-            (rawsniffer_remote_path, profile["local_rawsniffer_dir"], downloaded_rawsniffer, "rawsniffer"),
-            (wardrive_remote_path, profile["local_wardrive_dir"], downloaded_wardrive, "wardrive"),
+            (
+                handshake_remote_path,
+                profile["local_handshakes_dir"],
+                downloaded_handshakes,
+                "handshakes",
+            ),
+            (
+                handshake_remote_path,
+                profile["local_mastersniffer_dir"],
+                downloaded_mastersniffer,
+                "mastersniffer",
+            ),
+            (
+                rawsniffer_remote_path,
+                profile["local_rawsniffer_dir"],
+                downloaded_rawsniffer,
+                "rawsniffer",
+            ),
+            (
+                wardrive_remote_path,
+                profile["local_wardrive_dir"],
+                downloaded_wardrive,
+                "wardrive",
+            ),
         ):
             listing = list_m5evil_admin_directory_fn(profile, remote_path)
             if listing.get("status") != "success":
-                errors.append(f"Failed to list {mode} in {remote_path}: {listing.get('message')}")
+                errors.append(
+                    f"Failed to list {mode} in {remote_path}: {listing.get('message')}"
+                )
                 last_failure_details = listing.get("details") or last_failure_details
                 continue
             had_listing_success = True
@@ -858,15 +922,24 @@ def perform_m5evil_sync(
             for entry in listing.get("entries") or []:
                 filename = str(entry.get("filename") or "").strip()
                 if mode == "handshakes":
-                    if not (filename.startswith("HS_") and filename.lower().endswith(".pcap")):
+                    if not (
+                        filename.startswith("HS_")
+                        and filename.lower().endswith(".pcap")
+                    ):
                         continue
                     local_name = filename
                 elif mode == "mastersniffer":
-                    if not (filename.lower().startswith("mastersniffer_") and filename.lower().endswith(".pcap")):
+                    if not (
+                        filename.lower().startswith("mastersniffer_")
+                        and filename.lower().endswith(".pcap")
+                    ):
                         continue
                     local_name = filename
                 elif mode == "rawsniffer":
-                    if not (filename.lower().startswith("rawsniff_") and filename.lower().endswith(".pcap")):
+                    if not (
+                        filename.lower().startswith("rawsniff_")
+                        and filename.lower().endswith(".pcap")
+                    ):
                         continue
                     local_name = filename
                 else:
@@ -878,7 +951,14 @@ def perform_m5evil_sync(
                 should_download = force or not os_module.path.exists(local_file)
                 if not should_download:
                     continue
-                candidate_entries.append({**entry, "filename": filename, "local_name": local_name, "local_file": local_file})
+                candidate_entries.append(
+                    {
+                        **entry,
+                        "filename": filename,
+                        "local_name": local_name,
+                        "local_file": local_file,
+                    }
+                )
 
             stats[mode]["remote_files_found"] = len(
                 [
@@ -888,21 +968,33 @@ def perform_m5evil_sync(
                         (
                             mode == "handshakes"
                             and str(entry.get("filename") or "").startswith("HS_")
-                            and str(entry.get("filename") or "").lower().endswith(".pcap")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .endswith(".pcap")
                         )
                         or (
                             mode == "mastersniffer"
-                            and str(entry.get("filename") or "").lower().startswith("mastersniffer_")
-                            and str(entry.get("filename") or "").lower().endswith(".pcap")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .startswith("mastersniffer_")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .endswith(".pcap")
                         )
                         or (
                             mode == "rawsniffer"
-                            and str(entry.get("filename") or "").lower().startswith("rawsniff_")
-                            and str(entry.get("filename") or "").lower().endswith(".pcap")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .startswith("rawsniff_")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .endswith(".pcap")
                         )
                         or (
                             mode not in {"handshakes", "mastersniffer", "rawsniffer"}
-                            and str(entry.get("filename") or "").lower().endswith(".csv")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .endswith(".csv")
                         )
                     )
                 ]
@@ -927,7 +1019,9 @@ def perform_m5evil_sync(
                     if resolved_download.get("status") != "success":
                         errors.append(resolved_download.get("message"))
                         stats[mode]["failed"] += 1
-                        last_failure_details = resolved_download.get("details") or last_failure_details
+                        last_failure_details = (
+                            resolved_download.get("details") or last_failure_details
+                        )
                         continue
                     download_web_file(
                         resolved_download.get("download_url"),
@@ -974,24 +1068,46 @@ def perform_m5evil_sync(
                     "mastersniffer_pcaps": downloaded_mastersniffer,
                     "wardrive_csvs": downloaded_wardrive,
                     "errors": errors,
-                    "handshake_remote_files_found": stats["handshakes"]["remote_files_found"],
-                    "handshake_files_to_download": stats["handshakes"]["files_to_download"],
+                    "handshake_remote_files_found": stats["handshakes"][
+                        "remote_files_found"
+                    ],
+                    "handshake_files_to_download": stats["handshakes"][
+                        "files_to_download"
+                    ],
                     "handshake_files_failed": stats["handshakes"]["failed"],
-                    "rawsniffer_remote_files_found": stats["rawsniffer"]["remote_files_found"],
-                    "rawsniffer_files_to_download": stats["rawsniffer"]["files_to_download"],
+                    "rawsniffer_remote_files_found": stats["rawsniffer"][
+                        "remote_files_found"
+                    ],
+                    "rawsniffer_files_to_download": stats["rawsniffer"][
+                        "files_to_download"
+                    ],
                     "rawsniffer_files_failed": stats["rawsniffer"]["failed"],
-                    "mastersniffer_remote_files_found": stats["mastersniffer"]["remote_files_found"],
-                    "mastersniffer_files_to_download": stats["mastersniffer"]["files_to_download"],
+                    "mastersniffer_remote_files_found": stats["mastersniffer"][
+                        "remote_files_found"
+                    ],
+                    "mastersniffer_files_to_download": stats["mastersniffer"][
+                        "files_to_download"
+                    ],
                     "mastersniffer_files_failed": stats["mastersniffer"]["failed"],
-                    "wardrive_remote_files_found": stats["wardrive"]["remote_files_found"],
-                    "wardrive_files_to_download": stats["wardrive"]["files_to_download"],
+                    "wardrive_remote_files_found": stats["wardrive"][
+                        "remote_files_found"
+                    ],
+                    "wardrive_files_to_download": stats["wardrive"][
+                        "files_to_download"
+                    ],
                     "wardrive_files_failed": stats["wardrive"]["failed"],
-                    "sync_ms": round((time_module.perf_counter() - started_at) * 1000, 2),
+                    "sync_ms": round(
+                        (time_module.perf_counter() - started_at) * 1000, 2
+                    ),
                 },
             }
 
         final_status = "partial" if errors else "success"
-        final_message = "M5Evil Admin WebUI sync completed with errors" if errors else "M5Evil Admin WebUI sync completed"
+        final_message = (
+            "M5Evil Admin WebUI sync completed with errors"
+            if errors
+            else "M5Evil Admin WebUI sync completed"
+        )
         for mode in ("handshakes", "rawsniffer", "mastersniffer", "wardrive"):
             mode_total = stats[mode]["files_to_download"]
             mode_downloaded = stats[mode]["downloaded"]
@@ -1026,14 +1142,24 @@ def perform_m5evil_sync(
                 "mastersniffer_pcaps": downloaded_mastersniffer,
                 "wardrive_csvs": downloaded_wardrive,
                 "errors": errors,
-                "handshake_remote_files_found": stats["handshakes"]["remote_files_found"],
+                "handshake_remote_files_found": stats["handshakes"][
+                    "remote_files_found"
+                ],
                 "handshake_files_to_download": stats["handshakes"]["files_to_download"],
                 "handshake_files_failed": stats["handshakes"]["failed"],
-                "rawsniffer_remote_files_found": stats["rawsniffer"]["remote_files_found"],
-                "rawsniffer_files_to_download": stats["rawsniffer"]["files_to_download"],
+                "rawsniffer_remote_files_found": stats["rawsniffer"][
+                    "remote_files_found"
+                ],
+                "rawsniffer_files_to_download": stats["rawsniffer"][
+                    "files_to_download"
+                ],
                 "rawsniffer_files_failed": stats["rawsniffer"]["failed"],
-                "mastersniffer_remote_files_found": stats["mastersniffer"]["remote_files_found"],
-                "mastersniffer_files_to_download": stats["mastersniffer"]["files_to_download"],
+                "mastersniffer_remote_files_found": stats["mastersniffer"][
+                    "remote_files_found"
+                ],
+                "mastersniffer_files_to_download": stats["mastersniffer"][
+                    "files_to_download"
+                ],
                 "mastersniffer_files_failed": stats["mastersniffer"]["failed"],
                 "wardrive_remote_files_found": stats["wardrive"]["remote_files_found"],
                 "wardrive_files_to_download": stats["wardrive"]["files_to_download"],

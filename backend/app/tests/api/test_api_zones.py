@@ -150,5 +150,10 @@ def test_to_conquer_direct_sanitize_filters_points(monkeypatch):
     out = zones_router.get_to_conquer_zones(payload)
     assert captured["conquered"] == [{"lat": 1.0, "lng": 2.0, "acc": 0.0}]
     assert captured["to_conquer"] == [{"lat": 3.0, "lng": 4.0, "acc": 5.0}]
-    assert captured["kwargs"] == {"eps_m": 350.0, "min_samples": 3, "acc_segments": 16, "min_zone_points": 5}
+    assert captured["kwargs"] == {
+        "eps_m": 350.0,
+        "min_samples": 3,
+        "acc_segments": 16,
+        "min_zone_points": 5,
+    }
     assert out["data"]["zones"][0]["id"] == 42

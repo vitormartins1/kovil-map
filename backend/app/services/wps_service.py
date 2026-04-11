@@ -1,4 +1,3 @@
-import os
 import re
 from .base_service import BaseService
 from app.core.config import (
@@ -7,8 +6,7 @@ from app.core.config import (
     BRUCE_PCAP_DIR,
     M5EVIL_HANDSHAKES_DIR,
 )
-from app.utils.pcap import build_pcap_search_roots, resolve_pcap_reference
-from app.utils.handshake_artifacts import get_capture_artifact_path
+from app.utils.pcap import build_pcap_search_roots
 from app.core.job_manager import job_manager
 from app.services.history_service import history_service
 
@@ -48,7 +46,10 @@ class WpsService(BaseService):
 
         tool = (tool or "reaver").strip().lower()
         if tool not in _ALLOWED_TOOLS:
-            return {"status": "error", "message": f"Unsupported tool: {tool}. Use reaver or bully."}
+            return {
+                "status": "error",
+                "message": f"Unsupported tool: {tool}. Use reaver or bully.",
+            }
 
         bssid = bssid.strip()
         interface = interface.strip()
@@ -64,7 +65,9 @@ class WpsService(BaseService):
             use_wsl = self._should_use_wsl(reaver_bin)
             if use_wsl:
                 cmd_args.append("wsl")
-            cmd_args.extend([reaver_bin, "-i", interface, "-b", bssid, "-c", channel, "-vv"])
+            cmd_args.extend(
+                [reaver_bin, "-i", interface, "-b", bssid, "-c", channel, "-vv"]
+            )
             if pixie_dust:
                 cmd_args.append("-K")
             if delay is not None:
@@ -84,7 +87,7 @@ class WpsService(BaseService):
             # Sanitize extra args: only allow simple flag-like strings
             for arg in extra_args:
                 s = str(arg).strip()
-                if s and re.match(r'^-{1,2}[\w-]+(=[\w./-]*)?$', s):
+                if s and re.match(r"^-{1,2}[\w-]+(=[\w./-]*)?$", s):
                     cmd_args.append(s)
 
         self.logger.info(f"WPS attack: {cmd_args}")
@@ -95,7 +98,12 @@ class WpsService(BaseService):
             display_label,
             tool,
             cmd_args,
-            {"bssid": bssid, "channel": channel, "interface": interface, "pixie_dust": pixie_dust},
+            {
+                "bssid": bssid,
+                "channel": channel,
+                "interface": interface,
+                "pixie_dust": pixie_dust,
+            },
         )
 
         def on_complete(job):

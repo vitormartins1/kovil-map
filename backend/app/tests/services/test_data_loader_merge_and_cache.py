@@ -21,9 +21,13 @@ def reset_wardrive_runtime_state(monkeypatch, tmp_path):
     monkeypatch.setattr(dl_module, "_WARDRIVE_MANIFEST_PATH", None)
     monkeypatch.setattr(dl_module, "WARDRIVE_DIR", str(tmp_path / "wardrive_empty"))
     monkeypatch.setattr(dl_module, "BRUCE_PCAP_DIR", str(tmp_path / "bruce_empty"))
-    monkeypatch.setattr(dl_module, "BRUCE_HANDSHAKES_DIR", str(tmp_path / "bruce_empty" / "handshakes"))
+    monkeypatch.setattr(
+        dl_module, "BRUCE_HANDSHAKES_DIR", str(tmp_path / "bruce_empty" / "handshakes")
+    )
     monkeypatch.setattr(dl_module, "M5EVIL_DIR", str(tmp_path / "m5_empty"))
-    monkeypatch.setattr(dl_module, "M5EVIL_HANDSHAKES_DIR", str(tmp_path / "m5_empty" / "handshakes"))
+    monkeypatch.setattr(
+        dl_module, "M5EVIL_HANDSHAKES_DIR", str(tmp_path / "m5_empty" / "handshakes")
+    )
 
 
 def _write_wardrive_csv(path, rows, wigle_header="WigleWifi-1.4,appRelease=1"):
@@ -513,9 +517,7 @@ def test_list_bruce_handshake_files_uses_deterministic_selection(tmp_path, monke
     )
 
 
-def test_reload_data_marks_bruce_raw_for_beacon_only_metadata(
-    tmp_path, monkeypatch
-):
+def test_reload_data_marks_bruce_raw_for_beacon_only_metadata(tmp_path, monkeypatch):
     hand_dir = tmp_path / "hand"
     ward_dir = tmp_path / "ward"
     bruce_dir = tmp_path / "BrucePCAP"
@@ -531,7 +533,9 @@ def test_reload_data_marks_bruce_raw_for_beacon_only_metadata(
     monkeypatch.setattr(dl_module, "WARDRIVE_DIR", str(ward_dir))
     monkeypatch.setattr(dl_module, "BRUCE_PCAP_DIR", str(bruce_dir))
     monkeypatch.setattr(dl_module, "M5EVIL_DIR", str(m5_dir))
-    monkeypatch.setattr(dl_module, "BRUCE_HANDSHAKES_DIR", str(bruce_dir / "handshakes"))
+    monkeypatch.setattr(
+        dl_module, "BRUCE_HANDSHAKES_DIR", str(bruce_dir / "handshakes")
+    )
     monkeypatch.setattr(dl_module, "M5EVIL_HANDSHAKES_DIR", str(tmp_path / "m5hand"))
 
     csv_content = (
@@ -575,9 +579,7 @@ def test_reload_data_marks_bruce_raw_for_beacon_only_metadata(
     assert "bruce_raw_sniffing" in data[key]["sources"]
 
 
-def test_reload_data_merges_m5evil_raw_and_master_metadata(
-    tmp_path, monkeypatch
-):
+def test_reload_data_merges_m5evil_raw_and_master_metadata(tmp_path, monkeypatch):
     hand_dir = tmp_path / "handshakes"
     ward_dir = tmp_path / "wardrive"
     bruce_dir = tmp_path / "BrucePCAP"

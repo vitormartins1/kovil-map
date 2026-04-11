@@ -1,12 +1,10 @@
 ﻿import os
 import json
-import glob
 import csv
 import itertools
 import re
 import logging
 import time
-from datetime import datetime, timezone
 from app.core.config import (
     HANDSHAKES_DIR,
     WARDRIVE_DIR,
@@ -16,8 +14,8 @@ from app.core.config import (
     M5EVIL_HANDSHAKES_DIR,
 )
 from app.services.spatial_normalizer import (
+    generate_deterministic_accuracy as _generate_deterministic_accuracy,
     normalize_network_positions,
-    generate_deterministic_accuracy,
 )
 from app.services import handshake_catalog as handshake_catalog_service
 from app.services.data_loader_wardrive_helpers import (
@@ -25,16 +23,12 @@ from app.services.data_loader_wardrive_helpers import (
     _extract_device_classification,
     _infer_encryption,
     _infer_encryption_from_details,
-    _is_bruce_wardrive_source,
-    _is_m5evil_wardrive_source,
     _merge_wardrive_session_observation,
     _normalize_mac,
     _normalize_wardrive_accuracy,
-    _normalize_wardrive_source_basename,
     _parse_float,
     _parse_wigle_timestamp,
     _wardrive_session_base_name_from_filename,
-    _wardrive_session_id_from_path,
 )
 from app.services.data_loader_wardrive_manifest_helpers import (
     _build_unique_wardrive_session_id as _build_unique_wardrive_session_id_helper,
@@ -94,9 +88,11 @@ WARDRIVE_TRANSPORT_MODES = (
     "metro",
 )
 logger = logging.getLogger(__name__)
+generate_deterministic_accuracy = _generate_deterministic_accuracy
 
 _WARDRIVE_MANIFEST_VERSION = 1
 _WARDRIVE_MERGED_DIRNAME = "merged"
+
 
 def get_wardrive_summary():
     global _DATA_CACHE

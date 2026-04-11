@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
-from collections import Counter, defaultdict
+from collections import defaultdict
 from typing import Any, List, Tuple
 
 from app.core.config import (
@@ -111,9 +111,7 @@ class ProbeService(BaseService):
                 if "damaged or corrupt" in stderr.lower():
                     self.logger.debug("Skipping corrupt PCAP: %s", stderr.strip())
                     return "", []
-                raise RuntimeError(
-                    stderr.strip() or f"tshark exit {proc.returncode}"
-                )
+                raise RuntimeError(stderr.strip() or f"tshark exit {proc.returncode}")
             warnings: list[str] = []
             if stderr.strip():
                 warnings.append(stderr.strip())
@@ -171,16 +169,26 @@ class ProbeService(BaseService):
         maybe_wsl = self._should_use_wsl(tshark_bin)
         read_path = self._to_wsl_path(pcap_path) if maybe_wsl else pcap_path
 
-        stdout, _ = self._run_tshark([
-            "-r", read_path,
-            "-Y", "wlan.fc.type_subtype==0x04",
-            "-T", "fields",
-            "-E", "separator=\t",
-            "-e", "frame.time_epoch",
-            "-e", "wlan.sa",
-            "-e", "wlan.ssid",
-            "-e", "radiotap.dbm_antsignal",
-        ])
+        stdout, _ = self._run_tshark(
+            [
+                "-r",
+                read_path,
+                "-Y",
+                "wlan.fc.type_subtype==0x04",
+                "-T",
+                "fields",
+                "-E",
+                "separator=\t",
+                "-e",
+                "frame.time_epoch",
+                "-e",
+                "wlan.sa",
+                "-e",
+                "wlan.ssid",
+                "-e",
+                "radiotap.dbm_antsignal",
+            ]
+        )
 
         rows = self._parse_rows(stdout, 4)
         results: list[dict] = []
@@ -198,12 +206,14 @@ class ProbeService(BaseService):
             except (ValueError, TypeError, IndexError):
                 signal = None
 
-            results.append({
-                "client_mac": client_mac,
-                "ssid": ssid,
-                "timestamp": ts,
-                "signal": signal,
-            })
+            results.append(
+                {
+                    "client_mac": client_mac,
+                    "ssid": ssid,
+                    "timestamp": ts,
+                    "signal": signal,
+                }
+            )
         return results
 
     # ------------------------------------------------------------------
@@ -254,7 +264,12 @@ class ProbeService(BaseService):
         return self._build_intelligence(all_probes, pcaps_ok, limit)
 
     def analyse_with_progress(
-        self, pcaps: list[str], *, limit: int = 200, emit=None, job=None,
+        self,
+        pcaps: list[str],
+        *,
+        limit: int = 200,
+        emit=None,
+        job=None,
     ) -> dict[str, Any]:
         """Run probe intelligence with per-PCAP progress emission.
 
@@ -379,26 +394,32 @@ class ProbeService(BaseService):
                 if cd["signals"]
                 else None
             )
-            clients.append({
-                "client_mac": mac,
-                "oui_prefix": mac[:8],
-                "probe_count": cd["probe_count"],
-                "ssids_probed": sorted(cd["ssids"]),
-                "unique_ssids": len(cd["ssids"]),
-                "avg_signal": avg_signal,
-                "first_seen": cd["first_seen"] if cd["first_seen"] != float("inf") else None,
-                "last_seen": cd["last_seen"] if cd["last_seen"] > 0 else None,
-            })
+            clients.append(
+                {
+                    "client_mac": mac,
+                    "oui_prefix": mac[:8],
+                    "probe_count": cd["probe_count"],
+                    "ssids_probed": sorted(cd["ssids"]),
+                    "unique_ssids": len(cd["ssids"]),
+                    "avg_signal": avg_signal,
+                    "first_seen": (
+                        cd["first_seen"] if cd["first_seen"] != float("inf") else None
+                    ),
+                    "last_seen": cd["last_seen"] if cd["last_seen"] > 0 else None,
+                }
+            )
         clients.sort(key=lambda c: c["probe_count"], reverse=True)
 
         # Build SSID list sorted by client count desc
         ssids: list[dict] = []
         for ssid_name, sd in ssid_data.items():
-            ssids.append({
-                "ssid": ssid_name,
-                "client_count": len(sd["clients"]),
-                "probe_count": sd["probe_count"],
-            })
+            ssids.append(
+                {
+                    "ssid": ssid_name,
+                    "client_count": len(sd["clients"]),
+                    "probe_count": sd["probe_count"],
+                }
+            )
         ssids.sort(key=lambda s: s["client_count"], reverse=True)
 
         return {

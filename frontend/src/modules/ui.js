@@ -1847,7 +1847,7 @@ async function syncData() {
             );
         }
 
-        function handleFingerprintFamily(jobId, label, filesToProcess, breakdown, familyDetails) {
+        const handleFingerprintFamily = (jobId, label, filesToProcess, breakdown, familyDetails) => {
             if (jobId) {
                 addProcess(
                     jobId,
@@ -1874,7 +1874,7 @@ async function syncData() {
             } else if (syncWasSuccessful && familyDetails.handshakes_seen !== undefined) {
                 log(`${label} handshakes up to date: no hidden/missing/invalid files to reprocess.`, 'info');
             }
-        }
+        };
 
         handleFingerprintFamily(
             bruce.fingerprint_job_id,

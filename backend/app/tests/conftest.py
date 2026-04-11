@@ -7,7 +7,6 @@ from fastapi.testclient import TestClient
 from app.api.routers import ALL_ROUTERS
 from app.api.ws.handlers import router as ws_router
 
-
 # Valid PCAP LE global header (24 bytes)
 VALID_PCAP_HEADER = (
     b"\xd4\xc3\xb2\xa1"

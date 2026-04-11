@@ -21,7 +21,9 @@ def emit_pwnagotchi_progress(
     upper_stage = str(stage).upper()
     if safe_total <= 0:
         percentage = (
-            100 if upper_stage in {"UP TO DATE", "COMPLETED", "PARTIAL", "ERROR"} else 15
+            100
+            if upper_stage in {"UP TO DATE", "COMPLETED", "PARTIAL", "ERROR"}
+            else 15
         )
     elif upper_stage in {"COMPLETED", "PARTIAL", "ERROR"}:
         percentage = 100
@@ -71,7 +73,9 @@ def should_download_entry(
         return True
     if not os_module.path.exists(local_file):
         return True
-    remote_size = getattr(remote_entry, "st_size", None) if remote_entry is not None else None
+    remote_size = (
+        getattr(remote_entry, "st_size", None) if remote_entry is not None else None
+    )
     if remote_size is None:
         msg = f"Error checking remote size for {filename}"
         logger.error(msg)
@@ -368,7 +372,10 @@ def perform_pwnagotchi_sync(
         candidate_files = [
             file
             for file in list(remote_entries.keys())
-            if any(file.endswith(ext) for ext in [".pcap", ".gps.json", ".geo.json", ".paw-gps.json"])
+            if any(
+                file.endswith(ext)
+                for ext in [".pcap", ".gps.json", ".geo.json", ".paw-gps.json"]
+            )
         ]
         total_candidates = len(candidate_files)
         downloaded = []

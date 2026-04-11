@@ -43,11 +43,16 @@ def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
     dlam = math.radians(lon2 - lon1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
+    a = (
+        math.sin(dphi / 2) ** 2
+        + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
+    )
     return earth_radius_m * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
-def _build_colocation_zone_geometry(members: list[dict[str, Any]]) -> tuple[list[list[dict]], list[list[list[dict]]]]:
+def _build_colocation_zone_geometry(
+    members: list[dict[str, Any]],
+) -> tuple[list[list[dict]], list[list[list[dict]]]]:
     if len(members) < 2:
         return [], []
 
@@ -124,7 +129,9 @@ def build_device_fingerprints_payload(dataset: dict[str, Any]) -> dict[str, Any]
             "encryption": Counter(),
         }
     )
-    by_channel: dict[int, dict[str, Any]] = defaultdict(lambda: {"count": 0, "rssi_vals": []})
+    by_channel: dict[int, dict[str, Any]] = defaultdict(
+        lambda: {"count": 0, "rssi_vals": []}
+    )
     total = 0
     raw_beacons = 0
     raw_eapol = 0
@@ -169,7 +176,9 @@ def build_device_fingerprints_payload(dataset: dict[str, Any]) -> dict[str, Any]
         raw_probes += int(net.get("raw_probe_peak_count") or 0)
 
     types = []
-    for device_type, info in sorted(by_type.items(), key=lambda item: item[1]["count"], reverse=True):
+    for device_type, info in sorted(
+        by_type.items(), key=lambda item: item[1]["count"], reverse=True
+    ):
         rssi_vals = info["rssi_vals"]
         rssi_stats = None
         if rssi_vals:
@@ -232,7 +241,9 @@ def build_device_fingerprints_payload(dataset: dict[str, Any]) -> dict[str, Any]
             {
                 "channel": channel_num,
                 "count": channel_info["count"],
-                "avg_rssi": round(sum(rssi_vals) / len(rssi_vals), 1) if rssi_vals else None,
+                "avg_rssi": (
+                    round(sum(rssi_vals) / len(rssi_vals), 1) if rssi_vals else None
+                ),
             }
         )
 
@@ -298,7 +309,9 @@ def build_colocation_payload(dataset: dict[str, Any]) -> dict[str, Any]:
         for member in members:
             max_dist = max(
                 max_dist,
-                _haversine_m(center_lat, center_lng, float(member["lat"]), float(member["lng"])),
+                _haversine_m(
+                    center_lat, center_lng, float(member["lat"]), float(member["lng"])
+                ),
             )
         radius_m = round(max_dist, 1)
 
@@ -431,7 +444,9 @@ def build_relationship_graph_payload(
                 )
                 edge_breakdown["probe_unknown"] += 1
 
-    summary = probe_data.get("summary") if probe_data and probe_data.get("available") else {}
+    summary = (
+        probe_data.get("summary") if probe_data and probe_data.get("available") else {}
+    )
     return {
         "nodes": ap_nodes + ssid_target_nodes + client_nodes,
         "edges": edges,
@@ -493,7 +508,9 @@ def build_spectrum_payload(dataset: dict[str, Any]) -> dict[str, Any]:
             {
                 "channel": channel_num,
                 "count": info["count"],
-                "avg_rssi": round(sum(rssi_vals) / len(rssi_vals), 1) if rssi_vals else None,
+                "avg_rssi": (
+                    round(sum(rssi_vals) / len(rssi_vals), 1) if rssi_vals else None
+                ),
                 "encryption": dict(info["encryption"].most_common()),
             }
         )
@@ -505,7 +522,9 @@ def build_spectrum_payload(dataset: dict[str, Any]) -> dict[str, Any]:
     congested = []
     if total_with_channel > 0:
         threshold = total_with_channel * 0.15
-        congested = [channel["channel"] for channel in channels if channel["count"] > threshold]
+        congested = [
+            channel["channel"] for channel in channels if channel["count"] > threshold
+        ]
 
     return {
         "total_with_channel": total_with_channel,

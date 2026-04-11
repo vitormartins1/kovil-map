@@ -76,7 +76,9 @@ def test_list_files_handles_bad_metadata(tmp_path, monkeypatch):
     service = _service_with_dirs(tmp_path, monkeypatch)
     pcap = tmp_path / "bruce" / "rawsniffer" / "orphan.pcap"
     write_test_pcap(pcap)
-    meta = tmp_path / "bruce" / ".metadata" / "brucegotchi__rawsniffer__orphan.pcap.json"
+    meta = (
+        tmp_path / "bruce" / ".metadata" / "brucegotchi__rawsniffer__orphan.pcap.json"
+    )
     meta.write_text("not-json", encoding="utf-8")
 
     files = service.list_files()

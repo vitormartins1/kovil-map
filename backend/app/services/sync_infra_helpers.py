@@ -3,7 +3,6 @@ import hashlib
 import os
 import posixpath
 import re
-import socket
 from html.parser import HTMLParser
 from urllib import parse as urllib_parse
 
@@ -183,7 +182,9 @@ def fetch_remote_host_key(host, port, *, socket_module, paramiko_module, timeout
             pass
 
 
-def probe_remote_host_key_details(host, port, *, socket_module, paramiko_module, logger):
+def probe_remote_host_key_details(
+    host, port, *, socket_module, paramiko_module, logger
+):
     try:
         key = fetch_remote_host_key(
             host,
@@ -193,14 +194,17 @@ def probe_remote_host_key_details(host, port, *, socket_module, paramiko_module,
         )
         return serialize_host_key(key, host, port)
     except Exception as exc:
-        logger.warning(
-            "Unable to probe remote host key for %s:%s: %s", host, port, exc
-        )
+        logger.warning("Unable to probe remote host key for %s:%s: %s", host, port, exc)
         return None
 
 
 def build_ssh_client(
-    config, *, paramiko_module, ensure_known_hosts_file_fn, get_known_hosts_path_fn, logger
+    config,
+    *,
+    paramiko_module,
+    ensure_known_hosts_file_fn,
+    get_known_hosts_path_fn,
+    logger,
 ):
     ssh = paramiko_module.SSHClient()
     ssh.load_system_host_keys()
@@ -382,7 +386,11 @@ def parse_bruce_listfiles_payload(payload):
             filename = posixpath.basename(normalized_path.rstrip("/"))
         if not filename or filename in {"..", "..."} or text in {"..", "..."}:
             continue
-        entry_type = "file" if _is_bruce_file_candidate(normalized_path, filename, href) else "dir"
+        entry_type = (
+            "file"
+            if _is_bruce_file_candidate(normalized_path, filename, href)
+            else "dir"
+        )
         dedupe_key = (entry_type, normalized_path.lower())
         if dedupe_key in seen:
             continue

@@ -81,8 +81,12 @@ def validate_pcap_file(path: str) -> tuple[bool, str]:
     # For classic PCAP, do a lightweight truncation check: verify the
     # global header is complete and (optionally) that the first packet
     # record header fits within the file.
-    if header in (_PCAP_LE_MAGIC, _PCAP_BE_MAGIC,
-                  _PCAP_NSEC_LE_MAGIC, _PCAP_NSEC_BE_MAGIC):
+    if header in (
+        _PCAP_LE_MAGIC,
+        _PCAP_BE_MAGIC,
+        _PCAP_NSEC_LE_MAGIC,
+        _PCAP_NSEC_BE_MAGIC,
+    ):
         try:
             with open(path, "rb") as fh:
                 ghdr = fh.read(24)
@@ -97,6 +101,7 @@ def validate_pcap_file(path: str) -> tuple[bool, str]:
             return False, f"error reading PCAP header: {exc}"
 
     return True, "ok"
+
 
 DEFAULT_PCAP_SEARCH_ROOTS = (
     HANDSHAKES_DIR,

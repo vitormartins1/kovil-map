@@ -89,9 +89,8 @@ def _classify_ssid_shape(ssid: str) -> str:
     hex_suffix = bool(re.search(r"[-_][0-9a-f]{4,}$", lowered))
     numeric_suffix = bool(re.search(r"[-_][0-9]{4,}$", lowered))
     has_compact_suffix = bool(re.search(r"[a-z][0-9]{4,}$", lowered))
-    if (
-        lowered.startswith(_GENERATED_PREFIXES)
-        or (len(raw) >= 10 and (hex_suffix or numeric_suffix or has_compact_suffix))
+    if lowered.startswith(_GENERATED_PREFIXES) or (
+        len(raw) >= 10 and (hex_suffix or numeric_suffix or has_compact_suffix)
     ):
         return "generated_like"
     return "human"
@@ -125,12 +124,18 @@ def _build_known_ssid_index(dataset: dict[str, Any]) -> dict[str, list[dict[str,
         ssid = str(net.get("ssid") or "").strip()
         if not ssid:
             continue
-        known_index[ssid.lower()].append({
-            "mac": mac,
-            "encryption": _probe_net_encryption(net),
-            "device_type": _normalize_device_type(net.get("device_type")),
-            "sources": [str(src).strip().lower() for src in (net.get("sources") or []) if str(src).strip()],
-        })
+        known_index[ssid.lower()].append(
+            {
+                "mac": mac,
+                "encryption": _probe_net_encryption(net),
+                "device_type": _normalize_device_type(net.get("device_type")),
+                "sources": [
+                    str(src).strip().lower()
+                    for src in (net.get("sources") or [])
+                    if str(src).strip()
+                ],
+            }
+        )
     return known_index
 
 
@@ -140,13 +145,19 @@ def _build_known_context(matches: list[dict[str, Any]]) -> dict[str, Any]:
 
     enc_counter = Counter(str(item.get("encryption") or "UNKNOWN") for item in matches)
     dev_counter = Counter(str(item.get("device_type") or "unknown") for item in matches)
-    sources = sorted({src for item in matches for src in (item.get("sources") or []) if src})
+    sources = sorted(
+        {src for item in matches for src in (item.get("sources") or []) if src}
+    )
     sample_mac = next((item.get("mac") for item in matches if item.get("mac")), None)
     return {
         "network_count": len(matches),
         "sample_mac": sample_mac,
-        "dominant_encryption": enc_counter.most_common(1)[0][0] if enc_counter else None,
-        "dominant_device_type": dev_counter.most_common(1)[0][0] if dev_counter else None,
+        "dominant_encryption": (
+            enc_counter.most_common(1)[0][0] if enc_counter else None
+        ),
+        "dominant_device_type": (
+            dev_counter.most_common(1)[0][0] if dev_counter else None
+        ),
         "sources": sources,
     }
 
@@ -175,10 +186,16 @@ def _enrich_probe_intel_result(result: dict[str, Any] | None) -> dict[str, Any] 
     enriched_clients = []
     for cl in payload.get("clients") or []:
         item = dict(cl)
-        ssids = [str(ssid).strip() for ssid in (item.get("ssids_probed") or []) if str(ssid).strip()]
+        ssids = [
+            str(ssid).strip()
+            for ssid in (item.get("ssids_probed") or [])
+            if str(ssid).strip()
+        ]
         known_ssids = [ssid for ssid in ssids if known_index.get(ssid.lower())]
         unmatched_ssids = [ssid for ssid in ssids if not known_index.get(ssid.lower())]
-        item["vendor"] = _resolve_mac_vendor(item.get("client_mac") or item.get("oui_prefix"))
+        item["vendor"] = _resolve_mac_vendor(
+            item.get("client_mac") or item.get("oui_prefix")
+        )
         item["known_ssid_count"] = len(known_ssids)
         item["unmatched_ssid_count"] = len(unmatched_ssids)
         item["known_ssid_preview"] = known_ssids[:3]

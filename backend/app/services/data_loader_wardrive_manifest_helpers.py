@@ -175,8 +175,12 @@ def _make_wardrive_manifest_entry(normalize_entry, **kwargs):
                 else time.time()
             ),
             "merged_at": kwargs.get("merged_at"),
-            "merged_from_session_ids": list(kwargs.get("merged_from_session_ids") or []),
-            "source_leaf_session_ids": list(kwargs.get("source_leaf_session_ids") or []),
+            "merged_from_session_ids": list(
+                kwargs.get("merged_from_session_ids") or []
+            ),
+            "source_leaf_session_ids": list(
+                kwargs.get("source_leaf_session_ids") or []
+            ),
             "source_hashes": list(kwargs.get("source_hashes") or []),
             "duplicate_of_session_id": kwargs.get("duplicate_of_session_id"),
         }

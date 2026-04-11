@@ -233,9 +233,7 @@ class RawSnifferService(BaseService):
                 seen_paths.add(real_path)
                 valid, reason = validate_pcap_file(path)
                 if not valid:
-                    logger.warning(
-                        "Skipping invalid PCAP %s: %s", name, reason
-                    )
+                    logger.warning("Skipping invalid PCAP %s: %s", name, reason)
                     continue
                 record = {
                     "artifact_type": "pcap",

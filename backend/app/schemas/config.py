@@ -37,10 +37,26 @@ MapClusterMode = Literal[
 ]
 UIVisualTheme = Literal["cyberpunk", "professional", "synthwave", "military"]
 UITheme = Literal[
-    "cyan", "purple", "green", "pink", "orange",
-    "steel", "slate", "forest", "amber", "rose",
-    "sunset", "vapor", "miami", "retro", "plasma",
-    "tactical", "desert", "nightvision", "command", "stealth",
+    "cyan",
+    "purple",
+    "green",
+    "pink",
+    "orange",
+    "steel",
+    "slate",
+    "forest",
+    "amber",
+    "rose",
+    "sunset",
+    "vapor",
+    "miami",
+    "retro",
+    "plasma",
+    "tactical",
+    "desert",
+    "nightvision",
+    "command",
+    "stealth",
 ]
 M5WebProtocol = Literal["http", "https"]
 UIPwnedIcon = Literal["fa-skull", "fa-ghost", "fa-gem"]
