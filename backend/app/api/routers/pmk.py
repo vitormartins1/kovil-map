@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Query
+from fastapi import APIRouter, Body
 from app.services.pmk_service import pmk_service
 from app.schemas.jobs import PmkBuildRequest, PmkAttackRequest
 from app.utils.responses import ok, fail

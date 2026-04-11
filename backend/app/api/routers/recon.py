@@ -13,20 +13,14 @@ import os
 import time
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
 from app.core.config import DATA_DIR, HANDSHAKES_DIR
-from app.core.job_manager import job_manager
 from app.services.data_loader import get_data_revision, load_real_data
-from app.services.history_service import history_service
-from app.services.insights_service import insights_service
-from app.services.packet_analysis_service import packet_analysis_service
 from app.services.probe_service import probe_service
-from app.services.rawsniffer_service import rawsniffer_service
 from app.services.recon_comms_service import (
     build_colocation_payload,
     build_device_fingerprints_payload,
@@ -41,18 +35,15 @@ from app.services.recon_probe_service import (
 from app.services.recon_runtime_service import (
     _KILL_CHAIN_STAGES,
     _build_kill_chain_network_entry,
-    _build_vuln_flags,
     _build_recon_manifest_payload,
     _build_vulnerability_row,
     _cache_response,
     _cache_response_get,
     _cache_response_set,
     _classify_network,
-    _clear_caches,
     _get_dir_listing,
     _net_encryption,
     _probe_cache_signature,
-    _quick_score,
     _recon_artifacts_signature,
     _resolve_dataset_network,
     _scan_hash_files,
@@ -68,6 +59,7 @@ router = APIRouter()
 # Persistent storage for snapshots
 _SNAPSHOT_DIR = os.path.join(DATA_DIR, "recon_snapshots")
 os.makedirs(_SNAPSHOT_DIR, exist_ok=True)
+
 
 def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Return the great-circle distance in metres between two lat/lon points."""
