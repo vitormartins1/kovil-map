@@ -675,8 +675,7 @@ def test_sync_service_only_m5evil_configured_succeeds_without_pwnagotchi(
 
 def test_probe_bruce_webui_success(monkeypatch):
     route_map = {
-        "http://bruce.local:80/": _FakeHttpResponse(
-            b"""
+        "http://bruce.local:80/": _FakeHttpResponse(b"""
             <html><body>
               <h1>BRUCE Firmware</h1>
               <input type="hidden" id="actualFolder" value="/">
@@ -685,8 +684,7 @@ def test_probe_bruce_webui_success(monkeypatch):
               <button onclick="listFilesButton('/', 'LittleFS', true)">LittleFS</button>
               <script src="script.js"></script>
             </body></html>
-            """
-        ),
+            """),
         "http://bruce.local:80/listfiles?fs=SD&folder=%2FBrucePCAP": _FakeHttpResponse(
             b"""
             <table>

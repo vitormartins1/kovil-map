@@ -522,7 +522,9 @@ def test_list_files_handles_corrupt_metadata(tmp_path, monkeypatch):
     write_test_pcap(raw_dir / "raw_1.pcap")
     meta_dir = bruce_dir / ".metadata"
     meta_dir.mkdir()
-    (meta_dir / "brucegotchi__rawsniffer__raw_1.pcap.json").write_text("{invalid json", encoding="utf-8")
+    (meta_dir / "brucegotchi__rawsniffer__raw_1.pcap.json").write_text(
+        "{invalid json", encoding="utf-8"
+    )
     files = rs_module.rawsniffer_service.list_files()
     assert files[0]["cached_up_to_date"] is False
 
@@ -560,9 +562,17 @@ def test_list_files_ignores_bruce_root_raw_files_outside_canonical_rawsniffer(
 def test_clear_metadata_cache_no_files(tmp_path, monkeypatch):
     """clear_metadata_cache returns zeros when no metadata exists."""
     monkeypatch.setattr(rs_module, "BRUCE_PCAP_DIR", str(tmp_path))
-    monkeypatch.setattr(rs_module, "M5EVIL_DIR", str(tmp_path / "nonexistent_m5evil_root"))
-    monkeypatch.setattr(rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil"))
-    monkeypatch.setattr(rs_module, "M5EVIL_MASTERSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_master"))
+    monkeypatch.setattr(
+        rs_module, "M5EVIL_DIR", str(tmp_path / "nonexistent_m5evil_root")
+    )
+    monkeypatch.setattr(
+        rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil")
+    )
+    monkeypatch.setattr(
+        rs_module,
+        "M5EVIL_MASTERSNIFFER_DIR",
+        str(tmp_path / "nonexistent_m5evil_master"),
+    )
     result = rs_module.rawsniffer_service.clear_metadata_cache(remove_files=True)
     assert result["deleted_count"] == 0
     assert result["failed_count"] == 0
@@ -572,8 +582,14 @@ def test_clear_metadata_cache_no_files(tmp_path, monkeypatch):
 def test_clear_metadata_cache_remove_false(tmp_path, monkeypatch):
     """clear_metadata_cache skips deletion when remove_files=False."""
     bruce_dir, _raw_dir = _set_bruce_layout(tmp_path, monkeypatch)
-    monkeypatch.setattr(rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil"))
-    monkeypatch.setattr(rs_module, "M5EVIL_MASTERSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_master"))
+    monkeypatch.setattr(
+        rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil")
+    )
+    monkeypatch.setattr(
+        rs_module,
+        "M5EVIL_MASTERSNIFFER_DIR",
+        str(tmp_path / "nonexistent_m5evil_master"),
+    )
     meta_dir = bruce_dir / ".metadata"
     meta_dir.mkdir()
     (meta_dir / "test.json").write_text("{}", encoding="utf-8")
@@ -606,7 +622,11 @@ def test_delete_file_removes_raw_metadata_and_hash(tmp_path, monkeypatch):
     assert result["source_file"] == "raw_1.pcap"
     assert result["metadata_deleted"] is True
     assert result["hash_deleted"] is True
-    assert result["deleted"] == ["raw_1.pcap", "brucegotchi__rawsniffer__raw_1.pcap.json", "raw_1.22000"]
+    assert result["deleted"] == [
+        "raw_1.pcap",
+        "brucegotchi__rawsniffer__raw_1.pcap.json",
+        "raw_1.22000",
+    ]
     assert not raw_file.exists()
     assert not metadata_file.exists()
     assert not hash_file.exists()

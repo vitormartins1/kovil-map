@@ -21,6 +21,9 @@ from pydantic import BaseModel, Field
 from app.core.config import DATA_DIR, HANDSHAKES_DIR
 from app.core.job_manager import job_manager as _job_manager
 from app.services.data_loader import get_data_revision, load_real_data
+from app.services.packet_analysis_service import (
+    packet_analysis_service as _packet_analysis_service,
+)
 from app.services.probe_service import probe_service
 from app.services.recon_comms_service import (
     build_colocation_payload,
@@ -36,6 +39,7 @@ from app.services.recon_probe_service import (
 from app.services.recon_runtime_service import (
     _KILL_CHAIN_STAGES,
     _build_kill_chain_network_entry,
+    _build_vuln_flags as _recon_build_vuln_flags,
     _build_recon_manifest_payload,
     _build_vulnerability_row,
     _cache_response,
@@ -50,11 +54,15 @@ from app.services.recon_runtime_service import (
     _scan_hash_files,
 )
 from app.utils.responses import fail, ok
+from app.api.deps import mac_lookup as _mac_lookup
 
 import json as _json
 
 router = APIRouter()
 job_manager = _job_manager
+packet_analysis_service = _packet_analysis_service
+mac_lookup = _mac_lookup
+_build_vuln_flags = _recon_build_vuln_flags
 
 # Persistent storage for snapshots
 _SNAPSHOT_DIR = os.path.join(DATA_DIR, "recon_snapshots")
@@ -67,7 +75,10 @@ def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
     dlam = math.radians(lon2 - lon1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
+    a = (
+        math.sin(dphi / 2) ** 2
+        + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
+    )
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
@@ -158,18 +169,20 @@ def get_kill_chain():
                 elif e:
                     eapol_only += 1
 
-        return ok({
-            "total": total,
-            "stages": summary,
-            "hash_intel": {
-                "total_with_hash": total_with_hash,
-                "total_pmkid": total_pmkid,
-                "total_eapol_hash": total_eapol_hash,
-                "pmkid_only": pmkid_only,
-                "eapol_only": eapol_only,
-                "both": both_types,
-            },
-        })
+        return ok(
+            {
+                "total": total,
+                "stages": summary,
+                "hash_intel": {
+                    "total_with_hash": total_with_hash,
+                    "total_pmkid": total_pmkid,
+                    "total_eapol_hash": total_eapol_hash,
+                    "pmkid_only": pmkid_only,
+                    "eapol_only": eapol_only,
+                    "both": both_types,
+                },
+            }
+        )
 
     return _cache_response("kill_chain", tuple(), _build, data_revision=data_revision)
 
@@ -187,7 +200,9 @@ def get_kill_chain_summary():
 
     def _build():
         stage_counts: dict[str, int] = {s: 0 for s in _KILL_CHAIN_STAGES}
-        stage_previews: dict[str, list[dict[str, Any]]] = {s: [] for s in _KILL_CHAIN_STAGES}
+        stage_previews: dict[str, list[dict[str, Any]]] = {
+            s: [] for s in _KILL_CHAIN_STAGES
+        }
         total_pmkid = 0
         total_eapol_hash = 0
         total_with_hash = 0
@@ -202,7 +217,9 @@ def get_kill_chain_summary():
             hash_info = _scan_hash_files(mac_clean)
             stage = _classify_network(mac, net, hash_info=hash_info)
             stage_counts[stage] += 1
-            stage_previews[stage].append(_build_kill_chain_network_entry(mac, net, hash_info=hash_info))
+            stage_previews[stage].append(
+                _build_kill_chain_network_entry(mac, net, hash_info=hash_info)
+            )
             if not hash_info["has_hash"]:
                 continue
             total_with_hash += 1
@@ -224,26 +241,33 @@ def get_kill_chain_summary():
                 "preview_count": min(stage_counts[stage_name], preview_limit),
                 "preview_networks": sorted(
                     stage_previews[stage_name],
-                    key=lambda item: ((item.get("ssid") or "").lower(), (item.get("mac") or "").lower()),
+                    key=lambda item: (
+                        (item.get("ssid") or "").lower(),
+                        (item.get("mac") or "").lower(),
+                    ),
                 )[:preview_limit],
             }
             for stage_name in _KILL_CHAIN_STAGES
         ]
         total = sum(stage_counts.values())
-        return ok({
-            "total": total,
-            "stages": summary,
-            "hash_intel": {
-                "total_with_hash": total_with_hash,
-                "total_pmkid": total_pmkid,
-                "total_eapol_hash": total_eapol_hash,
-                "pmkid_only": pmkid_only,
-                "eapol_only": eapol_only,
-                "both": both_types,
-            },
-        })
+        return ok(
+            {
+                "total": total,
+                "stages": summary,
+                "hash_intel": {
+                    "total_with_hash": total_with_hash,
+                    "total_pmkid": total_pmkid,
+                    "total_eapol_hash": total_eapol_hash,
+                    "pmkid_only": pmkid_only,
+                    "eapol_only": eapol_only,
+                    "both": both_types,
+                },
+            }
+        )
 
-    return _cache_response("kill_chain_summary", tuple(), _build, data_revision=data_revision, ttl=6.0)
+    return _cache_response(
+        "kill_chain_summary", tuple(), _build, data_revision=data_revision, ttl=6.0
+    )
 
 
 @router.get("/api/recon/kill-chain/stage", tags=["Recon"])
@@ -278,16 +302,23 @@ def get_kill_chain_stage(
                     continue
             networks.append(entry)
 
-        networks.sort(key=lambda item: ((item.get("ssid") or "").lower(), (item.get("mac") or "").lower()))
+        networks.sort(
+            key=lambda item: (
+                (item.get("ssid") or "").lower(),
+                (item.get("mac") or "").lower(),
+            )
+        )
         total_count = len(networks)
         page = networks[offset : offset + limit]
-        return ok({
-            "stage": stage_key,
-            "total": total_count,
-            "offset": offset,
-            "limit": limit,
-            "networks": page,
-        })
+        return ok(
+            {
+                "stage": stage_key,
+                "total": total_count,
+                "offset": offset,
+                "limit": limit,
+                "networks": page,
+            }
+        )
 
     return _cache_response(
         "kill_chain_stage",
@@ -361,7 +392,9 @@ def get_vulnerability_matrix(
 
         total_count = len(rows)
         page = rows[offset : offset + limit]
-        return ok({"total": total_count, "offset": offset, "limit": limit, "rows": page})
+        return ok(
+            {"total": total_count, "offset": offset, "limit": limit, "rows": page}
+        )
 
     return _cache_response(
         "vulnerability_matrix",
@@ -394,6 +427,7 @@ def get_target_detail(
         extra_signature=(_recon_artifacts_signature(),),
         ttl=10.0,
     )
+
 
 # ---------------------------------------------------------------------------
 # 3. Attack Effectiveness
@@ -435,8 +469,14 @@ def get_attack_effectiveness(
     total_failed = 0
 
     by_mode: dict[str, dict] = defaultdict(
-        lambda: {"attempts": 0, "cracked": 0, "exhausted": 0, "failed": 0,
-                 "total_time": 0.0, "timed_count": 0}
+        lambda: {
+            "attempts": 0,
+            "cracked": 0,
+            "exhausted": 0,
+            "failed": 0,
+            "total_time": 0.0,
+            "timed_count": 0,
+        }
     )
     by_encryption: dict[str, dict] = defaultdict(
         lambda: {"targets": 0, "cracked": 0, "attempts": 0}
@@ -520,12 +560,16 @@ def get_attack_effectiveness(
                     # O-F2: velocity event
                     event_ts = end if end > 0 else start
                     if event_ts > 0:
-                        crack_events.append({
-                            "ts": datetime.fromtimestamp(event_ts, tz=timezone.utc).isoformat(),
-                            "mac": mac,
-                            "ssid": net.get("ssid") or "",
-                            "mode": mode,
-                        })
+                        crack_events.append(
+                            {
+                                "ts": datetime.fromtimestamp(
+                                    event_ts, tz=timezone.utc
+                                ).isoformat(),
+                                "mac": mac,
+                                "ssid": net.get("ssid") or "",
+                                "mode": mode,
+                            }
+                        )
                 elif status == "EXHAUSTED":
                     total_exhausted += 1
                     by_mode[mode]["exhausted"] += 1
@@ -543,8 +587,13 @@ def get_attack_effectiveness(
     # Sort modes by attempts — include avg_time per mode
     mode_list = []
     for k, v in by_mode.items():
-        entry = {"mode": k, "attempts": v["attempts"], "cracked": v["cracked"],
-                 "exhausted": v["exhausted"], "failed": v["failed"]}
+        entry = {
+            "mode": k,
+            "attempts": v["attempts"],
+            "cracked": v["cracked"],
+            "exhausted": v["exhausted"],
+            "failed": v["failed"],
+        }
         if v["timed_count"] > 0:
             entry["avg_time"] = round(v["total_time"] / v["timed_count"], 1)
         else:
@@ -558,18 +607,19 @@ def get_attack_effectiveness(
         cracks = wordlist_cracks.get(name, 0)
         uses = wordlist_uses.get(name, 0)
         rate = round(cracks / uses * 100, 1) if uses > 0 else 0
-        wordlist_roi.append({
-            "name": name,
-            "cracks": cracks,
-            "uses": uses,
-            "success_rate": rate,
-        })
+        wordlist_roi.append(
+            {
+                "name": name,
+                "cracks": cracks,
+                "uses": uses,
+                "success_rate": rate,
+            }
+        )
     wordlist_roi.sort(key=lambda x: x["cracks"], reverse=True)
 
     # Backward-compat: top_wordlists (cracks only, legacy format)
     top_wordlists = [
-        {"name": w["name"], "cracks": w["cracks"]}
-        for w in wordlist_roi[:10]
+        {"name": w["name"], "cracks": w["cracks"]} for w in wordlist_roi[:10]
     ]
 
     # Encryption breakdown
@@ -655,7 +705,8 @@ def get_temporal_intel():
         day_dist[dt.weekday()] += 1
 
         has_gps = bool(
-            net.get("lat") and net.get("lng")
+            net.get("lat")
+            and net.get("lng")
             and (net.get("lat") != 0 or net.get("lng") != 0)
         )
         if has_gps:
@@ -739,65 +790,72 @@ def get_temporal_intel():
         threshold = max(avg_daily * 2, 5)  # at least 5 to avoid noise on tiny datasets
         for date_str, count in sorted(daily_counts.items()):
             if count >= threshold and avg_daily > 0:
-                anomalies.append({
-                    "type": "spike",
-                    "date": date_str,
-                    "count": count,
-                    "avg": round(avg_daily, 1),
-                    "description": f"Spike: {count} networks active on {date_str} (avg {round(avg_daily, 1)})",
-                })
+                anomalies.append(
+                    {
+                        "type": "spike",
+                        "date": date_str,
+                        "count": count,
+                        "avg": round(avg_daily, 1),
+                        "description": f"Spike: {count} networks active on {date_str} (avg {round(avg_daily, 1)})",
+                    }
+                )
         # Detect gaps: if span > 2 days but some days have 0 activity
         if len(daily_counts) >= 2:
             sorted_dates = sorted(daily_counts.keys())
             from datetime import timedelta
+
             prev_date = datetime.strptime(sorted_dates[0], "%Y-%m-%d")
             for ds in sorted_dates[1:]:
                 cur_date = datetime.strptime(ds, "%Y-%m-%d")
                 gap_days = (cur_date - prev_date).days
                 if gap_days > 2:
-                    anomalies.append({
-                        "type": "gap",
-                        "start": (prev_date + timedelta(days=1)).strftime("%Y-%m-%d"),
-                        "end": (cur_date - timedelta(days=1)).strftime("%Y-%m-%d"),
-                        "days": gap_days - 1,
-                        "description": f"No activity for {gap_days - 1} days ({(prev_date + timedelta(days=1)).strftime('%Y-%m-%d')} – {(cur_date - timedelta(days=1)).strftime('%Y-%m-%d')})",
-                    })
+                    anomalies.append(
+                        {
+                            "type": "gap",
+                            "start": (prev_date + timedelta(days=1)).strftime(
+                                "%Y-%m-%d"
+                            ),
+                            "end": (cur_date - timedelta(days=1)).strftime("%Y-%m-%d"),
+                            "days": gap_days - 1,
+                            "description": f"No activity for {gap_days - 1} days ({(prev_date + timedelta(days=1)).strftime('%Y-%m-%d')} – {(cur_date - timedelta(days=1)).strftime('%Y-%m-%d')})",
+                        }
+                    )
                 prev_date = cur_date
 
     return _cache_response_set(
         "temporal_intel",
         tuple(),
         ok(
-        {
-            "total_networks": len(dataset),
-            "freshness": freshness,
-            "hour_distribution": [
-                {"hour": hour_labels[i], "count": hour_dist[i]} for i in range(24)
-            ],
-            "day_distribution": [
-                {"day": day_labels[i], "count": day_dist[i]} for i in range(7)
-            ],
-            "top_active_hours": [
-                {"hour": hour_labels[h], "count": hour_dist[h]} for h in top_hours
-            ],
-            "top_active_days": [
-                {"day": day_labels[d], "count": day_dist[d]} for d in top_days
-            ],
-            "first_seen": (
-                datetime.fromtimestamp(first_seen, tz=timezone.utc).isoformat()
-                if first_seen
-                else None
-            ),
-            "last_seen": (
-                datetime.fromtimestamp(last_seen, tz=timezone.utc).isoformat()
-                if last_seen
-                else None
-            ),
-            "total_gps": total_gps,
-            "gps_origin": dict(source_gps_origin),
-            "by_source": by_source,
-            "anomalies": anomalies[:20],
-        }
+            {
+                "total_networks": len(dataset),
+                "freshness": freshness,
+                "hour_distribution": [
+                    {"hour": hour_labels[i], "count": hour_dist[i]} for i in range(24)
+                ],
+                "day_distribution": [
+                    {"day": day_labels[i], "count": day_dist[i]} for i in range(7)
+                ],
+                "top_active_hours": [
+                    {"hour": hour_labels[h], "count": hour_dist[h]} for h in top_hours
+                ],
+                "top_active_days": [
+                    {"day": day_labels[d], "count": day_dist[d]} for d in top_days
+                ],
+                "first_seen": (
+                    datetime.fromtimestamp(first_seen, tz=timezone.utc).isoformat()
+                    if first_seen
+                    else None
+                ),
+                "last_seen": (
+                    datetime.fromtimestamp(last_seen, tz=timezone.utc).isoformat()
+                    if last_seen
+                    else None
+                ),
+                "total_gps": total_gps,
+                "gps_origin": dict(source_gps_origin),
+                "by_source": by_source,
+                "anomalies": anomalies[:20],
+            }
         ),
         data_revision=data_revision,
     )
@@ -866,11 +924,17 @@ def _build_audit_report_data() -> dict:
         sources = net.get("sources") or []
         if len(sources) >= 2:
             multi_source += 1
-        if int(net.get("raw_beacon_count") or 0) > 0 or int(net.get("raw_eapol_count") or 0) > 0:
+        if (
+            int(net.get("raw_beacon_count") or 0) > 0
+            or int(net.get("raw_eapol_count") or 0) > 0
+        ):
             with_raw_data += 1
         mac_clean = mac.replace(":", "").lower()
         # Check fingerprint (.details) — uses cached dir listing
-        if any(mac_clean in n.lower() and n.endswith(".details") for n in _get_dir_listing()):
+        if any(
+            mac_clean in n.lower() and n.endswith(".details")
+            for n in _get_dir_listing()
+        ):
             with_fingerprint += 1
         # Check hash
         hash_info = _scan_hash_files(mac_clean)
@@ -910,47 +974,58 @@ def _build_audit_report_data() -> dict:
             pmkid_targets += 1
 
     if eapol_no_hash_count > 0:
-        recommendations.append({
-            "priority": "high",
-            "action": "convert_hashes",
-            "description": f"{eapol_no_hash_count} network(s) have EAPOL evidence but no .22000 hash — convert captures with hcxpcapngtool.",
-            "count": eapol_no_hash_count,
-        })
+        recommendations.append(
+            {
+                "priority": "high",
+                "action": "convert_hashes",
+                "description": f"{eapol_no_hash_count} network(s) have EAPOL evidence but no .22000 hash — convert captures with hcxpcapngtool.",
+                "count": eapol_no_hash_count,
+            }
+        )
     if pmkid_targets > 0:
-        recommendations.append({
-            "priority": "high",
-            "action": "attack_pmkid",
-            "description": f"{pmkid_targets} uncracked target(s) with PMKID available — prioritize hashcat mode 22000.",
-            "count": pmkid_targets,
-        })
+        recommendations.append(
+            {
+                "priority": "high",
+                "action": "attack_pmkid",
+                "description": f"{pmkid_targets} uncracked target(s) with PMKID available — prioritize hashcat mode 22000.",
+                "count": pmkid_targets,
+            }
+        )
     if wep_count > 0:
-        recommendations.append({
-            "priority": "medium",
-            "action": "attack_wep",
-            "description": f"{wep_count} WEP network(s) detected — use aircrack-ng direct attack (trivially breakable).",
-            "count": wep_count,
-        })
+        recommendations.append(
+            {
+                "priority": "medium",
+                "action": "attack_wep",
+                "description": f"{wep_count} WEP network(s) detected — use aircrack-ng direct attack (trivially breakable).",
+                "count": wep_count,
+            }
+        )
     if with_handshake > with_hash:
         gap = with_handshake - with_hash
-        recommendations.append({
-            "priority": "medium",
-            "action": "extract_hashes",
-            "description": f"{gap} network(s) have handshake captures but no extracted hash — run hash extraction pipeline.",
-            "count": gap,
-        })
+        recommendations.append(
+            {
+                "priority": "medium",
+                "action": "extract_hashes",
+                "description": f"{gap} network(s) have handshake captures but no extracted hash — run hash extraction pipeline.",
+                "count": gap,
+            }
+        )
     if crackable > 0 and cracked_count == 0:
-        recommendations.append({
-            "priority": "low",
-            "action": "start_cracking",
-            "description": f"{crackable} crackable network(s) with 0 cracks — begin attack operations.",
-            "count": crackable,
-        })
+        recommendations.append(
+            {
+                "priority": "low",
+                "action": "start_cracking",
+                "description": f"{crackable} crackable network(s) with 0 cracks — begin attack operations.",
+                "count": crackable,
+            }
+        )
 
     # R-F2: Risk scoring per encryption type
     risk_scoring: list[dict] = []
     for enc, count in enc_dist.most_common():
         enc_cracked = sum(
-            1 for net in dataset.values()
+            1
+            for net in dataset.values()
             if isinstance(net, dict) and _net_encryption(net) == enc and net.get("pass")
         )
         enc_rate = round(enc_cracked / count * 100, 1) if count > 0 else 0
@@ -968,13 +1043,15 @@ def _build_audit_report_data() -> dict:
             grade = "D"
         else:
             grade = "F"
-        risk_scoring.append({
-            "encryption": enc,
-            "total": count,
-            "cracked": enc_cracked,
-            "crack_rate": enc_rate,
-            "grade": grade,
-        })
+        risk_scoring.append(
+            {
+                "encryption": enc,
+                "total": count,
+                "cracked": enc_cracked,
+                "crack_rate": enc_rate,
+                "grade": grade,
+            }
+        )
 
     # R-F7: Coverage analysis
     coverage = {
@@ -982,7 +1059,9 @@ def _build_audit_report_data() -> dict:
         "with_gps": with_gps,
         "with_gps_pct": round(with_gps / total * 100, 1) if total else 0,
         "with_fingerprint": with_fingerprint,
-        "with_fingerprint_pct": round(with_fingerprint / total * 100, 1) if total else 0,
+        "with_fingerprint_pct": (
+            round(with_fingerprint / total * 100, 1) if total else 0
+        ),
         "with_raw_data": with_raw_data,
         "with_raw_data_pct": round(with_raw_data / total * 100, 1) if total else 0,
         "with_hash": with_hash,
@@ -1012,16 +1091,12 @@ def _build_audit_report_data() -> dict:
         },
         "statistics": {
             "first_observation": (
-                datetime.fromtimestamp(
-                    min(timestamps), tz=timezone.utc
-                ).isoformat()
+                datetime.fromtimestamp(min(timestamps), tz=timezone.utc).isoformat()
                 if timestamps
                 else None
             ),
             "last_observation": (
-                datetime.fromtimestamp(
-                    max(timestamps), tz=timezone.utc
-                ).isoformat()
+                datetime.fromtimestamp(max(timestamps), tz=timezone.utc).isoformat()
                 if timestamps
                 else None
             ),
@@ -1141,10 +1216,14 @@ def list_report_snapshots():
                 path = os.path.join(_REPORT_SNAPSHOT_DIR, name)
                 try:
                     ts = os.path.getmtime(path)
-                    snaps.append({
-                        "id": snap_id,
-                        "created": datetime.fromtimestamp(ts, tz=timezone.utc).isoformat(),
-                    })
+                    snaps.append(
+                        {
+                            "id": snap_id,
+                            "created": datetime.fromtimestamp(
+                                ts, tz=timezone.utc
+                            ).isoformat(),
+                        }
+                    )
                 except OSError:
                     pass
     return ok({"snapshots": snaps})
@@ -1155,7 +1234,12 @@ def compare_report_snapshots(
     snapshot_id: str = Query(..., description="Snapshot ID to compare against current"),
 ):
     """Compare current report with a saved snapshot."""
-    if not snapshot_id or "/" in snapshot_id or "\\" in snapshot_id or ".." in snapshot_id:
+    if (
+        not snapshot_id
+        or "/" in snapshot_id
+        or "\\" in snapshot_id
+        or ".." in snapshot_id
+    ):
         fail("Invalid snapshot ID")
     path = os.path.join(_REPORT_SNAPSHOT_DIR, f"report_{snapshot_id}.json")
     if not os.path.isfile(path):
@@ -1176,14 +1260,32 @@ def compare_report_snapshots(
         "snapshot_id": snapshot_id,
         "snapshot_date": old.get("generated_at", ""),
         "current_date": current.get("generated_at", ""),
-        "total_networks": {"old": old_f.get("total_networks", 0), "new": cur_f.get("total_networks", 0)},
+        "total_networks": {
+            "old": old_f.get("total_networks", 0),
+            "new": cur_f.get("total_networks", 0),
+        },
         "cracked": {"old": old_f.get("cracked", 0), "new": cur_f.get("cracked", 0)},
-        "crack_rate_percent": {"old": old_f.get("crack_rate_percent", 0), "new": cur_f.get("crack_rate_percent", 0)},
-        "crackable_remaining": {"old": old_f.get("crackable_remaining", 0), "new": cur_f.get("crackable_remaining", 0)},
-        "with_handshake": {"old": old_f.get("with_handshake", 0), "new": cur_f.get("with_handshake", 0)},
+        "crack_rate_percent": {
+            "old": old_f.get("crack_rate_percent", 0),
+            "new": cur_f.get("crack_rate_percent", 0),
+        },
+        "crackable_remaining": {
+            "old": old_f.get("crackable_remaining", 0),
+            "new": cur_f.get("crackable_remaining", 0),
+        },
+        "with_handshake": {
+            "old": old_f.get("with_handshake", 0),
+            "new": cur_f.get("with_handshake", 0),
+        },
     }
     # Compute deltas
-    for key in ["total_networks", "cracked", "crack_rate_percent", "crackable_remaining", "with_handshake"]:
+    for key in [
+        "total_networks",
+        "cracked",
+        "crack_rate_percent",
+        "crackable_remaining",
+        "with_handshake",
+    ]:
         delta[key]["delta"] = delta[key]["new"] - delta[key]["old"]
 
     # Encryption comparison
@@ -1210,6 +1312,7 @@ def _generate_audit_report_data() -> dict:
 # ---------------------------------------------------------------------------
 # 8. Attack Planner  (O-F6)
 # ---------------------------------------------------------------------------
+
 
 class AttackPlanRequest(BaseModel):
     targets: list[str] = Field(..., description="List of MAC addresses")
@@ -1239,7 +1342,14 @@ def create_attack_plan(plan: AttackPlanRequest):
         enc = _net_encryption(net)
 
         if net.get("pass"):
-            operations.append({"mac": mac_upper, "ssid": net.get("ssid", ""), "skip": True, "reason": "already_cracked"})
+            operations.append(
+                {
+                    "mac": mac_upper,
+                    "ssid": net.get("ssid", ""),
+                    "skip": True,
+                    "reason": "already_cracked",
+                }
+            )
             continue
 
         op: dict[str, Any] = {
@@ -1286,17 +1396,20 @@ def create_attack_plan(plan: AttackPlanRequest):
         operations.append(op)
 
     executable = [o for o in operations if not o.get("skip")]
-    return ok({
-        "total_targets": len(plan.targets),
-        "executable": len(executable),
-        "skipped": len(operations) - len(executable),
-        "operations": operations,
-    })
+    return ok(
+        {
+            "total_targets": len(plan.targets),
+            "executable": len(executable),
+            "skipped": len(operations) - len(executable),
+            "operations": operations,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
 # 9. COMMS Intelligence  (C-F1, C-F2, C-F3)
 # ---------------------------------------------------------------------------
+
 
 @router.get("/api/recon/comms/device-fingerprints", tags=["Recon"])
 def get_device_fingerprints():
@@ -1308,7 +1421,9 @@ def get_device_fingerprints():
     """
     dataset = load_real_data() or {}
     data_revision = int(get_data_revision())
-    cached = _cache_response_get("device_fingerprints", tuple(), data_revision=data_revision)
+    cached = _cache_response_get(
+        "device_fingerprints", tuple(), data_revision=data_revision
+    )
     if cached is not None:
         return cached
     return _cache_response_set(
@@ -1399,7 +1514,9 @@ def get_signal_landscape():
     """
     dataset = load_real_data() or {}
     data_revision = int(get_data_revision())
-    cached = _cache_response_get("signal_landscape", tuple(), data_revision=data_revision)
+    cached = _cache_response_get(
+        "signal_landscape", tuple(), data_revision=data_revision
+    )
     if cached is not None:
         return cached
     return _cache_response_set(

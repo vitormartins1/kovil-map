@@ -106,7 +106,9 @@ def test_rawsniffer_get_metadata_corrupt_json(tmp_path, monkeypatch):
 
     meta_dir = bruce_dir / ".metadata"
     meta_dir.mkdir()
-    (meta_dir / "brucegotchi__rawsniffer__test.pcap.json").write_text("{invalid json", encoding="utf-8")
+    (meta_dir / "brucegotchi__rawsniffer__test.pcap.json").write_text(
+        "{invalid json", encoding="utf-8"
+    )
 
     service = rs_module.RawSnifferService()
     metadata = service.get_metadata("test.pcap")
@@ -119,8 +121,12 @@ def test_rawsniffer_clear_metadata_cache(tmp_path, monkeypatch):
 
     meta_dir = bruce_dir / ".metadata"
     meta_dir.mkdir()
-    (meta_dir / "brucegotchi__rawsniffer__test1.pcap.json").write_text("{}", encoding="utf-8")
-    (meta_dir / "brucegotchi__rawsniffer__test2.pcap.json").write_text("{}", encoding="utf-8")
+    (meta_dir / "brucegotchi__rawsniffer__test1.pcap.json").write_text(
+        "{}", encoding="utf-8"
+    )
+    (meta_dir / "brucegotchi__rawsniffer__test2.pcap.json").write_text(
+        "{}", encoding="utf-8"
+    )
 
     service = rs_module.RawSnifferService()
     result = service.clear_metadata_cache()
@@ -262,8 +268,14 @@ class TestRawsnifferServiceCacheScenarios:
     def test_list_files_skips_hs_prefix(self, tmp_path, monkeypatch):
         """Test list_files skips HS_ prefixed files."""
         bruce_dir, raw_dir = _set_bruce_layout(tmp_path, monkeypatch)
-        monkeypatch.setattr(rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_raw"))
-        monkeypatch.setattr(rs_module, "M5EVIL_MASTERSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_master"))
+        monkeypatch.setattr(
+            rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_raw")
+        )
+        monkeypatch.setattr(
+            rs_module,
+            "M5EVIL_MASTERSNIFFER_DIR",
+            str(tmp_path / "nonexistent_m5evil_master"),
+        )
 
         pcap1 = raw_dir / "test.pcap"
         write_test_pcap(pcap1)
@@ -280,8 +292,14 @@ class TestRawsnifferServiceCacheScenarios:
     def test_get_pending_files(self, tmp_path, monkeypatch):
         """Test get_pending_files returns files needing processing."""
         bruce_dir, raw_dir = _set_bruce_layout(tmp_path, monkeypatch)
-        monkeypatch.setattr(rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_raw"))
-        monkeypatch.setattr(rs_module, "M5EVIL_MASTERSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_master"))
+        monkeypatch.setattr(
+            rs_module, "M5EVIL_RAWSNIFFER_DIR", str(tmp_path / "nonexistent_m5evil_raw")
+        )
+        monkeypatch.setattr(
+            rs_module,
+            "M5EVIL_MASTERSNIFFER_DIR",
+            str(tmp_path / "nonexistent_m5evil_master"),
+        )
 
         pcap1 = raw_dir / "pending.pcap"
         write_test_pcap(pcap1)

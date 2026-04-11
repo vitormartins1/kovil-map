@@ -422,7 +422,8 @@ class AnalyticsService:
         normalized = {str(source or "").strip().lower() for source in sources}
         has_ward = "wardrive" in normalized
         has_raw = any(
-            source in {
+            source
+            in {
                 "bruce_raw",
                 "bruce_raw_sniffing",
                 "m5evil_raw_sniffing",

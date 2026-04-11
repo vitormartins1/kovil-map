@@ -14,6 +14,7 @@ from app.core.config import (
     M5EVIL_HANDSHAKES_DIR,
 )
 from app.services.spatial_normalizer import (
+    generate_deterministic_accuracy as _generate_deterministic_accuracy,
     normalize_network_positions,
 )
 from app.services import handshake_catalog as handshake_catalog_service
@@ -87,9 +88,11 @@ WARDRIVE_TRANSPORT_MODES = (
     "metro",
 )
 logger = logging.getLogger(__name__)
+generate_deterministic_accuracy = _generate_deterministic_accuracy
 
 _WARDRIVE_MANIFEST_VERSION = 1
 _WARDRIVE_MERGED_DIRNAME = "merged"
+
 
 def get_wardrive_summary():
     global _DATA_CACHE

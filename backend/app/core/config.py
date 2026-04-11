@@ -82,10 +82,26 @@ _ALLOWED_CLUSTER_MODES = {
 }
 _ALLOWED_UI_VISUAL_THEMES = {"cyberpunk", "professional", "synthwave", "military"}
 _ALLOWED_UI_THEMES = {
-    "cyan", "purple", "green", "pink", "orange",
-    "steel", "slate", "forest", "amber", "rose",
-    "sunset", "vapor", "miami", "retro", "plasma",
-    "tactical", "desert", "nightvision", "command", "stealth",
+    "cyan",
+    "purple",
+    "green",
+    "pink",
+    "orange",
+    "steel",
+    "slate",
+    "forest",
+    "amber",
+    "rose",
+    "sunset",
+    "vapor",
+    "miami",
+    "retro",
+    "plasma",
+    "tactical",
+    "desert",
+    "nightvision",
+    "command",
+    "stealth",
 }
 _ALLOWED_PWNED_ICONS = {"fa-skull", "fa-ghost", "fa-gem"}
 _ALLOWED_LOCKED_ICONS = {"fa-shield-halved", "fa-lock", "fa-house-lock", "fa-vault"}
@@ -413,7 +429,10 @@ def normalize_config(raw_config):
         migrated.get("bruce_host"), DEFAULT_CONFIG["bruce_host"]
     )
     normalized["bruce_port"] = _normalize_int(
-        migrated.get("bruce_port"), DEFAULT_CONFIG["bruce_port"], minimum=1, maximum=65535
+        migrated.get("bruce_port"),
+        DEFAULT_CONFIG["bruce_port"],
+        minimum=1,
+        maximum=65535,
     )
     normalized["bruce_web_protocol"] = _normalize_choice(
         _normalize_string(

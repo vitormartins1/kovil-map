@@ -53,10 +53,20 @@ def _bruce_phase_details(
 def _looks_like_bruce_sd_browser_page(body):
     haystack = str(body or "").lower()
     return (
-        ("bruce firmware" in haystack and "listfilesbutton('/', 'sd', true)" in haystack)
-        or ("sd files" in haystack and "littlefs" in haystack and "actualfolder" in haystack)
+        (
+            "bruce firmware" in haystack
+            and "listfilesbutton('/', 'sd', true)" in haystack
+        )
+        or (
+            "sd files" in haystack
+            and "littlefs" in haystack
+            and "actualfolder" in haystack
+        )
         or ("sd files" in haystack and "listfilesbutton(" in haystack)
-        or ("please select the storage you want to manage" in haystack and "listfilesbutton(" in haystack)
+        or (
+            "please select the storage you want to manage" in haystack
+            and "listfilesbutton(" in haystack
+        )
         or ("sd files" in haystack and "folder actions" in haystack)
         or ("downloaddeletebutton" in haystack and "littlefs" in haystack)
         or ("sd files" in haystack and "name" in haystack and "size" in haystack)
@@ -94,7 +104,11 @@ def emit_bruce_progress(
 
     upper_stage = str(stage).upper()
     if safe_total <= 0:
-        percentage = 100 if upper_stage in {"UP TO DATE", "COMPLETED", "PARTIAL", "ERROR"} else 15
+        percentage = (
+            100
+            if upper_stage in {"UP TO DATE", "COMPLETED", "PARTIAL", "ERROR"}
+            else 15
+        )
     elif upper_stage in {"COMPLETED", "PARTIAL", "ERROR"}:
         percentage = 100
     else:
@@ -201,7 +215,9 @@ def list_bruce_webui_directory(
         }
 
     entries = parse_bruce_listfiles_payload(page.get("body") or "")
-    if not entries and not _looks_like_bruce_directory_listing_page(page.get("body") or ""):
+    if not entries and not _looks_like_bruce_directory_listing_page(
+        page.get("body") or ""
+    ):
         return {
             "status": "error",
             "code": "path_not_parseable",
@@ -318,13 +334,16 @@ def probe_bruce_webui(
             },
         }
 
-    handshake_dir_name = str(handshake_remote_path or "").strip().rstrip("/").split("/")[-1]
+    handshake_dir_name = (
+        str(handshake_remote_path or "").strip().rstrip("/").split("/")[-1]
+    )
     raw_entries = raw_listing.get("entries") or []
     handshake_listing_url = ""
     handshake_dir_visible = any(
         entry.get("type") == "dir"
         and (
-            str(entry.get("raw_name") or "").strip().rstrip("/") == str(handshake_remote_path or "").strip().rstrip("/")
+            str(entry.get("raw_name") or "").strip().rstrip("/")
+            == str(handshake_remote_path or "").strip().rstrip("/")
             or str(entry.get("filename") or "").strip() == handshake_dir_name
         )
         for entry in raw_entries
@@ -335,7 +354,9 @@ def probe_bruce_webui(
     if handshake_dir_visible:
         handshake_file_count_skipped = True
     else:
-        handshake_listing = list_bruce_webui_directory_fn(profile, handshake_remote_path)
+        handshake_listing = list_bruce_webui_directory_fn(
+            profile, handshake_remote_path
+        )
         if handshake_listing.get("status") != "success":
             listing_details = handshake_listing.get("details") or {}
             return {
@@ -390,7 +411,11 @@ def probe_bruce_webui(
                 rawsniffer_path_ok=True,
                 wardrive_path_ok=wardrive_listing.get("status") == "success",
                 failure_phase=None,
-                url_used=wardrive_listing.get("url") or raw_listing.get("url") or handshake_listing_url or root_page.get("url") or base_url,
+                url_used=wardrive_listing.get("url")
+                or raw_listing.get("url")
+                or handshake_listing_url
+                or root_page.get("url")
+                or base_url,
             ),
             "handshake_path_ok": True,
             "rawsniffer_path_ok": True,
@@ -448,27 +473,57 @@ def perform_bruce_sync(
     errors = []
     started_at = time_module.perf_counter()
     stats = {
-        "handshakes": {"remote_files_found": 0, "files_to_download": 0, "downloaded": 0, "failed": 0},
-        "rawsniffer": {"remote_files_found": 0, "files_to_download": 0, "downloaded": 0, "failed": 0},
-        "wardrive": {"remote_files_found": 0, "files_to_download": 0, "downloaded": 0, "failed": 0},
+        "handshakes": {
+            "remote_files_found": 0,
+            "files_to_download": 0,
+            "downloaded": 0,
+            "failed": 0,
+        },
+        "rawsniffer": {
+            "remote_files_found": 0,
+            "files_to_download": 0,
+            "downloaded": 0,
+            "failed": 0,
+        },
+        "wardrive": {
+            "remote_files_found": 0,
+            "files_to_download": 0,
+            "downloaded": 0,
+            "failed": 0,
+        },
     }
 
     try:
         for remote_path, local_dir, collector, mode in (
-            (handshake_remote_path, profile["local_handshakes_dir"], downloaded_handshakes, "handshakes"),
-            (rawsniffer_remote_path, profile["local_rawsniffer_dir"], downloaded_rawsniffer, "rawsniffer"),
-            (wardrive_remote_path, profile["local_wardrive_dir"], downloaded_wardrive, "wardrive"),
+            (
+                handshake_remote_path,
+                profile["local_handshakes_dir"],
+                downloaded_handshakes,
+                "handshakes",
+            ),
+            (
+                rawsniffer_remote_path,
+                profile["local_rawsniffer_dir"],
+                downloaded_rawsniffer,
+                "rawsniffer",
+            ),
+            (
+                wardrive_remote_path,
+                profile["local_wardrive_dir"],
+                downloaded_wardrive,
+                "wardrive",
+            ),
         ):
             progress_mode = (
                 "bruce_handshakes"
                 if mode == "handshakes"
-                else "bruce_rawsniffer"
-                if mode == "rawsniffer"
-                else "bruce_wardrive"
+                else "bruce_rawsniffer" if mode == "rawsniffer" else "bruce_wardrive"
             )
             listing = list_bruce_webui_directory_fn(profile, remote_path)
             if listing.get("status") != "success":
-                errors.append(f"Failed to list {mode} in {remote_path}: {listing.get('message')}")
+                errors.append(
+                    f"Failed to list {mode} in {remote_path}: {listing.get('message')}"
+                )
                 stats[mode]["failed"] += 1
                 emit_bruce_progress_fn(
                     progress_callback,
@@ -488,7 +543,10 @@ def perform_bruce_sync(
                     continue
                 filename = str(entry.get("filename") or "").strip()
                 if mode == "handshakes":
-                    if not (filename.startswith("HS_") and filename.lower().endswith(".pcap")):
+                    if not (
+                        filename.startswith("HS_")
+                        and filename.lower().endswith(".pcap")
+                    ):
                         continue
                 elif mode == "rawsniffer":
                     if not filename.lower().endswith(".pcap"):
@@ -500,7 +558,9 @@ def perform_bruce_sync(
                 local_file = os_module.path.join(local_dir, filename)
                 if not force and os_module.path.exists(local_file):
                     continue
-                candidate_entries.append({**entry, "filename": filename, "local_file": local_file})
+                candidate_entries.append(
+                    {**entry, "filename": filename, "local_file": local_file}
+                )
 
             stats[mode]["remote_files_found"] = len(
                 [
@@ -511,15 +571,21 @@ def perform_bruce_sync(
                         (
                             mode == "handshakes"
                             and str(entry.get("filename") or "").startswith("HS_")
-                            and str(entry.get("filename") or "").lower().endswith(".pcap")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .endswith(".pcap")
                         )
                         or (
                             mode == "rawsniffer"
-                            and str(entry.get("filename") or "").lower().endswith(".pcap")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .endswith(".pcap")
                         )
                         or (
                             mode == "wardrive"
-                            and str(entry.get("filename") or "").lower().endswith(".csv")
+                            and str(entry.get("filename") or "")
+                            .lower()
+                            .endswith(".csv")
                         )
                     )
                 ]
@@ -540,7 +606,9 @@ def perform_bruce_sync(
             for entry in candidate_entries:
                 filename = str(entry.get("filename") or "").strip()
                 try:
-                    download_url = build_bruce_download_url(profile, remote_path, filename)
+                    download_url = build_bruce_download_url(
+                        profile, remote_path, filename
+                    )
                     emit_bruce_progress_fn(
                         progress_callback,
                         progress_mode,
@@ -565,7 +633,11 @@ def perform_bruce_sync(
                             stats[mode]["failed"],
                             current_file=_format_bruce_download_label(
                                 _filename,
-                                downloaded_bytes if not done else (total_bytes or downloaded_bytes),
+                                (
+                                    downloaded_bytes
+                                    if not done
+                                    else (total_bytes or downloaded_bytes)
+                                ),
                                 total_bytes,
                                 speed_bps,
                             ),
@@ -591,8 +663,17 @@ def perform_bruce_sync(
                     )
 
         status = "partial" if errors else "success"
-        message = "Bruce WebUI sync completed with errors" if errors else "Bruce WebUI sync completed"
-        if not downloaded_handshakes and not downloaded_rawsniffer and not downloaded_wardrive and errors:
+        message = (
+            "Bruce WebUI sync completed with errors"
+            if errors
+            else "Bruce WebUI sync completed"
+        )
+        if (
+            not downloaded_handshakes
+            and not downloaded_rawsniffer
+            and not downloaded_wardrive
+            and errors
+        ):
             status = "error"
 
         for mode in ("handshakes", "rawsniffer", "wardrive"):
@@ -602,9 +683,7 @@ def perform_bruce_sync(
             progress_mode = (
                 "bruce_handshakes"
                 if mode == "handshakes"
-                else "bruce_rawsniffer"
-                if mode == "rawsniffer"
-                else "bruce_wardrive"
+                else "bruce_rawsniffer" if mode == "rawsniffer" else "bruce_wardrive"
             )
             if mode_total <= 0 and mode_failed > 0:
                 stage = "ERROR"
@@ -638,11 +717,17 @@ def perform_bruce_sync(
                 "rawsniffer_pcaps": downloaded_rawsniffer,
                 "wardrive_csvs": downloaded_wardrive,
                 "errors": errors,
-                "handshake_remote_files_found": stats["handshakes"]["remote_files_found"],
+                "handshake_remote_files_found": stats["handshakes"][
+                    "remote_files_found"
+                ],
                 "handshake_files_to_download": stats["handshakes"]["files_to_download"],
                 "handshake_files_failed": stats["handshakes"]["failed"],
-                "rawsniffer_remote_files_found": stats["rawsniffer"]["remote_files_found"],
-                "rawsniffer_files_to_download": stats["rawsniffer"]["files_to_download"],
+                "rawsniffer_remote_files_found": stats["rawsniffer"][
+                    "remote_files_found"
+                ],
+                "rawsniffer_files_to_download": stats["rawsniffer"][
+                    "files_to_download"
+                ],
                 "rawsniffer_files_failed": stats["rawsniffer"]["failed"],
                 "wardrive_remote_files_found": stats["wardrive"]["remote_files_found"],
                 "wardrive_files_to_download": stats["wardrive"]["files_to_download"],
@@ -662,9 +747,7 @@ def perform_bruce_sync(
             progress_mode = (
                 "bruce_handshakes"
                 if mode == "handshakes"
-                else "bruce_rawsniffer"
-                if mode == "rawsniffer"
-                else "bruce_wardrive"
+                else "bruce_rawsniffer" if mode == "rawsniffer" else "bruce_wardrive"
             )
             emit_bruce_progress_fn(
                 progress_callback,

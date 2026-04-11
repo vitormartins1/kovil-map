@@ -70,7 +70,9 @@ def test_clear_cache_returns_expected_keys(monkeypatch):
     )
     monkeypatch.setattr(ms_module.analytics_service, "clear_cache", lambda: None)
     monkeypatch.setattr(ms_module.probe_service, "invalidate_cache", lambda: None)
-    monkeypatch.setattr(ms_module.packet_analysis_service, "invalidate_cache", lambda: None)
+    monkeypatch.setattr(
+        ms_module.packet_analysis_service, "invalidate_cache", lambda: None
+    )
     monkeypatch.setattr(ms_module, "_clear_recon_runtime_cache", lambda: None)
     monkeypatch.setattr(ms_module, "reload_data", lambda: None)
 
@@ -94,7 +96,9 @@ def test_clear_cache_handles_missing_deleted_count(monkeypatch):
     )
     monkeypatch.setattr(ms_module.analytics_service, "clear_cache", lambda: None)
     monkeypatch.setattr(ms_module.probe_service, "invalidate_cache", lambda: None)
-    monkeypatch.setattr(ms_module.packet_analysis_service, "invalidate_cache", lambda: None)
+    monkeypatch.setattr(
+        ms_module.packet_analysis_service, "invalidate_cache", lambda: None
+    )
     monkeypatch.setattr(ms_module, "_clear_recon_runtime_cache", lambda: None)
     monkeypatch.setattr(ms_module, "reload_data", lambda: None)
 

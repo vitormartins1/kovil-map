@@ -22,10 +22,7 @@ _build_vuln_flags – exercised indirectly through endpoints.
 from __future__ import annotations
 
 import json
-import os
-import textwrap
 import time
-from datetime import datetime, timezone
 
 import pytest
 
@@ -33,10 +30,10 @@ from app.api.routers import recon as recon_module
 from app.core import config as config_module
 from app.services import recon_runtime_service as recon_runtime_module
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_dataset(**overrides):
     """Return a small realistic dataset dict (mac → net)."""
@@ -136,12 +133,8 @@ def patch_recon(monkeypatch, tmp_path, fake_dataset):
     monkeypatch.setattr(recon_module, "load_real_data", lambda: fake_dataset)
     monkeypatch.setattr(recon_module, "HANDSHAKES_DIR", str(tmp_path))
     monkeypatch.setattr(recon_runtime_module, "HANDSHAKES_DIR", str(tmp_path))
-    monkeypatch.setattr(
-        recon_module.job_manager, "list_jobs", lambda: []
-    )
-    monkeypatch.setattr(
-        recon_runtime_module.job_manager, "list_jobs", lambda: []
-    )
+    monkeypatch.setattr(recon_module.job_manager, "list_jobs", lambda: [])
+    monkeypatch.setattr(recon_runtime_module.job_manager, "list_jobs", lambda: [])
     monkeypatch.setattr(
         recon_module.probe_service, "get_cache_status", lambda: {"cached": False}
     )
@@ -185,7 +178,9 @@ class TestKillChain:
     def test_cracked_network_classified(self, client, patch_recon):
         """Network with 'pass' field → cracked stage."""
         resp = client.get("/api/recon/kill-chain")
-        cracked = next(s for s in resp.json()["data"]["stages"] if s["stage"] == "cracked")
+        cracked = next(
+            s for s in resp.json()["data"]["stages"] if s["stage"] == "cracked"
+        )
         macs = [n["mac"] for n in cracked["networks"]]
         assert "aa:bb:cc:dd:ee:03" in macs
 
@@ -202,12 +197,18 @@ class TestKillChain:
     def test_hash_ready_with_22000_file(self, client, patch_recon):
         """Network with .22000 file → hash_ready stage."""
         tmp_path = patch_recon
-        _write_hash_file(tmp_path, "aabbccddee01", [
-            "WPA*01*aabbcc*001122*SSID*hash_data",
-            "WPA*02*aabbcc*001122*SSID*eapol_data",
-        ])
+        _write_hash_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                "WPA*01*aabbcc*001122*SSID*hash_data",
+                "WPA*02*aabbcc*001122*SSID*eapol_data",
+            ],
+        )
         resp = client.get("/api/recon/kill-chain")
-        hash_ready = next(s for s in resp.json()["data"]["stages"] if s["stage"] == "hash_ready")
+        hash_ready = next(
+            s for s in resp.json()["data"]["stages"] if s["stage"] == "hash_ready"
+        )
         macs = [n["mac"] for n in hash_ready["networks"]]
         assert "aa:bb:cc:dd:ee:01" in macs
 
@@ -215,31 +216,43 @@ class TestKillChain:
         """hash_intel counters reflect PMKID/EAPOL classification."""
         tmp_path = patch_recon
         # Net 01: both PMKID and EAPOL
-        _write_hash_file(tmp_path, "aabbccddee01", [
-            "WPA*01*abcd*1234*HN*pmkid_data",
-            "WPA*02*abcd*1234*HN*eapol_data",
-        ])
+        _write_hash_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                "WPA*01*abcd*1234*HN*pmkid_data",
+                "WPA*02*abcd*1234*HN*eapol_data",
+            ],
+        )
         # Net 04: PMKID only
-        _write_hash_file(tmp_path, "aabbccddee04", [
-            "WPA*01*efgh*5678*LD*pmkid_only",
-        ])
+        _write_hash_file(
+            tmp_path,
+            "aabbccddee04",
+            [
+                "WPA*01*efgh*5678*LD*pmkid_only",
+            ],
+        )
 
         resp = client.get("/api/recon/kill-chain")
         hi = resp.json()["data"]["hash_intel"]
         assert hi["total_with_hash"] == 2
         assert hi["total_pmkid"] == 2
         assert hi["total_eapol_hash"] == 1
-        assert hi["pmkid_only"] == 1   # net 04
+        assert hi["pmkid_only"] == 1  # net 04
         assert hi["eapol_only"] == 0
-        assert hi["both"] == 1         # net 01
+        assert hi["both"] == 1  # net 01
 
     def test_network_entry_has_pmkid_fields(self, client, patch_recon):
         """Network entries with hash include pmkid/eapol fields."""
         tmp_path = patch_recon
-        _write_hash_file(tmp_path, "aabbccddee01", [
-            "WPA*01*a*b*c*d",
-            "WPA*01*e*f*g*h",
-        ])
+        _write_hash_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                "WPA*01*a*b*c*d",
+                "WPA*01*e*f*g*h",
+            ],
+        )
         resp = client.get("/api/recon/kill-chain")
         stages = resp.json()["data"]["stages"]
         # Find net 01 in any stage
@@ -294,11 +307,15 @@ class TestKillChain:
         )
         recon_runtime_module.clear_recon_runtime_cache()
         resp = client.get("/api/recon/kill-chain")
-        under_attack = next(s for s in resp.json()["data"]["stages"] if s["stage"] == "under_attack")
+        under_attack = next(
+            s for s in resp.json()["data"]["stages"] if s["stage"] == "under_attack"
+        )
         macs = [n["mac"] for n in under_attack["networks"]]
         assert "aa:bb:cc:dd:ee:01" in macs
 
-    def test_kill_chain_response_cache_skips_repeat_recompute_until_cleared(self, client, patch_recon, monkeypatch):
+    def test_kill_chain_response_cache_skips_repeat_recompute_until_cleared(
+        self, client, patch_recon, monkeypatch
+    ):
         calls = {"count": 0}
 
         def _fake_scan(_mac_clean):
@@ -330,7 +347,9 @@ class TestKillChain:
         assert third.status_code == 200
         assert calls["count"] > first_calls
 
-    def test_kill_chain_summary_returns_counts_with_lightweight_previews(self, client, patch_recon):
+    def test_kill_chain_summary_returns_counts_with_lightweight_previews(
+        self, client, patch_recon
+    ):
         resp = client.get("/api/recon/kill-chain/summary")
         assert resp.status_code == 200
         data = resp.json()["data"]
@@ -338,7 +357,9 @@ class TestKillChain:
         assert len(data["stages"]) == 6
         assert all("networks" not in stage for stage in data["stages"])
         assert all("preview_networks" in stage for stage in data["stages"])
-        discovered = next(stage for stage in data["stages"] if stage["stage"] == "discovered")
+        discovered = next(
+            stage for stage in data["stages"] if stage["stage"] == "discovered"
+        )
         assert discovered["preview_count"] == min(discovered["count"], 20)
         assert len(discovered["preview_networks"]) == discovered["preview_count"]
 
@@ -361,18 +382,42 @@ class TestKillChain:
         assert data["total"] == 1
         assert data["networks"][0]["ssid"] == "OpenCafe"
 
-    def test_recon_cache_manifest_uses_dataset_and_artifact_signatures(self, client, patch_recon, monkeypatch):
+    def test_recon_cache_manifest_uses_dataset_and_artifact_signatures(
+        self, client, patch_recon, monkeypatch
+    ):
         monkeypatch.setattr(recon_module, "get_data_revision", lambda: 77)
         monkeypatch.setattr(recon_runtime_module, "get_data_revision", lambda: 77)
         monkeypatch.setattr(
             recon_module.probe_service,
             "get_cache_status",
-            lambda: {"cached": True, "stale": False, "pcap_count": 2, "result": {"summary": {"total_probes": 7, "unique_clients": 3, "unique_ssids": 4}}},
+            lambda: {
+                "cached": True,
+                "stale": False,
+                "pcap_count": 2,
+                "result": {
+                    "summary": {
+                        "total_probes": 7,
+                        "unique_clients": 3,
+                        "unique_ssids": 4,
+                    }
+                },
+            },
         )
         monkeypatch.setattr(
             recon_module.packet_analysis_service,
             "get_cache_status",
-            lambda: {"cached": True, "stale": False, "pcap_count": 1, "result": {"summary": {"total_deauth": 2, "total_disassoc": 1, "targeted_bssids": 1}}},
+            lambda: {
+                "cached": True,
+                "stale": False,
+                "pcap_count": 1,
+                "result": {
+                    "summary": {
+                        "total_deauth": 2,
+                        "total_disassoc": 1,
+                        "targeted_bssids": 1,
+                    }
+                },
+            },
         )
 
         resp = client.get("/api/recon/cache-manifest")
@@ -407,13 +452,17 @@ class TestVulnerabilityMatrix:
         assert scores == sorted(scores, reverse=True)
 
     def test_filter_by_encryption(self, client, patch_recon):
-        resp = client.get("/api/recon/vulnerability-matrix", params={"encryption": "OPEN"})
+        resp = client.get(
+            "/api/recon/vulnerability-matrix", params={"encryption": "OPEN"}
+        )
         rows = resp.json()["data"]["rows"]
         assert all(r["encryption"] == "OPEN" for r in rows)
         assert len(rows) == 1
 
     def test_filter_by_stage(self, client, patch_recon):
-        resp = client.get("/api/recon/vulnerability-matrix", params={"stage": "cracked"})
+        resp = client.get(
+            "/api/recon/vulnerability-matrix", params={"stage": "cracked"}
+        )
         rows = resp.json()["data"]["rows"]
         assert all(r["stage"] == "cracked" for r in rows)
 
@@ -507,11 +556,15 @@ class TestVulnerabilityMatrix:
     def test_pmkid_fields_present(self, client, patch_recon):
         """Rows include has_pmkid, has_eapol_hash, pmkid_count, eapol_hash_count."""
         tmp_path = patch_recon
-        _write_hash_file(tmp_path, "aabbccddee01", [
-            "WPA*01*a*b*c*d",
-            "WPA*02*e*f*g*h",
-            "WPA*02*i*j*k*l",
-        ])
+        _write_hash_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                "WPA*01*a*b*c*d",
+                "WPA*02*e*f*g*h",
+                "WPA*02*i*j*k*l",
+            ],
+        )
         resp = client.get("/api/recon/vulnerability-matrix")
         rows = resp.json()["data"]["rows"]
         net01 = next(r for r in rows if r["mac"] == "aa:bb:cc:dd:ee:01")
@@ -609,8 +662,12 @@ class TestVulnerabilityMatrix:
         # The exact diff depends on base scoring; just verify increase
         assert score_with > score_without
 
-    def test_target_detail_returns_single_target_without_matrix_page_fetch_shape_loss(self, client, patch_recon):
-        resp = client.get("/api/recon/target-detail", params={"mac": "aa:bb:cc:dd:ee:01"})
+    def test_target_detail_returns_single_target_without_matrix_page_fetch_shape_loss(
+        self, client, patch_recon
+    ):
+        resp = client.get(
+            "/api/recon/target-detail", params={"mac": "aa:bb:cc:dd:ee:01"}
+        )
         assert resp.status_code == 200
         data = resp.json()["data"]
         assert data["mac"] == "aa:bb:cc:dd:ee:01"
@@ -619,7 +676,9 @@ class TestVulnerabilityMatrix:
         assert "flags" in data
 
     def test_target_detail_is_case_insensitive(self, client, patch_recon):
-        resp = client.get("/api/recon/target-detail", params={"mac": "AA-BB-CC-DD-EE-03"})
+        resp = client.get(
+            "/api/recon/target-detail", params={"mac": "AA-BB-CC-DD-EE-03"}
+        )
         assert resp.status_code == 200
         assert resp.json()["data"]["ssid"] == "SecureOffice"
 
@@ -654,28 +713,42 @@ class TestAttackEffectiveness:
     def test_with_history(self, client, patch_recon):
         """Parse .try history files correctly."""
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "dictionary", "wordlist": "/path/rockyou.txt"},
-                "start_time": "2025-04-01T10:00:00Z",
-                "end_time": "2025-04-01T10:05:00Z",
-            },
-            {
-                "status": "EXHAUSTED",
-                "params": {"attack_mode": "dictionary", "wordlist": "/path/common.txt"},
-                "start_time": "2025-03-31T09:00:00Z",
-                "end_time": "2025-03-31T09:10:00Z",
-            },
-        ])
-        _write_try_file(tmp_path, "aabbccddee04", [
-            {
-                "status": "FAILED",
-                "params": {"attack_mode": "brute_force"},
-                "start_time": "2025-04-01T11:00:00Z",
-                "end_time": "2025-04-01T11:15:00Z",
-            },
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "CRACKED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/rockyou.txt",
+                    },
+                    "start_time": "2025-04-01T10:00:00Z",
+                    "end_time": "2025-04-01T10:05:00Z",
+                },
+                {
+                    "status": "EXHAUSTED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/common.txt",
+                    },
+                    "start_time": "2025-03-31T09:00:00Z",
+                    "end_time": "2025-03-31T09:10:00Z",
+                },
+            ],
+        )
+        _write_try_file(
+            tmp_path,
+            "aabbccddee04",
+            [
+                {
+                    "status": "FAILED",
+                    "params": {"attack_mode": "brute_force"},
+                    "start_time": "2025-04-01T11:00:00Z",
+                    "end_time": "2025-04-01T11:15:00Z",
+                },
+            ],
+        )
 
         resp = client.get("/api/recon/attack-effectiveness")
         data = resp.json()["data"]
@@ -687,11 +760,15 @@ class TestAttackEffectiveness:
 
     def test_by_mode_breakdown(self, client, patch_recon):
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {"status": "CRACKED", "params": {"attack_mode": "dictionary"}},
-            {"status": "EXHAUSTED", "params": {"attack_mode": "dictionary"}},
-            {"status": "CRACKED", "params": {"attack_mode": "brute_force"}},
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {"status": "CRACKED", "params": {"attack_mode": "dictionary"}},
+                {"status": "EXHAUSTED", "params": {"attack_mode": "dictionary"}},
+                {"status": "CRACKED", "params": {"attack_mode": "brute_force"}},
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         data = resp.json()["data"]
         modes = {m["mode"]: m for m in data["by_mode"]}
@@ -701,11 +778,33 @@ class TestAttackEffectiveness:
 
     def test_top_wordlists(self, client, patch_recon):
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {"status": "CRACKED", "params": {"attack_mode": "dictionary", "wordlist": "/path/rockyou.txt"}},
-            {"status": "CRACKED", "params": {"attack_mode": "dictionary", "wordlist": "/path/rockyou.txt"}},
-            {"status": "CRACKED", "params": {"attack_mode": "dictionary", "wordlist": "/path/common.txt"}},
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "CRACKED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/rockyou.txt",
+                    },
+                },
+                {
+                    "status": "CRACKED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/rockyou.txt",
+                    },
+                },
+                {
+                    "status": "CRACKED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/common.txt",
+                    },
+                },
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         top = resp.json()["data"]["top_wordlists"]
         assert top[0]["name"] == "rockyou.txt"
@@ -713,20 +812,24 @@ class TestAttackEffectiveness:
 
     def test_avg_crack_time(self, client, patch_recon):
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "dictionary"},
-                "start_time": 1000.0,
-                "end_time": 1300.0,  # 300 seconds
-            },
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "dictionary"},
-                "start_time": 2000.0,
-                "end_time": 2100.0,  # 100 seconds
-            },
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "dictionary"},
+                    "start_time": 1000.0,
+                    "end_time": 1300.0,  # 300 seconds
+                },
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "dictionary"},
+                    "start_time": 2000.0,
+                    "end_time": 2100.0,  # 100 seconds
+                },
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         avg = resp.json()["data"]["avg_crack_time_seconds"]
         assert avg == pytest.approx(200.0, abs=0.1)
@@ -960,35 +1063,65 @@ class TestAttackEffectivenessPhase2:
         """Entries outside the period window should be excluded."""
         tmp_path = patch_recon
         now = time.time()
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "dictionary"},
-                "start_time": now - 3600,      # 1h ago — within 24h
-                "end_time": now - 3500,
-            },
-            {
-                "status": "EXHAUSTED",
-                "params": {"attack_mode": "dictionary"},
-                "start_time": now - 200000,     # ~2.3 days ago — outside 24h
-                "end_time": now - 199900,
-            },
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "dictionary"},
+                    "start_time": now - 3600,  # 1h ago — within 24h
+                    "end_time": now - 3500,
+                },
+                {
+                    "status": "EXHAUSTED",
+                    "params": {"attack_mode": "dictionary"},
+                    "start_time": now - 200000,  # ~2.3 days ago — outside 24h
+                    "end_time": now - 199900,
+                },
+            ],
+        )
 
-        resp_all = client.get("/api/recon/attack-effectiveness", params={"period": "all"})
+        resp_all = client.get(
+            "/api/recon/attack-effectiveness", params={"period": "all"}
+        )
         assert resp_all.json()["data"]["total_attacks"] == 2
 
-        resp_24h = client.get("/api/recon/attack-effectiveness", params={"period": "24h"})
+        resp_24h = client.get(
+            "/api/recon/attack-effectiveness", params={"period": "24h"}
+        )
         assert resp_24h.json()["data"]["total_attacks"] == 1
         assert resp_24h.json()["data"]["total_cracked"] == 1
 
     def test_wordlist_roi_structure(self, client, patch_recon):
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {"status": "CRACKED", "params": {"attack_mode": "dictionary", "wordlist": "/path/rockyou.txt"}},
-            {"status": "EXHAUSTED", "params": {"attack_mode": "dictionary", "wordlist": "/path/rockyou.txt"}},
-            {"status": "CRACKED", "params": {"attack_mode": "dictionary", "wordlist": "/path/common.txt"}},
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "CRACKED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/rockyou.txt",
+                    },
+                },
+                {
+                    "status": "EXHAUSTED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/rockyou.txt",
+                    },
+                },
+                {
+                    "status": "CRACKED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/common.txt",
+                    },
+                },
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         roi = resp.json()["data"]["wordlist_roi"]
         assert len(roi) >= 2
@@ -1003,9 +1136,19 @@ class TestAttackEffectivenessPhase2:
     def test_wordlist_roi_includes_zero_crack_wordlists(self, client, patch_recon):
         """Wordlists used but with 0 cracks should still appear."""
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {"status": "EXHAUSTED", "params": {"attack_mode": "dictionary", "wordlist": "/path/big.txt"}},
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "EXHAUSTED",
+                    "params": {
+                        "attack_mode": "dictionary",
+                        "wordlist": "/path/big.txt",
+                    },
+                },
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         roi = resp.json()["data"]["wordlist_roi"]
         big = next(w for w in roi if w["name"] == "big.txt")
@@ -1016,20 +1159,24 @@ class TestAttackEffectivenessPhase2:
     def test_crack_velocity_structure(self, client, patch_recon):
         tmp_path = patch_recon
         now = time.time()
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "dictionary"},
-                "start_time": now - 7200,
-                "end_time": now - 7100,
-            },
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "brute_force"},
-                "start_time": now - 3600,
-                "end_time": now - 3500,
-            },
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "dictionary"},
+                    "start_time": now - 7200,
+                    "end_time": now - 7100,
+                },
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "brute_force"},
+                    "start_time": now - 3600,
+                    "end_time": now - 3500,
+                },
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         velocity = resp.json()["data"]["crack_velocity"]
         assert len(velocity) == 2
@@ -1042,34 +1189,42 @@ class TestAttackEffectivenessPhase2:
 
     def test_crack_velocity_empty_when_no_cracks(self, client, patch_recon):
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {"status": "EXHAUSTED", "params": {"attack_mode": "dictionary"}},
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {"status": "EXHAUSTED", "params": {"attack_mode": "dictionary"}},
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         assert resp.json()["data"]["crack_velocity"] == []
 
     def test_per_mode_avg_time(self, client, patch_recon):
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "dictionary"},
-                "start_time": 1000.0,
-                "end_time": 1300.0,  # 300s
-            },
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "dictionary"},
-                "start_time": 2000.0,
-                "end_time": 2100.0,  # 100s
-            },
-            {
-                "status": "CRACKED",
-                "params": {"attack_mode": "brute_force"},
-                "start_time": 3000.0,
-                "end_time": 3600.0,  # 600s
-            },
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "dictionary"},
+                    "start_time": 1000.0,
+                    "end_time": 1300.0,  # 300s
+                },
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "dictionary"},
+                    "start_time": 2000.0,
+                    "end_time": 2100.0,  # 100s
+                },
+                {
+                    "status": "CRACKED",
+                    "params": {"attack_mode": "brute_force"},
+                    "start_time": 3000.0,
+                    "end_time": 3600.0,  # 600s
+                },
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         modes = {m["mode"]: m for m in resp.json()["data"]["by_mode"]}
         assert modes["dictionary"]["avg_time"] == pytest.approx(200.0, abs=0.1)
@@ -1077,9 +1232,13 @@ class TestAttackEffectivenessPhase2:
 
     def test_per_mode_avg_time_none_without_timing(self, client, patch_recon):
         tmp_path = patch_recon
-        _write_try_file(tmp_path, "aabbccddee01", [
-            {"status": "CRACKED", "params": {"attack_mode": "dictionary"}},
-        ])
+        _write_try_file(
+            tmp_path,
+            "aabbccddee01",
+            [
+                {"status": "CRACKED", "params": {"attack_mode": "dictionary"}},
+            ],
+        )
         resp = client.get("/api/recon/attack-effectiveness")
         modes = {m["mode"]: m for m in resp.json()["data"]["by_mode"]}
         assert modes["dictionary"]["avg_time"] is None
@@ -1118,7 +1277,9 @@ class TestTemporalIntelPhase2:
         assert by_source["pwnagotchi"]["total"] == 2
         assert by_source["wardrive"]["total"] == 3
 
-    def test_by_source_supports_specific_raw_variants(self, client, monkeypatch, tmp_path):
+    def test_by_source_supports_specific_raw_variants(
+        self, client, monkeypatch, tmp_path
+    ):
         dataset = {
             "aa:bb:cc:dd:ee:01": {
                 "ssid": "BruceRaw",
@@ -1194,20 +1355,29 @@ class TestTemporalIntelPhase2:
         # Day 1: 2 networks
         for i in range(2):
             dataset[f"aa:bb:cc:00:00:{i:02x}"] = {
-                "ssid": f"A{i}", "encryption": "WPA2", "handshake": False,
-                "sources": ["wardrive"], "ts_last": "2025-04-01T10:00:00Z",
+                "ssid": f"A{i}",
+                "encryption": "WPA2",
+                "handshake": False,
+                "sources": ["wardrive"],
+                "ts_last": "2025-04-01T10:00:00Z",
             }
         # Day 2: 2 networks
         for i in range(2):
             dataset[f"aa:bb:cc:00:01:{i:02x}"] = {
-                "ssid": f"B{i}", "encryption": "WPA2", "handshake": False,
-                "sources": ["wardrive"], "ts_last": "2025-04-02T10:00:00Z",
+                "ssid": f"B{i}",
+                "encryption": "WPA2",
+                "handshake": False,
+                "sources": ["wardrive"],
+                "ts_last": "2025-04-02T10:00:00Z",
             }
         # Day 3: 20 networks (spike)
         for i in range(20):
             dataset[f"aa:bb:cc:00:02:{i:02x}"] = {
-                "ssid": f"C{i}", "encryption": "WPA2", "handshake": False,
-                "sources": ["wardrive"], "ts_last": "2025-04-03T10:00:00Z",
+                "ssid": f"C{i}",
+                "encryption": "WPA2",
+                "handshake": False,
+                "sources": ["wardrive"],
+                "ts_last": "2025-04-03T10:00:00Z",
             }
         monkeypatch.setattr(recon_module, "load_real_data", lambda: dataset)
         monkeypatch.setattr(recon_module, "HANDSHAKES_DIR", str(tmp_path))
@@ -1358,15 +1528,24 @@ class TestAuditReportPhase2:
         """Networks with lat/lng → with_gps counted."""
         dataset = {
             "aa:bb:cc:dd:ee:01": {
-                "ssid": "GpsNet", "encryption": "WPA2", "handshake": False,
-                "sources": ["wardrive"], "ts_last": "2025-04-01T12:00:00Z",
-                "lat": 40.7, "lng": -74.0,
-                "raw_beacon_count": 0, "raw_eapol_count": 0,
+                "ssid": "GpsNet",
+                "encryption": "WPA2",
+                "handshake": False,
+                "sources": ["wardrive"],
+                "ts_last": "2025-04-01T12:00:00Z",
+                "lat": 40.7,
+                "lng": -74.0,
+                "raw_beacon_count": 0,
+                "raw_eapol_count": 0,
             },
             "aa:bb:cc:dd:ee:02": {
-                "ssid": "NoGps", "encryption": "WPA2", "handshake": False,
-                "sources": ["pwnagotchi"], "ts_last": "2025-04-01T12:00:00Z",
-                "raw_beacon_count": 0, "raw_eapol_count": 0,
+                "ssid": "NoGps",
+                "encryption": "WPA2",
+                "handshake": False,
+                "sources": ["pwnagotchi"],
+                "ts_last": "2025-04-01T12:00:00Z",
+                "raw_beacon_count": 0,
+                "raw_eapol_count": 0,
             },
         }
         monkeypatch.setattr(recon_module, "load_real_data", lambda: dataset)
@@ -1389,7 +1568,9 @@ class TestKillChainSnapshot:
     def test_create_snapshot(self, client, patch_recon, monkeypatch, tmp_path):
         snap_dir = tmp_path / "kc_snaps"
         snap_dir.mkdir()
-        monkeypatch.setattr(recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json"))
+        monkeypatch.setattr(
+            recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json")
+        )
 
         resp = client.post("/api/recon/kill-chain/snapshot")
         assert resp.status_code == 200
@@ -1401,7 +1582,9 @@ class TestKillChainSnapshot:
     def test_history_empty(self, client, patch_recon, monkeypatch, tmp_path):
         snap_dir = tmp_path / "kc_snaps"
         snap_dir.mkdir()
-        monkeypatch.setattr(recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json"))
+        monkeypatch.setattr(
+            recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json")
+        )
 
         resp = client.get("/api/recon/kill-chain/history")
         assert resp.status_code == 200
@@ -1412,7 +1595,9 @@ class TestKillChainSnapshot:
     def test_history_after_snapshot(self, client, patch_recon, monkeypatch, tmp_path):
         snap_dir = tmp_path / "kc_snaps"
         snap_dir.mkdir()
-        monkeypatch.setattr(recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json"))
+        monkeypatch.setattr(
+            recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json")
+        )
 
         client.post("/api/recon/kill-chain/snapshot")
         resp = client.get("/api/recon/kill-chain/history")
@@ -1424,7 +1609,9 @@ class TestKillChainSnapshot:
     def test_multiple_snapshots(self, client, patch_recon, monkeypatch, tmp_path):
         snap_dir = tmp_path / "kc_snaps"
         snap_dir.mkdir()
-        monkeypatch.setattr(recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json"))
+        monkeypatch.setattr(
+            recon_module, "_KC_SNAPSHOT_FILE", str(snap_dir / "kc.json")
+        )
 
         client.post("/api/recon/kill-chain/snapshot")
         client.post("/api/recon/kill-chain/snapshot")
@@ -1630,8 +1817,8 @@ class TestDeviceFingerprints:
         resp = client.get("/api/recon/comms/device-fingerprints")
         ra = resp.json()["data"]["raw_activity"]
         assert ra["beacons"] == 36  # 20+5+10+1
-        assert ra["eapol"] == 6    # 4+0+2+0
-        assert ra["probes"] == 4   # 3+0+1+0
+        assert ra["eapol"] == 6  # 4+0+2+0
+        assert ra["probes"] == 4  # 3+0+1+0
 
     def test_oui_grouping(self, client, patch_recon):
         resp = client.get("/api/recon/comms/device-fingerprints")
@@ -1651,9 +1838,13 @@ class TestColocation:
     def test_no_gps_data(self, client, monkeypatch, tmp_path):
         dataset = {
             "aa:bb:cc:dd:ee:04": {
-                "ssid": "NoGPS", "encryption": "WEP",
-                "sources": ["wardrive"], "ts_last": "2025-04-01T12:00:00Z",
-                "handshake": False, "raw_beacon_count": 1, "raw_eapol_count": 0,
+                "ssid": "NoGPS",
+                "encryption": "WEP",
+                "sources": ["wardrive"],
+                "ts_last": "2025-04-01T12:00:00Z",
+                "handshake": False,
+                "raw_beacon_count": 1,
+                "raw_eapol_count": 0,
             },
         }
         monkeypatch.setattr(recon_module, "load_real_data", lambda: dataset)
@@ -1784,7 +1975,8 @@ class TestRelationshipGraph:
 
     def test_no_probe_data(self, client, patch_recon, monkeypatch):
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {"cached": False},
         )
         resp = client.get("/api/recon/comms/relationship-graph")
@@ -1795,7 +1987,8 @@ class TestRelationshipGraph:
 
     def test_with_probe_data(self, client, patch_recon, monkeypatch):
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {
                 "cached": True,
                 "stale": False,
@@ -1849,7 +2042,8 @@ class TestRelationshipGraph:
 class TestProbeDerandomization:
     def test_no_cache(self, client, patch_recon, monkeypatch):
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {"cached": False},
         )
         resp = client.get("/api/recon/probe-intel/derandom")
@@ -1880,19 +2074,34 @@ class TestProbeDerandomization:
         monkeypatch.setattr(
             recon_module.mac_lookup,
             "lookup",
-            lambda value: "Acme Wireless" if str(value).startswith(("d2:", "f6:")) else "Unknown",
+            lambda value: (
+                "Acme Wireless" if str(value).startswith(("d2:", "f6:")) else "Unknown"
+            ),
         )
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {
                 "cached": True,
                 "result": {
                     "available": True,
                     "clients": [
-                        {"client_mac": "d2:ab:cd:ef:00:01", "probe_count": 5,
-                         "ssids_probed": ["NetA", "NetB", "NetC"], "avg_signal": -50, "first_seen": 1712000100, "last_seen": 1712000500},
-                        {"client_mac": "f6:ab:cd:ef:00:02", "probe_count": 4,
-                         "ssids_probed": ["NetA", "NetB", "NetC"], "avg_signal": -55, "first_seen": 1712000150, "last_seen": 1712000450},
+                        {
+                            "client_mac": "d2:ab:cd:ef:00:01",
+                            "probe_count": 5,
+                            "ssids_probed": ["NetA", "NetB", "NetC"],
+                            "avg_signal": -50,
+                            "first_seen": 1712000100,
+                            "last_seen": 1712000500,
+                        },
+                        {
+                            "client_mac": "f6:ab:cd:ef:00:02",
+                            "probe_count": 4,
+                            "ssids_probed": ["NetA", "NetB", "NetC"],
+                            "avg_signal": -55,
+                            "first_seen": 1712000150,
+                            "last_seen": 1712000450,
+                        },
                     ],
                 },
             },
@@ -1906,7 +2115,10 @@ class TestProbeDerandomization:
         assert grp["random_macs"] >= 2
         assert grp["known_ssid_count"] == 2
         assert grp["known_ssid_preview"] == ["NetA", "NetC"]
-        assert grp["rule_summary"] == "2 randomized MACs share 3 probed SSIDs. 2 of those SSIDs also match known Recon networks."
+        assert (
+            grp["rule_summary"]
+            == "2 randomized MACs share 3 probed SSIDs. 2 of those SSIDs also match known Recon networks."
+        )
         assert grp["first_seen"] == 1712000100
         assert grp["last_seen"] == 1712000500
         assert grp["ssid_fingerprint"] == ["NetA", "NetB", "NetC"]
@@ -1915,16 +2127,25 @@ class TestProbeDerandomization:
 
     def test_single_ssid_ignored(self, client, patch_recon, monkeypatch):
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {
                 "cached": True,
                 "result": {
                     "available": True,
                     "clients": [
-                        {"client_mac": "d2:aa:bb:cc:dd:01", "probe_count": 5,
-                         "ssids_probed": ["OnlyOne"], "avg_signal": -50},
-                        {"client_mac": "f6:aa:bb:cc:dd:02", "probe_count": 3,
-                         "ssids_probed": ["OnlyOne"], "avg_signal": -55},
+                        {
+                            "client_mac": "d2:aa:bb:cc:dd:01",
+                            "probe_count": 5,
+                            "ssids_probed": ["OnlyOne"],
+                            "avg_signal": -50,
+                        },
+                        {
+                            "client_mac": "f6:aa:bb:cc:dd:02",
+                            "probe_count": 3,
+                            "ssids_probed": ["OnlyOne"],
+                            "avg_signal": -55,
+                        },
                     ],
                 },
             },
@@ -1936,7 +2157,8 @@ class TestProbeDerandomization:
 class TestProbeGeocorrelation:
     def test_no_cache(self, client, patch_recon, monkeypatch):
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {"cached": False},
         )
         resp = client.get("/api/recon/probe-intel/geocorrelation")
@@ -1947,28 +2169,45 @@ class TestProbeGeocorrelation:
     def test_correlation(self, client, monkeypatch, tmp_path):
         dataset = {
             "aa:bb:cc:dd:ee:01": {
-                "ssid": "NetA", "encryption": "WPA2", "lat": 40.0, "lng": -74.0,
-                "sources": ["wardrive"], "ts_last": "2025-04-01T12:00:00Z",
-                "handshake": False, "raw_beacon_count": 1, "raw_eapol_count": 0,
+                "ssid": "NetA",
+                "encryption": "WPA2",
+                "lat": 40.0,
+                "lng": -74.0,
+                "sources": ["wardrive"],
+                "ts_last": "2025-04-01T12:00:00Z",
+                "handshake": False,
+                "raw_beacon_count": 1,
+                "raw_eapol_count": 0,
             },
             "aa:bb:cc:dd:ee:02": {
-                "ssid": "NetB", "encryption": "WPA2", "lat": 40.0004, "lng": -74.0003,
-                "sources": ["wardrive"], "ts_last": "2025-04-01T12:00:00Z",
-                "handshake": False, "raw_beacon_count": 1, "raw_eapol_count": 0,
+                "ssid": "NetB",
+                "encryption": "WPA2",
+                "lat": 40.0004,
+                "lng": -74.0003,
+                "sources": ["wardrive"],
+                "ts_last": "2025-04-01T12:00:00Z",
+                "handshake": False,
+                "raw_beacon_count": 1,
+                "raw_eapol_count": 0,
             },
         }
         monkeypatch.setattr(recon_module, "load_real_data", lambda: dataset)
         monkeypatch.setattr(recon_module, "HANDSHAKES_DIR", str(tmp_path))
         monkeypatch.setattr(recon_module.job_manager, "list_jobs", lambda: [])
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {
                 "cached": True,
                 "result": {
                     "available": True,
                     "clients": [
-                        {"client_mac": "52:ab:cd:ef:00:01", "probe_count": 5,
-                         "ssids_probed": ["NetA", "NetB"], "avg_signal": -50},
+                        {
+                            "client_mac": "52:ab:cd:ef:00:01",
+                            "probe_count": 5,
+                            "ssids_probed": ["NetA", "NetB"],
+                            "avg_signal": -50,
+                        },
                     ],
                 },
             },
@@ -1996,34 +2235,57 @@ class TestProbeGeocorrelation:
     def test_duplicate_ssid_creates_alternative_hypothesis(self, client, monkeypatch):
         dataset = {
             "aa:bb:cc:dd:ee:01": {
-                "ssid": "CafeNet", "encryption": "WPA2", "lat": 40.0, "lng": -74.0,
-                "device_type": "router_ap", "sources": ["wardrive"],
+                "ssid": "CafeNet",
+                "encryption": "WPA2",
+                "lat": 40.0,
+                "lng": -74.0,
+                "device_type": "router_ap",
+                "sources": ["wardrive"],
             },
             "aa:bb:cc:dd:ee:02": {
-                "ssid": "CafeNet", "encryption": "WPA2", "lat": 41.0, "lng": -75.0,
-                "device_type": "router_ap", "sources": ["wardrive"],
+                "ssid": "CafeNet",
+                "encryption": "WPA2",
+                "lat": 41.0,
+                "lng": -75.0,
+                "device_type": "router_ap",
+                "sources": ["wardrive"],
             },
             "aa:bb:cc:dd:ee:03": {
-                "ssid": "OfficeWiFi", "encryption": "OPEN", "lat": 40.0004, "lng": -74.0003,
-                "device_type": "camera", "sources": ["pwnagotchi"],
+                "ssid": "OfficeWiFi",
+                "encryption": "OPEN",
+                "lat": 40.0004,
+                "lng": -74.0003,
+                "device_type": "camera",
+                "sources": ["pwnagotchi"],
             },
             "aa:bb:cc:dd:ee:04": {
-                "ssid": "PrinterNet", "encryption": "WPA2", "lat": 40.0005, "lng": -74.0001,
-                "device_type": "iot", "sources": ["wardrive"],
+                "ssid": "PrinterNet",
+                "encryption": "WPA2",
+                "lat": 40.0005,
+                "lng": -74.0001,
+                "device_type": "iot",
+                "sources": ["wardrive"],
             },
             "aa:bb:cc:dd:ee:05": {
-                "ssid": "OfficeWiFi", "encryption": "OPEN", "lat": 41.0003, "lng": -75.0002,
-                "device_type": "camera", "sources": ["pwnagotchi"],
+                "ssid": "OfficeWiFi",
+                "encryption": "OPEN",
+                "lat": 41.0003,
+                "lng": -75.0002,
+                "device_type": "camera",
+                "sources": ["pwnagotchi"],
             },
         }
         monkeypatch.setattr(recon_module, "load_real_data", lambda: dataset)
         monkeypatch.setattr(
             recon_module.mac_lookup,
             "lookup",
-            lambda value: "Acme Wireless" if str(value).startswith("52:ab:cd") else "Unknown",
+            lambda value: (
+                "Acme Wireless" if str(value).startswith("52:ab:cd") else "Unknown"
+            ),
         )
         monkeypatch.setattr(
-            recon_module.probe_service, "get_cache_status",
+            recon_module.probe_service,
+            "get_cache_status",
             lambda: {
                 "cached": True,
                 "result": {

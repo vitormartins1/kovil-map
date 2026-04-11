@@ -9,13 +9,11 @@ Covers:
 from __future__ import annotations
 
 import os
-import textwrap
 
 import pytest
 
 from app.api.routers import probe as probe_router_module
 from app.services import probe_service as probe_service_module
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -113,7 +111,9 @@ class TestProbeIntelEndpoint:
         assert s["broadcast_probes"] == 1  # aa:bb:cc:dd:ee:ff empty SSID
         assert s["pcaps_scanned"] == 1
 
-    def test_clients_sorted_by_probe_count(self, client, patch_probe, patch_tshark_output):
+    def test_clients_sorted_by_probe_count(
+        self, client, patch_probe, patch_tshark_output
+    ):
         _write_pcap(patch_probe, "test.pcap")
         resp = client.get("/api/recon/probe-intel")
         clients = resp.json()["data"]["clients"]
@@ -134,7 +134,9 @@ class TestProbeIntelEndpoint:
         assert cl["first_seen"] is not None
         assert cl["last_seen"] is not None
 
-    def test_ssids_sorted_by_client_count(self, client, patch_probe, patch_tshark_output):
+    def test_ssids_sorted_by_client_count(
+        self, client, patch_probe, patch_tshark_output
+    ):
         _write_pcap(patch_probe, "test.pcap")
         resp = client.get("/api/recon/probe-intel")
         ssids = resp.json()["data"]["ssids"]
@@ -149,7 +151,9 @@ class TestProbeIntelEndpoint:
         assert home["client_count"] == 2  # 00:11:22 + aa:bb:cc
         assert home["probe_count"] == 2
 
-    def test_probe_intel_enriches_known_context_and_vendor(self, client, patch_probe, patch_tshark_output, monkeypatch):
+    def test_probe_intel_enriches_known_context_and_vendor(
+        self, client, patch_probe, patch_tshark_output, monkeypatch
+    ):
         _write_pcap(patch_probe, "test.pcap")
         monkeypatch.setattr(
             probe_router_module,
@@ -166,14 +170,18 @@ class TestProbeIntelEndpoint:
         monkeypatch.setattr(
             probe_router_module.mac_lookup,
             "lookup",
-            lambda value: "Acme Wireless" if str(value).startswith("00:11:22") else "Unknown",
+            lambda value: (
+                "Acme Wireless" if str(value).startswith("00:11:22") else "Unknown"
+            ),
         )
 
         resp = client.get("/api/recon/probe-intel")
         data = resp.json()["data"]
         home = next(s for s in data["ssids"] if s["ssid"] == "HomeNet")
         coffee = next(s for s in data["ssids"] if s["ssid"] == "CoffeeShop")
-        rich_client = next(c for c in data["clients"] if c["client_mac"] == "00:11:22:33:44:55")
+        rich_client = next(
+            c for c in data["clients"] if c["client_mac"] == "00:11:22:33:44:55"
+        )
 
         assert home["is_known"] is True
         assert home["name_shape"] == "human"
@@ -189,7 +197,9 @@ class TestProbeIntelEndpoint:
         assert rich_client["known_ssid_preview"] == ["HomeNet"]
         assert rich_client["unmatched_ssid_preview"] == ["CoffeeShop"]
 
-    def test_probe_intel_classifies_ssid_name_shape(self, client, patch_probe, monkeypatch):
+    def test_probe_intel_classifies_ssid_name_shape(
+        self, client, patch_probe, monkeypatch
+    ):
         monkeypatch.setattr(
             probe_service_module.probe_service,
             "analyse",
@@ -197,9 +207,17 @@ class TestProbeIntelEndpoint:
                 "available": True,
                 "clients": [],
                 "ssids": [
-                    {"ssid": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "client_count": 1, "probe_count": 1},
+                    {
+                        "ssid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                        "client_count": 1,
+                        "probe_count": 1,
+                    },
                     {"ssid": "ABCDEF123456", "client_count": 1, "probe_count": 1},
-                    {"ssid": "DIRECT-AB_Printer4F2A", "client_count": 1, "probe_count": 1},
+                    {
+                        "ssid": "DIRECT-AB_Printer4F2A",
+                        "client_count": 1,
+                        "probe_count": 1,
+                    },
                 ],
                 "summary": {
                     "total_probes": 3,
@@ -316,10 +334,15 @@ class TestProbeServiceInternals:
         pcap = _write_pcap(patch_probe, "corrupt.pcap")
 
         def _fake_run(cmd, **kwargs):
-            r = subprocess.CompletedProcess(cmd, returncode=2, stdout="", stderr=(
-                'tshark: The file "corrupt.pcap" appears to be damaged or corrupt.\n'
-                "(pcap: File has 1742268728-byte packet, bigger than maximum of 262144)"
-            ))
+            r = subprocess.CompletedProcess(
+                cmd,
+                returncode=2,
+                stdout="",
+                stderr=(
+                    'tshark: The file "corrupt.pcap" appears to be damaged or corrupt.\n'
+                    "(pcap: File has 1742268728-byte packet, bigger than maximum of 262144)"
+                ),
+            )
             return r
 
         monkeypatch.setattr(probe_service_module.subprocess, "run", _fake_run)
@@ -335,10 +358,30 @@ class TestProbeServiceInternals:
 
     def test_build_intelligence_aggregates(self):
         probes = [
-            {"client_mac": "aa:bb:cc:11:22:33", "ssid": "Net1", "timestamp": 1000.0, "signal": -40},
-            {"client_mac": "aa:bb:cc:11:22:33", "ssid": "Net2", "timestamp": 1001.0, "signal": -50},
-            {"client_mac": "dd:ee:ff:44:55:66", "ssid": "Net1", "timestamp": 1002.0, "signal": -60},
-            {"client_mac": "dd:ee:ff:44:55:66", "ssid": "", "timestamp": 1003.0, "signal": None},
+            {
+                "client_mac": "aa:bb:cc:11:22:33",
+                "ssid": "Net1",
+                "timestamp": 1000.0,
+                "signal": -40,
+            },
+            {
+                "client_mac": "aa:bb:cc:11:22:33",
+                "ssid": "Net2",
+                "timestamp": 1001.0,
+                "signal": -50,
+            },
+            {
+                "client_mac": "dd:ee:ff:44:55:66",
+                "ssid": "Net1",
+                "timestamp": 1002.0,
+                "signal": -60,
+            },
+            {
+                "client_mac": "dd:ee:ff:44:55:66",
+                "ssid": "",
+                "timestamp": 1003.0,
+                "signal": None,
+            },
         ]
         result = probe_service_module.probe_service._build_intelligence(probes, 1, 100)
         assert result["summary"]["total_probes"] == 4
@@ -347,7 +390,9 @@ class TestProbeServiceInternals:
         assert result["summary"]["broadcast_probes"] == 1
 
         # Client aa:bb:cc probed 2 SSIDs with 2 probes
-        cl = next(c for c in result["clients"] if c["client_mac"] == "aa:bb:cc:11:22:33")
+        cl = next(
+            c for c in result["clients"] if c["client_mac"] == "aa:bb:cc:11:22:33"
+        )
         assert cl["probe_count"] == 2
         assert cl["unique_ssids"] == 2
         assert cl["avg_signal"] == -45  # avg(-40, -50)
@@ -358,7 +403,12 @@ class TestProbeServiceInternals:
 
     def test_build_intelligence_respects_limit(self):
         probes = [
-            {"client_mac": f"aa:bb:cc:dd:ee:{i:02x}", "ssid": f"Net{i}", "timestamp": 1000.0 + i, "signal": -40}
+            {
+                "client_mac": f"aa:bb:cc:dd:ee:{i:02x}",
+                "ssid": f"Net{i}",
+                "timestamp": 1000.0 + i,
+                "signal": -40,
+            }
             for i in range(10)
         ]
         result = probe_service_module.probe_service._build_intelligence(probes, 1, 3)
@@ -388,7 +438,9 @@ class TestProbeIntelStatusEndpoint:
         assert data["cached"] is False
         assert data["pcap_count"] == 1
 
-    def test_status_returns_cached_after_scan(self, client, patch_probe, patch_tshark_output):
+    def test_status_returns_cached_after_scan(
+        self, client, patch_probe, patch_tshark_output
+    ):
         _write_pcap(patch_probe, "test.pcap")
         # Run a full analyse to populate cache
         probe_service_module.probe_service.analyse(limit=200)
@@ -403,7 +455,9 @@ class TestProbeIntelStatusEndpoint:
         assert data["result"] is not None
         assert data["result"]["summary"]["total_probes"] == 5
 
-    def test_status_enriches_cached_result(self, client, patch_probe, patch_tshark_output, monkeypatch):
+    def test_status_enriches_cached_result(
+        self, client, patch_probe, patch_tshark_output, monkeypatch
+    ):
         _write_pcap(patch_probe, "test.pcap")
         monkeypatch.setattr(
             probe_router_module,
@@ -420,7 +474,9 @@ class TestProbeIntelStatusEndpoint:
         monkeypatch.setattr(
             probe_router_module.mac_lookup,
             "lookup",
-            lambda value: "Acme Wireless" if str(value).startswith("00:11:22") else "Unknown",
+            lambda value: (
+                "Acme Wireless" if str(value).startswith("00:11:22") else "Unknown"
+            ),
         )
 
         probe_service_module.probe_service.analyse(limit=200)
@@ -429,10 +485,16 @@ class TestProbeIntelStatusEndpoint:
 
         assert data["cached"] is True
         assert data["result"]["ssids"][0]["name_shape"] is not None
-        rich_client = next(c for c in data["result"]["clients"] if c["client_mac"] == "00:11:22:33:44:55")
+        rich_client = next(
+            c
+            for c in data["result"]["clients"]
+            if c["client_mac"] == "00:11:22:33:44:55"
+        )
         assert rich_client["vendor"] == "Acme Wireless"
 
-    def test_status_stale_after_new_pcap(self, client, patch_probe, patch_tshark_output):
+    def test_status_stale_after_new_pcap(
+        self, client, patch_probe, patch_tshark_output
+    ):
         _write_pcap(patch_probe, "test.pcap")
         pcaps = probe_service_module.probe_service._find_pcaps()
         probe_service_module.probe_service.analyse_with_progress(pcaps, limit=200)
@@ -466,20 +528,31 @@ class TestProbeIntelScanEndpoint:
         assert data["job_id"] is None
         assert data["pcap_count"] == 0
 
-    def test_scan_starts_job(self, client, patch_probe, patch_tshark_output, monkeypatch):
+    def test_scan_starts_job(
+        self, client, patch_probe, patch_tshark_output, monkeypatch
+    ):
         _write_pcap(patch_probe, "test.pcap")
         # Mock start_multi_job to avoid real thread
         from app.jobs import recon_jobs as recon_jobs_module
 
         captured = {}
 
-        def fake_start(worker, job_type="", total_steps=1, meta=None, on_complete=None, on_start=None):
+        def fake_start(
+            worker,
+            job_type="",
+            total_steps=1,
+            meta=None,
+            on_complete=None,
+            on_start=None,
+        ):
             captured["job_type"] = job_type
             captured["total_steps"] = total_steps
             captured["meta"] = meta
             return "fake-job-id-123"
 
-        monkeypatch.setattr(recon_jobs_module.job_manager, "start_multi_job", fake_start)
+        monkeypatch.setattr(
+            recon_jobs_module.job_manager, "start_multi_job", fake_start
+        )
 
         resp = client.post("/api/recon/probe-intel/scan")
         assert resp.status_code == 200
@@ -499,7 +572,9 @@ class TestProbeAnalyseWithProgress:
     def test_populates_cache(self, patch_probe, patch_tshark_output):
         _write_pcap(patch_probe, "test.pcap")
         pcaps = probe_service_module.probe_service._find_pcaps()
-        result = probe_service_module.probe_service.analyse_with_progress(pcaps, limit=200)
+        result = probe_service_module.probe_service.analyse_with_progress(
+            pcaps, limit=200
+        )
         assert result["available"] is True
         assert result["summary"]["total_probes"] == 5
         assert probe_service_module.probe_service._cache is not None
@@ -511,14 +586,22 @@ class TestProbeAnalyseWithProgress:
         emissions = []
         fake_job = {
             "id": "test-job",
-            "progress_data": {"current_step": 0, "percentage": 0, "stage": "", "extra": ""},
+            "progress_data": {
+                "current_step": 0,
+                "percentage": 0,
+                "stage": "",
+                "extra": "",
+            },
         }
 
         def fake_emit(event, data):
             emissions.append((event, data.copy()))
 
         probe_service_module.probe_service.analyse_with_progress(
-            pcaps, limit=200, emit=fake_emit, job=fake_job,
+            pcaps,
+            limit=200,
+            emit=fake_emit,
+            job=fake_job,
         )
         assert len(emissions) >= 2
         assert all(e[0] == "job_progress" for e in emissions)

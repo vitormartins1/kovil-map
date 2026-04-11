@@ -122,9 +122,7 @@ class PacketAnalysisService(BaseService):
                 if "damaged or corrupt" in stderr.lower():
                     self.logger.debug("Skipping corrupt PCAP: %s", stderr.strip())
                     return "", []
-                raise RuntimeError(
-                    stderr.strip() or f"tshark exit {proc.returncode}"
-                )
+                raise RuntimeError(stderr.strip() or f"tshark exit {proc.returncode}")
             warnings: list[str] = []
             if stderr.strip():
                 warnings.append(stderr.strip())
@@ -163,9 +161,7 @@ class PacketAnalysisService(BaseService):
                 seen.add(real)
                 valid, reason = validate_pcap_file(full)
                 if not valid:
-                    self.logger.warning(
-                        "Skipping invalid PCAP %s: %s", name, reason
-                    )
+                    self.logger.warning("Skipping invalid PCAP %s: %s", name, reason)
                     continue
                 paths.append(full)
         return paths
@@ -176,32 +172,54 @@ class PacketAnalysisService(BaseService):
 
     def _extract_deauth(self, pcap_path: str) -> list[dict]:
         """Extract deauthentication frames (subtype 0x0c)."""
-        stdout, _ = self._run_tshark([
-            "-r", pcap_path,
-            "-Y", "wlan.fc.type_subtype==0x0c",
-            "-T", "fields",
-            "-E", "separator=\t",
-            "-e", "frame.time_epoch",
-            "-e", "wlan.sa",
-            "-e", "wlan.da",
-            "-e", "wlan.bssid",
-            "-e", "wlan.fixed.reason_code",
-        ])
+        stdout, _ = self._run_tshark(
+            [
+                "-r",
+                pcap_path,
+                "-Y",
+                "wlan.fc.type_subtype==0x0c",
+                "-T",
+                "fields",
+                "-E",
+                "separator=\t",
+                "-e",
+                "frame.time_epoch",
+                "-e",
+                "wlan.sa",
+                "-e",
+                "wlan.da",
+                "-e",
+                "wlan.bssid",
+                "-e",
+                "wlan.fixed.reason_code",
+            ]
+        )
         return self._parse_mgmt_rows(stdout)
 
     def _extract_disassoc(self, pcap_path: str) -> list[dict]:
         """Extract disassociation frames (subtype 0x0a)."""
-        stdout, _ = self._run_tshark([
-            "-r", pcap_path,
-            "-Y", "wlan.fc.type_subtype==0x0a",
-            "-T", "fields",
-            "-E", "separator=\t",
-            "-e", "frame.time_epoch",
-            "-e", "wlan.sa",
-            "-e", "wlan.da",
-            "-e", "wlan.bssid",
-            "-e", "wlan.fixed.reason_code",
-        ])
+        stdout, _ = self._run_tshark(
+            [
+                "-r",
+                pcap_path,
+                "-Y",
+                "wlan.fc.type_subtype==0x0a",
+                "-T",
+                "fields",
+                "-E",
+                "separator=\t",
+                "-e",
+                "frame.time_epoch",
+                "-e",
+                "wlan.sa",
+                "-e",
+                "wlan.da",
+                "-e",
+                "wlan.bssid",
+                "-e",
+                "wlan.fixed.reason_code",
+            ]
+        )
         return self._parse_mgmt_rows(stdout)
 
     def _parse_mgmt_rows(self, raw: str) -> list[dict]:
@@ -219,14 +237,16 @@ class PacketAnalysisService(BaseService):
                 reason = int(reason_str.strip())
             except (ValueError, TypeError):
                 reason = 0
-            results.append({
-                "timestamp": ts,
-                "src": src.strip().lower(),
-                "dst": dst.strip().lower(),
-                "bssid": bssid.strip().lower(),
-                "reason_code": reason,
-                "reason_text": REASON_CODES.get(reason, "Unknown"),
-            })
+            results.append(
+                {
+                    "timestamp": ts,
+                    "src": src.strip().lower(),
+                    "dst": dst.strip().lower(),
+                    "bssid": bssid.strip().lower(),
+                    "reason_code": reason,
+                    "reason_text": REASON_CODES.get(reason, "Unknown"),
+                }
+            )
         return results
 
     # ------------------------------------------------------------------
@@ -262,7 +282,12 @@ class PacketAnalysisService(BaseService):
         return self._build_threat_intel(all_deauth, all_disassoc, pcaps_ok, limit)
 
     def analyse_with_progress(
-        self, pcaps: list[str], *, limit: int = 200, emit=None, job=None,
+        self,
+        pcaps: list[str],
+        *,
+        limit: int = 200,
+        emit=None,
+        job=None,
     ) -> dict[str, Any]:
         """Run deep analysis with per-PCAP progress emission.
 
@@ -393,21 +418,29 @@ class PacketAnalysisService(BaseService):
             source_is_flood = bd["deauth_count"] > 50
             if source_is_flood:
                 deauth_flood = True
-            threats.append({
-                "bssid": bssid,
-                "deauth_count": bd["deauth_count"],
-                "disassoc_count": bd["disassoc_count"],
-                "total_frames": total,
-                "unique_sources": len(bd["unique_sources"]),
-                "unique_targets": len(bd["unique_targets"]),
-                "top_reasons": [
-                    {"code": code, "text": REASON_CODES.get(code, "Unknown"), "count": cnt}
-                    for code, cnt in top_reasons
-                ],
-                "first_seen": bd["first_seen"] if bd["first_seen"] != float("inf") else None,
-                "last_seen": bd["last_seen"] if bd["last_seen"] > 0 else None,
-                "flood_indicator": source_is_flood,
-            })
+            threats.append(
+                {
+                    "bssid": bssid,
+                    "deauth_count": bd["deauth_count"],
+                    "disassoc_count": bd["disassoc_count"],
+                    "total_frames": total,
+                    "unique_sources": len(bd["unique_sources"]),
+                    "unique_targets": len(bd["unique_targets"]),
+                    "top_reasons": [
+                        {
+                            "code": code,
+                            "text": REASON_CODES.get(code, "Unknown"),
+                            "count": cnt,
+                        }
+                        for code, cnt in top_reasons
+                    ],
+                    "first_seen": (
+                        bd["first_seen"] if bd["first_seen"] != float("inf") else None
+                    ),
+                    "last_seen": bd["last_seen"] if bd["last_seen"] > 0 else None,
+                    "flood_indicator": source_is_flood,
+                }
+            )
         threats.sort(key=lambda t: t["total_frames"], reverse=True)
 
         return {

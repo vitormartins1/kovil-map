@@ -103,7 +103,9 @@ def _cache_response(
     ttl: float | None = None,
     extra_signature: tuple[Any, ...] = (),
 ):
-    effective_ttl = float(ttl if ttl is not None else _RECON_RESPONSE_CACHE_TTL.get(bucket, 10.0))
+    effective_ttl = float(
+        ttl if ttl is not None else _RECON_RESPONSE_CACHE_TTL.get(bucket, 10.0)
+    )
     revision = int(data_revision if data_revision is not None else get_data_revision())
     cache_key = (bucket, revision, extra_signature, params)
     now = time.time()
@@ -127,7 +129,9 @@ def _cache_response_get(
     ttl: float | None = None,
     extra_signature: tuple[Any, ...] = (),
 ):
-    effective_ttl = float(ttl if ttl is not None else _RECON_RESPONSE_CACHE_TTL.get(bucket, 10.0))
+    effective_ttl = float(
+        ttl if ttl is not None else _RECON_RESPONSE_CACHE_TTL.get(bucket, 10.0)
+    )
     revision = int(data_revision if data_revision is not None else get_data_revision())
     cache_key = (bucket, revision, extra_signature, params)
     cached = _recon_response_cache.get(cache_key)
@@ -195,7 +199,10 @@ def _recon_artifacts_signature() -> str:
     global _artifact_signature_cache
     handshakes_dir = _current_handshakes_dir()
     now = time.time()
-    if _artifact_signature_cache is not None and now - _artifact_signature_cache[0] < _ARTIFACT_SIGNATURE_TTL:
+    if (
+        _artifact_signature_cache is not None
+        and now - _artifact_signature_cache[0] < _ARTIFACT_SIGNATURE_TTL
+    ):
         return _artifact_signature_cache[1]
 
     digest = hashlib.sha1()
@@ -232,7 +239,9 @@ def _build_recon_manifest_payload() -> dict[str, Any]:
     return payload
 
 
-def _build_kill_chain_network_entry(mac: str, net: dict[str, Any], *, hash_info: dict[str, Any]) -> dict[str, Any]:
+def _build_kill_chain_network_entry(
+    mac: str, net: dict[str, Any], *, hash_info: dict[str, Any]
+) -> dict[str, Any]:
     entry: dict[str, Any] = {
         "mac": mac,
         "ssid": net.get("ssid") or "",
@@ -291,7 +300,9 @@ def _scan_hash_files(mac_clean: str) -> dict:
     return result
 
 
-def _classify_network(mac: str, net: dict[str, Any], hash_info: dict[str, Any] | None = None) -> str:
+def _classify_network(
+    mac: str, net: dict[str, Any], hash_info: dict[str, Any] | None = None
+) -> str:
     if net.get("pass"):
         return "cracked"
 
@@ -306,7 +317,11 @@ def _classify_network(mac: str, net: dict[str, Any], hash_info: dict[str, Any] |
         if job_type not in ("cracking", "aircrack"):
             continue
         cmd = job.get("command")
-        cmd_text = " ".join(str(part) for part in cmd) if isinstance(cmd, list) else str(cmd or "")
+        cmd_text = (
+            " ".join(str(part) for part in cmd)
+            if isinstance(cmd, list)
+            else str(cmd or "")
+        )
         if mac_clean in cmd_text.lower():
             return "under_attack"
 
@@ -332,7 +347,9 @@ def _net_encryption(net: dict[str, Any]) -> str:
     return str(net.get("encryption") or "UNK").upper()
 
 
-def _quick_score(mac: str, net: dict[str, Any], *, hash_info: dict[str, Any] | None = None) -> dict[str, Any]:
+def _quick_score(
+    mac: str, net: dict[str, Any], *, hash_info: dict[str, Any] | None = None
+) -> dict[str, Any]:
     enc = _net_encryption(net)
     if enc == "OPEN":
         return {"score": 0, "readiness_status": "open", "readiness_score": 100}
@@ -396,7 +413,9 @@ def _load_akm_labels(mac: str) -> list[str]:
     for name in os.listdir(handshakes_dir):
         if mac_clean in name.lower() and name.endswith(".details"):
             try:
-                with open(os.path.join(handshakes_dir, name), "r", encoding="utf-8") as file_handle:
+                with open(
+                    os.path.join(handshakes_dir, name), "r", encoding="utf-8"
+                ) as file_handle:
                     details = _json.load(file_handle)
                 return details.get("security", {}).get("akm", [])
             except Exception:
@@ -405,7 +424,11 @@ def _load_akm_labels(mac: str) -> list[str]:
 
 
 def _build_vuln_flags(
-    mac: str, net: dict[str, Any], score_data: dict[str, Any], *, hash_info: dict[str, Any] | None = None
+    mac: str,
+    net: dict[str, Any],
+    score_data: dict[str, Any],
+    *,
+    hash_info: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], list[str]]:
     flags: list[dict[str, Any]] = []
     enc = _net_encryption(net)
@@ -524,7 +547,9 @@ def _build_vuln_flags(
     return flags, akm_labels
 
 
-def _build_vulnerability_row(mac: str, net: dict[str, Any], *, hash_info: dict[str, Any] | None = None) -> dict[str, Any]:
+def _build_vulnerability_row(
+    mac: str, net: dict[str, Any], *, hash_info: dict[str, Any] | None = None
+) -> dict[str, Any]:
     mac_clean = mac.replace(":", "").lower()
     if hash_info is None:
         hash_info = _scan_hash_files(mac_clean)
@@ -557,7 +582,9 @@ def _build_vulnerability_row(mac: str, net: dict[str, Any], *, hash_info: dict[s
     }
 
 
-def _resolve_dataset_network(dataset: dict[str, Any], mac: str) -> tuple[str, dict[str, Any]] | tuple[None, None]:
+def _resolve_dataset_network(
+    dataset: dict[str, Any], mac: str
+) -> tuple[str, dict[str, Any]] | tuple[None, None]:
     normalized = str(mac or "").strip().replace("-", ":")
     if not normalized:
         return None, None

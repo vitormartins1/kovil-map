@@ -22,7 +22,10 @@ def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
     dlam = math.radians(lon2 - lon1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
+    a = (
+        math.sin(dphi / 2) ** 2
+        + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
+    )
     return earth_radius_m * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
@@ -252,8 +255,12 @@ def _build_probe_geo_located_ssids(
             continue
         avg_lat = sum(float(item["lat"]) for item in items) / len(items)
         avg_lng = sum(float(item["lng"]) for item in items) / len(items)
-        enc_counter = Counter(str(item.get("encryption") or "UNKNOWN") for item in items)
-        dev_counter = Counter(str(item.get("device_type") or "unknown") for item in items)
+        enc_counter = Counter(
+            str(item.get("encryption") or "UNKNOWN") for item in items
+        )
+        dev_counter = Counter(
+            str(item.get("device_type") or "unknown") for item in items
+        )
         sources = sorted(
             {
                 str(src)
@@ -265,7 +272,9 @@ def _build_probe_geo_located_ssids(
         sample_mac = next((item.get("mac") for item in items if item.get("mac")), None)
         located_ssids.append(
             {
-                "ssid": str(items[0].get("ssid_display") or items[0].get("ssid_norm") or ""),
+                "ssid": str(
+                    items[0].get("ssid_display") or items[0].get("ssid_norm") or ""
+                ),
                 "network_count": len(items),
                 "sample_mac": sample_mac,
                 "dominant_encryption": enc_counter.most_common(1)[0][0],
@@ -309,7 +318,11 @@ def build_probe_derandomization_payload(
     dataset: dict[str, Any],
     status: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    if not isinstance(status, dict) or not status.get("cached") or not status.get("result"):
+    if (
+        not isinstance(status, dict)
+        or not status.get("cached")
+        or not status.get("result")
+    ):
         return {"groups": [], "message": "Run probe intel scan first"}
 
     data = status["result"]
@@ -319,7 +332,11 @@ def build_probe_derandomization_payload(
     fp_groups: dict[frozenset[str], list[dict[str, Any]]] = defaultdict(list)
     fp_display: dict[frozenset[str], dict[str, str]] = defaultdict(dict)
     for client in clients:
-        original_ssids = [str(ssid).strip() for ssid in client.get("ssids_probed", []) if str(ssid).strip()]
+        original_ssids = [
+            str(ssid).strip()
+            for ssid in client.get("ssids_probed", [])
+            if str(ssid).strip()
+        ]
         ssids = frozenset(ssid.lower() for ssid in original_ssids)
         if len(ssids) < 2:
             continue
@@ -351,13 +368,23 @@ def build_probe_derandomization_payload(
             for ssid in sorted(ssids)
             if ssid in known_ssids
         ]
-        member_pool = sorted(random_macs, key=lambda item: item.get("probe_count", 0), reverse=True) + sorted(
+        member_pool = sorted(
+            random_macs, key=lambda item: item.get("probe_count", 0), reverse=True
+        ) + sorted(
             real_macs,
             key=lambda item: item.get("probe_count", 0),
             reverse=True,
         )
-        first_seen_vals = [member.get("first_seen") for member in members if member.get("first_seen") is not None]
-        last_seen_vals = [member.get("last_seen") for member in members if member.get("last_seen") is not None]
+        first_seen_vals = [
+            member.get("first_seen")
+            for member in members
+            if member.get("first_seen") is not None
+        ]
+        last_seen_vals = [
+            member.get("last_seen")
+            for member in members
+            if member.get("last_seen") is not None
+        ]
 
         groups.append(
             {
@@ -369,7 +396,9 @@ def build_probe_derandomization_payload(
                         "probe_count": member["probe_count"],
                         "avg_signal": member.get("avg_signal"),
                         "is_random": member in random_macs,
-                        "randomization_state": "randomized" if member in random_macs else "global",
+                        "randomization_state": (
+                            "randomized" if member in random_macs else "global"
+                        ),
                         "vendor": _resolve_probe_vendor(member.get("client_mac")),
                         "first_seen": member.get("first_seen"),
                         "last_seen": member.get("last_seen"),
@@ -379,7 +408,9 @@ def build_probe_derandomization_payload(
                 "total_macs": len(random_macs) + len(real_macs),
                 "random_macs": len(random_macs),
                 "global_macs": len(real_macs),
-                "confidence": "high" if len(random_macs) >= 2 and len(ssids) >= 3 else "medium",
+                "confidence": (
+                    "high" if len(random_macs) >= 2 and len(ssids) >= 3 else "medium"
+                ),
                 "known_ssid_count": len(known_preview),
                 "known_ssid_preview": known_preview[:3],
                 "first_seen": min(first_seen_vals) if first_seen_vals else None,
@@ -403,7 +434,11 @@ def build_probe_geocorrelation_payload(
     dataset: dict[str, Any],
     status: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    if not isinstance(status, dict) or not status.get("cached") or not status.get("result"):
+    if (
+        not isinstance(status, dict)
+        or not status.get("cached")
+        or not status.get("result")
+    ):
         return {"clients": [], "message": "Run probe intel scan first"}
 
     data = status["result"]
@@ -449,8 +484,7 @@ def build_probe_geocorrelation_payload(
             if str(src).strip()
         )
         security_breakdown = Counter(
-            str(point.get("encryption") or "UNKNOWN")
-            for point in primary["points"]
+            str(point.get("encryption") or "UNKNOWN") for point in primary["points"]
         )
         ambiguity_level = _rank_probe_geo_ambiguity(primary, alternative)
         matched_ssid_count = int(primary["ssid_count"])
@@ -468,7 +502,9 @@ def build_probe_geocorrelation_payload(
             {
                 "client_mac": client["client_mac"],
                 "oui_prefix": client.get("oui_prefix"),
-                "vendor": _resolve_probe_vendor(client.get("client_mac") or client.get("oui_prefix")),
+                "vendor": _resolve_probe_vendor(
+                    client.get("client_mac") or client.get("oui_prefix")
+                ),
                 "probe_count": client.get("probe_count", 0),
                 "avg_signal": client.get("avg_signal"),
                 "first_seen": client.get("first_seen"),
@@ -476,7 +512,9 @@ def build_probe_geocorrelation_payload(
                 "total_probed_ssids": total_probed_ssids,
                 "match_count": match_count,
                 "matched_ssid_count": matched_ssid_count,
-                "known_match_ratio": round(matched_ssid_count / max(total_probed_ssids, 1), 2),
+                "known_match_ratio": round(
+                    matched_ssid_count / max(total_probed_ssids, 1), 2
+                ),
                 "estimated_center": {"lat": center_lat, "lng": center_lng},
                 "estimated_radius_m": float(primary["radius_m"]),
                 "confidence": confidence,
@@ -505,7 +543,9 @@ def build_probe_geocorrelation_payload(
     ]
     summary = {
         "correlated_clients": len(result),
-        "high_confidence_clients": sum(1 for item in result if item.get("confidence") == "high"),
+        "high_confidence_clients": sum(
+            1 for item in result if item.get("confidence") == "high"
+        ),
         "matched_networks": matched_network_total,
         "median_radius_m": _median_float(radii),
     }

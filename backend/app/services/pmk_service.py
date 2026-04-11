@@ -1,6 +1,5 @@
 import os
 import re
-import tempfile
 from .base_service import BaseService
 from app.core.config import (
     PMK_DIR,
@@ -96,7 +95,10 @@ class PmkService(BaseService):
         if not essid or not essid.strip():
             return {"status": "error", "message": "ESSID is required"}
         if not wordlist_path or not os.path.exists(wordlist_path):
-            return {"status": "error", "message": f"Wordlist not found: {wordlist_path}"}
+            return {
+                "status": "error",
+                "message": f"Wordlist not found: {wordlist_path}",
+            }
 
         essid = essid.strip()
         if not db_name:
@@ -300,7 +302,9 @@ class PmkService(BaseService):
                         os.remove(key_file)
                     except Exception:
                         pass
-                    self.logger.info(f"PMK attack: password '{password}' saved to {cracked_path}")
+                    self.logger.info(
+                        f"PMK attack: password '{password}' saved to {cracked_path}"
+                    )
                     return True
 
             # Fallback: parse logs

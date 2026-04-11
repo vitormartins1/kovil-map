@@ -10,17 +10,20 @@ from app.core.job_manager import job_manager
 from app.services.probe_service import probe_service
 from app.services.packet_analysis_service import packet_analysis_service
 
-
 # ------------------------------------------------------------------
 # Probe Intelligence (SIGINT tab)
 # ------------------------------------------------------------------
+
 
 def _probe_intel_worker(job, emit):
     """Process all PCAPs for probe-request intelligence."""
     pcaps = job.get("meta", {}).get("pcaps", [])
     limit = job.get("meta", {}).get("limit", 200)
     result = probe_service.analyse_with_progress(
-        pcaps, limit=limit, emit=emit, job=job,
+        pcaps,
+        limit=limit,
+        emit=emit,
+        job=job,
     )
     job["meta"]["result"] = result
 
@@ -41,12 +44,16 @@ def start_probe_intel_job(pcaps: list[str], limit: int = 200) -> str | None:
 # Deep Analysis (INTEL tab)
 # ------------------------------------------------------------------
 
+
 def _deep_analysis_worker(job, emit):
     """Process all PCAPs for deauth/disassoc threat intelligence."""
     pcaps = job.get("meta", {}).get("pcaps", [])
     limit = job.get("meta", {}).get("limit", 200)
     result = packet_analysis_service.analyse_with_progress(
-        pcaps, limit=limit, emit=emit, job=job,
+        pcaps,
+        limit=limit,
+        emit=emit,
+        job=job,
     )
     job["meta"]["result"] = result
 

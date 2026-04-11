@@ -18,7 +18,9 @@ def test_probe_intel_worker_stores_result_and_passes_parameters(monkeypatch):
     )
 
     job = {"meta": {"pcaps": ["a.pcap", "b.pcap"], "limit": 25}}
-    emit = lambda *_args, **_kwargs: None
+
+    def emit(*_args, **_kwargs):
+        return None
 
     recon_jobs._probe_intel_worker(job, emit)
 
@@ -71,7 +73,9 @@ def test_deep_analysis_worker_stores_result_and_passes_parameters(monkeypatch):
     )
 
     job = {"meta": {"pcaps": ["x.pcap"], "limit": 15}}
-    emit = lambda *_args, **_kwargs: None
+
+    def emit(*_args, **_kwargs):
+        return None
 
     recon_jobs._deep_analysis_worker(job, emit)
 
@@ -98,7 +102,9 @@ def test_start_deep_analysis_job_delegates_to_job_manager(monkeypatch):
 
     monkeypatch.setattr(recon_jobs.job_manager, "start_multi_job", _start_multi_job)
 
-    job_id = recon_jobs.start_deep_analysis_job(["a.pcap", "b.pcap", "c.pcap"], limit=123)
+    job_id = recon_jobs.start_deep_analysis_job(
+        ["a.pcap", "b.pcap", "c.pcap"], limit=123
+    )
 
     assert job_id == "deep-job-1"
     assert captured["worker"] is recon_jobs._deep_analysis_worker

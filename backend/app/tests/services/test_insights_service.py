@@ -298,7 +298,11 @@ def test_attack_recommendation_combined_quality_gate_uses_mac_for_history_lookup
     combined_dir = hand_dir / "combined" / "e01fedba23d1" / "build-abc123"
     combined_dir.mkdir(parents=True)
     monkeypatch.setattr(is_module, "HANDSHAKES_DIR", str(hand_dir))
-    monkeypatch.setattr(is_module.history_service, "get_history_path", lambda *args, **kwargs: str(combined_dir / "combined.try"))
+    monkeypatch.setattr(
+        is_module.history_service,
+        "get_history_path",
+        lambda *args, **kwargs: str(combined_dir / "combined.try"),
+    )
 
     (combined_dir / "combined.22000").write_text(
         "WPA*02*deadbeef*e01fedba23d1*112233445566*4e65744f6e65*00\n",

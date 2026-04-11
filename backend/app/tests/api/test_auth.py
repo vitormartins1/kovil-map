@@ -34,9 +34,7 @@ def test_websocket_token_validation_query_header_and_bearer(monkeypatch):
     monkeypatch.setenv(auth.API_TOKEN_ENV, "ws-secret")
 
     ws_query = SimpleNamespace(query_params={"token": "ws-secret"}, headers={})
-    ws_header = SimpleNamespace(
-        query_params={}, headers={"x-kovil-token": "ws-secret"}
-    )
+    ws_header = SimpleNamespace(query_params={}, headers={"x-kovil-token": "ws-secret"})
     ws_bearer = SimpleNamespace(
         query_params={}, headers={"authorization": "Bearer ws-secret"}
     )

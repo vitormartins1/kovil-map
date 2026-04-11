@@ -645,12 +645,13 @@ def test_first_non_empty():
 
 def test_extract_pcap_not_found(tmp_path, monkeypatch):
     """extract returns error when PCAP not found."""
-    from app.utils.pcap import resolve_pcap_reference
 
     monkeypatch.setattr(fs_module, "HANDSHAKES_DIR", str(tmp_path))
     service = fs_module.FingerprintService()
     monkeypatch.setattr(service, "_check_tshark", lambda: "tshark")
-    monkeypatch.setattr("app.utils.pcap.resolve_pcap_reference", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        "app.utils.pcap.resolve_pcap_reference", lambda *args, **kwargs: None
+    )
     result = service.extract("nonexistent.pcap")
     assert result["status"] == "error"
     assert "not found" in result["message"].lower()

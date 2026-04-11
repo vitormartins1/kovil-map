@@ -13,14 +13,11 @@ Covers:
 from __future__ import annotations
 
 import os
-import re
 import subprocess
 
 import pytest
 
 from app.services import pmk_service as pmk_service_module
-from app.services.pmk_service import PmkService
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -57,11 +54,13 @@ def pmk_dir(tmp_path, monkeypatch):
     pmk_path.mkdir()
     monkeypatch.setattr(pmk_service_module, "PMK_DIR", str(pmk_path))
     monkeypatch.setattr(
-        pmk_service_module.pmk_service, "_get_config",
+        pmk_service_module.pmk_service,
+        "_get_config",
         lambda: {"airolib_path": "airolib-ng", "aircrack_path": "aircrack-ng"},
     )
     monkeypatch.setattr(
-        pmk_service_module.pmk_service, "_should_use_wsl",
+        pmk_service_module.pmk_service,
+        "_should_use_wsl",
         lambda binary_path: False,
     )
     return pmk_path
@@ -72,11 +71,13 @@ def patch_pcap_resolve(monkeypatch, tmp_path):
     """Patch PCAP resolution for attack tests."""
     pcap = _write_pcap(tmp_path)
     monkeypatch.setattr(
-        pmk_service_module.pmk_service, "_pcap_search_roots",
+        pmk_service_module.pmk_service,
+        "_pcap_search_roots",
         lambda: (str(tmp_path),),
     )
     monkeypatch.setattr(
-        pmk_service_module, "resolve_pcap_reference",
+        pmk_service_module,
+        "resolve_pcap_reference",
         lambda filename, capture_id=None, raw_item_id=None, search_roots=None: {
             "path": pcap,
             "filename": filename,
@@ -84,7 +85,8 @@ def patch_pcap_resolve(monkeypatch, tmp_path):
         },
     )
     monkeypatch.setattr(
-        pmk_service_module, "get_capture_artifact_path",
+        pmk_service_module,
+        "get_capture_artifact_path",
         lambda cid: str(tmp_path),
     )
     return tmp_path
@@ -137,9 +139,12 @@ class TestDatabaseStats:
         db_file.write_bytes(b"\x00" * 50)
 
         monkeypatch.setattr(
-            subprocess, "run",
+            subprocess,
+            "run",
             lambda cmd, capture_output=False, text=False, timeout=None: type(
-                "FakeResult", (), {"stdout": "ESSID: 1\nPasswd: 100\nPMK: 50", "stderr": ""}
+                "FakeResult",
+                (),
+                {"stdout": "ESSID: 1\nPasswd: 100\nPMK: 50", "stderr": ""},
             )(),
         )
         resp = client.get("/api/pmk/databases/mydb.db/stats")
@@ -189,18 +194,23 @@ class TestBuildDatabase:
         started_jobs = []
 
         def fake_start_job(command, job_type="generic", cwd=None, on_complete=None):
-            started_jobs.append({
-                "command": command,
-                "job_type": job_type,
-                "cwd": cwd,
-            })
+            started_jobs.append(
+                {
+                    "command": command,
+                    "job_type": job_type,
+                    "cwd": cwd,
+                }
+            )
             return "fake-job-id"
 
         monkeypatch.setattr(
-            pmk_service_module.job_manager, "start_job", fake_start_job,
+            pmk_service_module.job_manager,
+            "start_job",
+            fake_start_job,
         )
         monkeypatch.setattr(
-            pmk_service_module.history_service, "add_entry",
+            pmk_service_module.history_service,
+            "add_entry",
             lambda *a, **kw: "fake-entry-id",
         )
 
@@ -219,11 +229,13 @@ class TestBuildDatabase:
     def test_custom_db_name(self, client, pmk_dir, tmp_path, monkeypatch):
         wl = _write_wordlist(tmp_path)
         monkeypatch.setattr(
-            pmk_service_module.job_manager, "start_job",
+            pmk_service_module.job_manager,
+            "start_job",
             lambda *a, **kw: "fake-job-id",
         )
         monkeypatch.setattr(
-            pmk_service_module.history_service, "add_entry",
+            pmk_service_module.history_service,
+            "add_entry",
             lambda *a, **kw: "fake-entry-id",
         )
         resp = client.post(
@@ -270,10 +282,13 @@ class TestPmkAttack:
             return "attack-job-id"
 
         monkeypatch.setattr(
-            pmk_service_module.job_manager, "start_job", fake_start_job,
+            pmk_service_module.job_manager,
+            "start_job",
+            fake_start_job,
         )
         monkeypatch.setattr(
-            pmk_service_module.history_service, "add_entry",
+            pmk_service_module.history_service,
+            "add_entry",
             lambda *a, **kw: "entry-id",
         )
 
@@ -363,12 +378,11 @@ class TestPmkServiceInternals:
         hs_dir = tmp_path / "handshakes"
         hs_dir.mkdir()
         import app.services.pmk_service as _mod
+
         original = _mod.HANDSHAKES_DIR
         _mod.HANDSHAKES_DIR = str(hs_dir)
         try:
-            result = svc._check_key_found(
-                {"logs": []}, key_file, "test_network"
-            )
+            result = svc._check_key_found({"logs": []}, key_file, "test_network")
             assert result is True
             cracked_file = hs_dir / "test_network.pcap.cracked"
             assert cracked_file.exists()
@@ -384,14 +398,17 @@ class TestPmkServiceInternals:
         hs_dir = tmp_path / "handshakes"
         hs_dir.mkdir()
         import app.services.pmk_service as _mod
+
         original = _mod.HANDSHAKES_DIR
         _mod.HANDSHAKES_DIR = str(hs_dir)
         try:
-            job = {"logs": [
-                "Reading packets...",
-                "KEY FOUND! [ mypassword123 ]",
-                "Master Key: ...",
-            ]}
+            job = {
+                "logs": [
+                    "Reading packets...",
+                    "KEY FOUND! [ mypassword123 ]",
+                    "Master Key: ...",
+                ]
+            }
             result = svc._check_key_found(job, key_file, "target")
             assert result is True
             cracked_file = hs_dir / "target.pcap.cracked"
@@ -429,7 +446,8 @@ class TestPmkAttackInternals:
     def test_attack_pcap_not_found(self, pmk_dir, monkeypatch):
         _write_db(pmk_dir, "attack.db")
         monkeypatch.setattr(
-            pmk_service_module, "resolve_pcap_reference",
+            pmk_service_module,
+            "resolve_pcap_reference",
             lambda *a, **kw: None,
         )
         svc = pmk_service_module.pmk_service
@@ -439,7 +457,9 @@ class TestPmkAttackInternals:
 
     def test_attack_db_not_found(self, pmk_dir):
         svc = pmk_service_module.pmk_service
-        result = svc.attack_with_pmk("capture.pcap", "AA:BB:CC:DD:EE:01", "nonexistent.db")
+        result = svc.attack_with_pmk(
+            "capture.pcap", "AA:BB:CC:DD:EE:01", "nonexistent.db"
+        )
         assert result["status"] == "error"
 
     def test_delete_nonexistent(self, pmk_dir):

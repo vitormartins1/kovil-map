@@ -66,7 +66,9 @@ def test_get_history_path_with_combined_build_id(tmp_path, monkeypatch):
     assert path == "/combined/AA:BB:CC:DD:EE:FF/build1/history.try"
 
 
-def test_get_history_path_with_combined_build_id_without_mac_falls_back(tmp_path, monkeypatch):
+def test_get_history_path_with_combined_build_id_without_mac_falls_back(
+    tmp_path, monkeypatch
+):
     monkeypatch.setattr(hs_module, "HANDSHAKES_DIR", str(tmp_path))
 
     def mock_get_combined(mac, combined_build_id, *args, **kwargs):

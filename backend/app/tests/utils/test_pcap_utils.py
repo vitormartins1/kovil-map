@@ -1,7 +1,6 @@
 from app.utils import pcap as pcap_utils
 from app.utils.pcap import validate_pcap_file
 
-
 # ── validate_pcap_file ────────────────────────────────────────────────
 
 
@@ -49,6 +48,7 @@ class TestValidatePcapFile:
     def test_valid_pcap_le(self, tmp_path):
         """Little-endian PCAP with valid global header."""
         import struct
+
         # Global header: magic(4) + ver_major(2) + ver_minor(2) + thiszone(4)
         #   + sigfigs(4) + snaplen(4) + network(4) = 24 bytes
         ghdr = (
@@ -68,6 +68,7 @@ class TestValidatePcapFile:
     def test_valid_pcap_be(self, tmp_path):
         """Big-endian PCAP with valid global header."""
         import struct
+
         ghdr = (
             b"\xa1\xb2\xc3\xd4"
             + struct.pack(">HH", 2, 4)
@@ -101,6 +102,7 @@ class TestValidatePcapFile:
     def test_snaplen_zero_is_corrupt(self, tmp_path):
         """PCAP with snaplen == 0 should be flagged as corrupt."""
         import struct
+
         ghdr = (
             b"\xd4\xc3\xb2\xa1"
             + struct.pack("<HH", 2, 4)
@@ -126,6 +128,7 @@ class TestValidatePcapFile:
     def test_nsec_pcap_valid(self, tmp_path):
         """Nanosecond-resolution PCAP."""
         import struct
+
         ghdr = (
             b"\x4d\x3c\xb2\xa1"  # nsec LE magic
             + struct.pack("<HH", 2, 4)

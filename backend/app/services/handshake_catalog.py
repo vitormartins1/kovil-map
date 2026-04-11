@@ -500,11 +500,10 @@ def _scan_capture_candidates() -> list[dict[str, Any]]:
             seen_paths.add(normalized_path)
 
             from app.utils.pcap import validate_pcap_file
+
             valid, reason = validate_pcap_file(full_path)
             if not valid:
-                logger.warning(
-                    "Skipping invalid capture PCAP %s: %s", filename, reason
-                )
+                logger.warning("Skipping invalid capture PCAP %s: %s", filename, reason)
                 continue
 
             capture = _build_capture_record(

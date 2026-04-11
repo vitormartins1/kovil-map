@@ -12,7 +12,6 @@ import pytest
 from app.services import wps_service as wps_service_module
 from app.services.wps_service import WpsService
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -22,11 +21,13 @@ from app.services.wps_service import WpsService
 def wps_env(monkeypatch):
     """Patch config and WSL for isolation."""
     monkeypatch.setattr(
-        wps_service_module.wps_service, "_get_config",
+        wps_service_module.wps_service,
+        "_get_config",
         lambda: {"reaver_path": "reaver", "bully_path": "bully"},
     )
     monkeypatch.setattr(
-        wps_service_module.wps_service, "_should_use_wsl",
+        wps_service_module.wps_service,
+        "_should_use_wsl",
         lambda binary_path: False,
     )
 
@@ -37,15 +38,21 @@ def fake_job_start(monkeypatch):
     calls = []
 
     def _start_job(cmd_args, job_type=None, cwd=None, on_complete=None):
-        calls.append({
-            "cmd_args": cmd_args,
-            "job_type": job_type,
-            "cwd": cwd,
-            "on_complete": on_complete,
-        })
+        calls.append(
+            {
+                "cmd_args": cmd_args,
+                "job_type": job_type,
+                "cwd": cwd,
+                "on_complete": on_complete,
+            }
+        )
         return "fake-wps-job-id"
 
-    monkeypatch.setattr(wps_service_module, "job_manager", type("FakeJM", (), {"start_job": staticmethod(_start_job)})())
+    monkeypatch.setattr(
+        wps_service_module,
+        "job_manager",
+        type("FakeJM", (), {"start_job": staticmethod(_start_job)})(),
+    )
     return calls
 
 
@@ -53,11 +60,16 @@ def fake_job_start(monkeypatch):
 def fake_history(monkeypatch):
     """Stub history_service to avoid side-effects."""
     monkeypatch.setattr(
-        wps_service_module, "history_service",
-        type("FakeHS", (), {
-            "add_entry": staticmethod(lambda *a, **kw: "fake-entry-id"),
-            "update_entry": staticmethod(lambda *a, **kw: None),
-        })(),
+        wps_service_module,
+        "history_service",
+        type(
+            "FakeHS",
+            (),
+            {
+                "add_entry": staticmethod(lambda *a, **kw: "fake-entry-id"),
+                "update_entry": staticmethod(lambda *a, **kw: None),
+            },
+        )(),
     )
 
 
@@ -68,27 +80,36 @@ def fake_history(monkeypatch):
 
 class TestWpsAttackEndpoint:
     def test_missing_bssid(self, client):
-        resp = client.post("/api/wps/attack", json={
-            "bssid": "",
-            "channel": "6",
-            "interface": "wlan0mon",
-        })
+        resp = client.post(
+            "/api/wps/attack",
+            json={
+                "bssid": "",
+                "channel": "6",
+                "interface": "wlan0mon",
+            },
+        )
         assert resp.status_code == 400
 
     def test_missing_channel(self, client):
-        resp = client.post("/api/wps/attack", json={
-            "bssid": "AA:BB:CC:DD:EE:FF",
-            "channel": "",
-            "interface": "wlan0mon",
-        })
+        resp = client.post(
+            "/api/wps/attack",
+            json={
+                "bssid": "AA:BB:CC:DD:EE:FF",
+                "channel": "",
+                "interface": "wlan0mon",
+            },
+        )
         assert resp.status_code == 400
 
     def test_missing_interface(self, client):
-        resp = client.post("/api/wps/attack", json={
-            "bssid": "AA:BB:CC:DD:EE:FF",
-            "channel": "6",
-            "interface": "",
-        })
+        resp = client.post(
+            "/api/wps/attack",
+            json={
+                "bssid": "AA:BB:CC:DD:EE:FF",
+                "channel": "6",
+                "interface": "",
+            },
+        )
         assert resp.status_code == 400
 
     def test_missing_fields_entirely(self, client):
@@ -96,12 +117,15 @@ class TestWpsAttackEndpoint:
         assert resp.status_code == 422
 
     def test_success_reaver(self, client, wps_env, fake_job_start, fake_history):
-        resp = client.post("/api/wps/attack", json={
-            "bssid": "AA:BB:CC:DD:EE:FF",
-            "channel": "6",
-            "interface": "wlan0mon",
-            "tool": "reaver",
-        })
+        resp = client.post(
+            "/api/wps/attack",
+            json={
+                "bssid": "AA:BB:CC:DD:EE:FF",
+                "channel": "6",
+                "interface": "wlan0mon",
+                "tool": "reaver",
+            },
+        )
         assert resp.status_code == 200
         data = resp.json()["data"]
         assert data["status"] == "started"
@@ -109,35 +133,44 @@ class TestWpsAttackEndpoint:
         assert data["tool"] == "reaver"
 
     def test_success_bully(self, client, wps_env, fake_job_start, fake_history):
-        resp = client.post("/api/wps/attack", json={
-            "bssid": "AA:BB:CC:DD:EE:FF",
-            "channel": "11",
-            "interface": "wlan0mon",
-            "tool": "bully",
-        })
+        resp = client.post(
+            "/api/wps/attack",
+            json={
+                "bssid": "AA:BB:CC:DD:EE:FF",
+                "channel": "11",
+                "interface": "wlan0mon",
+                "tool": "bully",
+            },
+        )
         assert resp.status_code == 200
         data = resp.json()["data"]
         assert data["status"] == "started"
         assert data["tool"] == "bully"
 
     def test_pixie_dust(self, client, wps_env, fake_job_start, fake_history):
-        resp = client.post("/api/wps/attack", json={
-            "bssid": "AA:BB:CC:DD:EE:FF",
-            "channel": "1",
-            "interface": "wlan0mon",
-            "pixie_dust": True,
-        })
+        resp = client.post(
+            "/api/wps/attack",
+            json={
+                "bssid": "AA:BB:CC:DD:EE:FF",
+                "channel": "1",
+                "interface": "wlan0mon",
+                "pixie_dust": True,
+            },
+        )
         assert resp.status_code == 200
         cmd = fake_job_start[0]["cmd_args"]
         assert "-K" in cmd
 
     def test_with_delay(self, client, wps_env, fake_job_start, fake_history):
-        resp = client.post("/api/wps/attack", json={
-            "bssid": "AA:BB:CC:DD:EE:FF",
-            "channel": "6",
-            "interface": "wlan0mon",
-            "delay": 5,
-        })
+        resp = client.post(
+            "/api/wps/attack",
+            json={
+                "bssid": "AA:BB:CC:DD:EE:FF",
+                "channel": "6",
+                "interface": "wlan0mon",
+                "delay": 5,
+            },
+        )
         assert resp.status_code == 200
         cmd = fake_job_start[0]["cmd_args"]
         assert "-d" in cmd
@@ -201,13 +234,17 @@ class TestWpsServiceStartAttack:
 
     def test_reaver_pixie_dust_flag(self, wps_env, fake_job_start, fake_history):
         svc = wps_service_module.wps_service
-        svc.start_attack("AA:BB:CC:DD:EE:FF", "6", "wlan0mon", tool="reaver", pixie_dust=True)
+        svc.start_attack(
+            "AA:BB:CC:DD:EE:FF", "6", "wlan0mon", tool="reaver", pixie_dust=True
+        )
         cmd = fake_job_start[0]["cmd_args"]
         assert "-K" in cmd
 
     def test_bully_pixie_dust_flag(self, wps_env, fake_job_start, fake_history):
         svc = wps_service_module.wps_service
-        svc.start_attack("AA:BB:CC:DD:EE:FF", "6", "wlan0mon", tool="bully", pixie_dust=True)
+        svc.start_attack(
+            "AA:BB:CC:DD:EE:FF", "6", "wlan0mon", tool="bully", pixie_dust=True
+        )
         cmd = fake_job_start[0]["cmd_args"]
         assert "-d" in cmd
 
@@ -230,8 +267,10 @@ class TestWpsServiceStartAttack:
     def test_extra_args_sanitized(self, wps_env, fake_job_start, fake_history):
         svc = wps_service_module.wps_service
         svc.start_attack(
-            "AA:BB:CC:DD:EE:FF", "6", "wlan0mon",
-            extra_args=["--no-nacks", "; rm -rf /", "--timeout=30"]
+            "AA:BB:CC:DD:EE:FF",
+            "6",
+            "wlan0mon",
+            extra_args=["--no-nacks", "; rm -rf /", "--timeout=30"],
         )
         cmd = fake_job_start[0]["cmd_args"]
         assert "--no-nacks" in cmd
