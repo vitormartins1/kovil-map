@@ -1,6 +1,6 @@
 # KOVIL MAP
 
-[![Quality](https://github.com/vitormartins1/kovil.map/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/vitormartins1/kovil.map/actions/workflows/quality.yml) [![Security](https://github.com/vitormartins1/kovil.map/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/vitormartins1/kovil.map/actions/workflows/security.yml) ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue.svg) ![License](https://img.shields.io/badge/License-MIT-purple.svg)
+[![Quality](https://github.com/vitormartins1/kovil-map/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/vitormartins1/kovil-map/actions/workflows/quality.yml) [![Security](https://github.com/vitormartins1/kovil-map/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/vitormartins1/kovil-map/actions/workflows/security.yml) ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue.svg) ![License](https://img.shields.io/badge/License-MIT-purple.svg)
 
 KOVIL MAP is a local-first desktop command center for Wi-Fi reconnaissance, map intelligence, cracking workflows, RAW capture enrichment, and WarDrive analysis.
 

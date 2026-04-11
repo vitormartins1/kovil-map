@@ -53,8 +53,8 @@ Use this path if you want the latest development build or plan to contribute.
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/vitormartins1/kovil.map.git
-cd kovil.map
+git clone https://github.com/vitormartins1/kovil-map.git
+cd kovil-map
 ```
 
 ### Step 2: Backend Setup
