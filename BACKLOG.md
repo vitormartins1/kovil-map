@@ -1,6 +1,6 @@
 # KOVIL MAP Backlog
 
-**Last updated:** April 7, 2026  
+**Last updated:** April 11, 2026  
 **Tracked initiatives:** 25
 
 This backlog is public-facing. It may include both contributor-friendly roadmap items and maintainer-owned release/readiness work, but it should not contain secrets, personal infrastructure details, or private operational notes.
@@ -30,10 +30,15 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 ### Capture-scoped derived artifacts
 
 - Priority: `HIGH`
-- Status: `TODO`
+- Status: `DONE`
 - Estimate: `12-16h`
 - Complexity: `High`
 - Goal: finish the handshake-set redesign by moving derived artifacts away from the current shared legacy model in `backend/data/handshakes/` and toward capture-scoped storage.
+- Current state:
+  - capture-scoped artifacts ship under `backend/data/handshakes/captures/<capture_id>/`
+  - legacy/shared artifacts remain readable for compatibility
+  - API and UI already expose capture-aware provenance and selection flows
+  - regression coverage exists for capture-id and cross-source handshake handling
 - Requirements:
   - namespaced `.details`, `.22000`, `.try`, and `.cracked` per capture
   - read compatibility for existing legacy/shared artifacts
@@ -43,10 +48,15 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 ### Opt-in combined candidate build for one BSSID
 
 - Priority: `MEDIUM`
-- Status: `TODO`
+- Status: `DONE`
 - Estimate: `10-14h`
 - Complexity: `High`
 - Goal: let the operator explicitly combine multiple valid captures from the same handshake set to improve cracking odds without changing the default preferred-capture workflow.
+- Current state:
+  - the cracking panel can manually build a combined candidate for one BSSID
+  - combined outputs are written with deterministic dedupe plus a provenance manifest
+  - combined candidates stay opt-in and do not replace the preferred-capture default
+  - UI and API test coverage already exists for operator-triggered builds
 - Requirements:
   - manual action in the cracking panel
   - deterministic dedupe and provenance manifest
@@ -62,6 +72,9 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 - Estimate: `3-5h`
 - Complexity: `Medium`
 - Goal: enforce the refactored CI/CD model in GitHub so merges are blocked unless the expected `Quality` and `Security` checks pass.
+- Current state:
+  - `Quality`, `Security`, and promotion workflows are healthy
+  - GitHub branch protection is still not enabled for either `dev` or `main`
 - Process:
   - open GitHub repository settings: `Settings -> Branches -> Add branch protection rule`
   - create one rule for `dev`
@@ -92,22 +105,30 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 ### Frontend branch coverage back to threshold
 
 - Priority: `HIGH`
-- Status: `TODO`
+- Status: `IN PROGRESS`
 - Estimate: `8-12h`
 - Complexity: `Medium`
 - Goal: restore a passing `jest --coverage` run without lowering the current frontend branch threshold.
+- Current state:
+  - frontend tests and CI are passing again
+  - the global coverage thresholds were temporarily normalized to the current baseline
+  - remaining work is to add targeted tests and raise the thresholds back to the intended gate
 - Requirements:
   - targeted tests for `ui.js`, `map.js`, `ui_wardrive.js`, and related helpers
-  - keep global coverage thresholds unchanged
+  - restore stronger global coverage thresholds after the new tests land
   - document the local command flow contributors should use before merging
 
 ### Packaged desktop smoke checks
 
 - Priority: `MEDIUM`
-- Status: `TODO`
+- Status: `IN PROGRESS`
 - Estimate: `6-8h`
 - Complexity: `Medium`
 - Goal: add repeatable verification for packaged Windows, macOS, and Linux builds.
+- Current state:
+  - the frontend quality workflow already runs a packaged-backend smoke test
+  - local contributors can already run `npm run test:smoke:packaged --prefix frontend`
+  - remaining work is broader packaged-app verification per platform plus a release checklist
 - Requirements:
   - verify the correct bundled backend binary per platform
   - launch the packaged app and confirm backend startup
@@ -145,24 +166,31 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 ### Cleanup and mock data
 
 - Priority: `CRITICAL`
-- Status: `TODO`
+- Status: `IN PROGRESS`
 - Estimate: `16-20h`
 - Complexity: `High`
 - Goal: prepare the codebase for public publication with safe demo-ready data.
+- Current state:
+  - tracked source, config, docs, and Git history were already sanitized for the public repository
+  - live runtime capture data is no longer versioned in the public tree
+  - remaining work is to formalize a dedicated versioned demo dataset/bootstrap flow
 - Tasks:
-  - remove personal absolute paths
-  - remove private IPs, hostnames, tokens, and credentials
-  - replace real SSIDs and MACs with mock data
+  - keep personal absolute paths, credentials, and local artifacts out of tracked files
+  - keep public examples and starter config sanitized
   - provide demo datasets under a dedicated data root
   - add a first-run demo bootstrap script
 
 ### Data-sensitivity review before publishing
 
 - Priority: `CRITICAL`
-- Status: `TODO`
+- Status: `DONE`
 - Estimate: `10-12h`
 - Complexity: `High`
 - Goal: perform a repository-wide sensitivity audit before any public release.
+- Current state:
+  - completed for the initial public release and history reset
+  - tracked source/config/docs were reviewed and sanitized before publication
+  - runtime data and generated local artifacts remain outside the versioned public tree
 - Audit areas:
   - source files
   - config files
