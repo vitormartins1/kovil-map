@@ -19,6 +19,7 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
 
 from app.core.config import DATA_DIR, HANDSHAKES_DIR
+from app.core.job_manager import job_manager as _job_manager
 from app.services.data_loader import get_data_revision, load_real_data
 from app.services.probe_service import probe_service
 from app.services.recon_comms_service import (
@@ -47,14 +48,13 @@ from app.services.recon_runtime_service import (
     _recon_artifacts_signature,
     _resolve_dataset_network,
     _scan_hash_files,
-    clear_recon_runtime_cache,
 )
 from app.utils.responses import fail, ok
-from app.api.deps import mac_lookup
 
 import json as _json
 
 router = APIRouter()
+job_manager = _job_manager
 
 # Persistent storage for snapshots
 _SNAPSHOT_DIR = os.path.join(DATA_DIR, "recon_snapshots")

@@ -6,8 +6,6 @@ import os
 import re
 from typing import Any
 
-logger = logging.getLogger(__name__)
-
 from app.core.config import (
     BRUCE_HANDSHAKES_DIR,
     BRUCE_PCAP_DIR,
@@ -20,6 +18,8 @@ from app.utils.handshake_artifacts import (
     list_combined_candidates,
     read_json,
 )
+
+logger = logging.getLogger(__name__)
 
 _HS_RE = re.compile(r"^HS_([0-9A-Fa-f]{12})")
 _TRAILING_MAC_RE = re.compile(r"^(?P<ssid>.+?)_(?P<mac>[0-9A-Fa-f]{12})$")
