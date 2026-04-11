@@ -119,8 +119,9 @@ Unified offensive intelligence workspace.
 
 1. Pick the feature that matches your workflow
 2. Read its full documentation
-3. Browse examples in [06-CODE-EXAMPLES](../06-CODE-EXAMPLES/)
-4. Check the operational guides in [07-OPERATIONS](../07-OPERATIONS/)
+3. If you think in tasks instead of modules, read [Workflows by Objective](../07-OPERATIONS/workflows-by-objective.md)
+4. Browse examples in [06-CODE-EXAMPLES](../06-CODE-EXAMPLES/)
+5. Check the operational guides in [07-OPERATIONS](../07-OPERATIONS/)
 
 ---
 

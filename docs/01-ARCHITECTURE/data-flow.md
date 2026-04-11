@@ -30,7 +30,7 @@ Typical data enters through:
 ### REST
 
 - `GET /api/map/data` for full map data refresh
-- workspace endpoints for analytics, WarDrive, cracking, RAW, and supporting summaries
+- workspace and supporting endpoints for map/recon analytics, WarDrive, cracking, RAW, and summaries
 
 ### WebSocket
 
@@ -44,5 +44,5 @@ The Electron renderer transforms backend JSON into:
 - filtered marker sets
 - themed popup cards
 - side-panel lists and summaries
-- workspace overlays for Analytics and WarDrive
+- map/recon analytics overlays and WarDrive overlays
 - process feedback and action states for cracking and RAW workflows

@@ -38,6 +38,8 @@ The easiest way to use KOVIL MAP is through the packaged releases.
 3. Run the installer and follow the on-screen instructions.
 4. On first launch, open **Settings** and configure the paths for `hashcat`, `hcxpcapngtool`, and `tshark`.
 
+Packaged releases start the backend for you. See [Runtime Modes](runtime-modes.md) if you want the exact differences between packaged and development behavior.
+
 ---
 
 ## Option 2: Developers
@@ -83,6 +85,8 @@ npm install
 npm start
 ```
 
+In development, the backend is started manually and logs stay visible in your terminal. See [Runtime Modes](runtime-modes.md) for the complete comparison.
+
 ---
 
 ## Installation Troubleshooting
@@ -118,4 +122,6 @@ This usually points to a GPU driver issue.
 ## Next Steps
 
 - [First Run Guide](first-run.md)
+- [Current Product Surface](current-product-surface.md)
+- [Runtime Modes](runtime-modes.md)
 - [Remote Sync](../02-FEATURES/sync-remote.md)

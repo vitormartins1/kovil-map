@@ -1,6 +1,6 @@
 # Analytics Endpoints
 
-Analytics endpoints power the adaptive Analytics workspace.
+Analytics endpoints power the tactical analytics layer used by map and Recon-adjacent workflows.
 
 Base path:
 
@@ -86,9 +86,11 @@ Returns channel summary, device summary, and WarDrive context for the current fi
 
 ## Current UX Contract
 
-The frontend uses these endpoints like this:
+Historically, the frontend used these endpoints like this:
 
 - load heatmap and hotspot list at workspace open
 - do not auto-select a hotspot
 - draw hotspot highlight only after a user click
 - use `candidate_macs` for `ADD TO TARGETS`
+
+The current operator-facing nomenclature is Recon Center plus the tactical map rather than a separate top-level Analytics screen.

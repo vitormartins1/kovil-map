@@ -6,7 +6,7 @@ This section tracks planned directions for KOVIL MAP. It is intentionally forwar
 
 | Period | Focus | Examples |
 |---|---|---|
-| Q2 2026 | Workspace polish | WarDrive and Analytics UX refinement |
+| Q2 2026 | Workspace polish | WarDrive and Recon workflow refinement |
 | Q3 2026 | Intelligence | targeting automation, richer analysis |
 | Q4 2026 | Scale | collaboration, auditability, packaging improvements |
 

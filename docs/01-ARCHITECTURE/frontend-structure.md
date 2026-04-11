@@ -2,6 +2,8 @@
 
 The frontend uses Electron and a vanilla JavaScript renderer organized by domain instead of a component framework runtime.
 
+The current operator-facing workspace names are Tactical Map, Recon Center, WarDrive Workspace, and Raw Sniffer. Some older files and state flags still keep `analytics` naming for compatibility with earlier iterations.
+
 ## Main Pieces
 
 ### Electron main process
@@ -83,7 +85,7 @@ frontend/src/
 - `state.js` - shared UI/application state
 - `ui.js` - global boot and top-level interactions
 - `ui_shell.js` - startup shell and title-bar presentation helpers
-- `ui_analytics.js` - analytics workspace
+- `ui_analytics.js` - legacy analytics module retained for older hotspot/heatmap-era flows and internal compatibility
 - `ui_recon.js` - Recon Center shell, orchestration, and tab wiring
 - `ui_wardrive.js` - WarDrive workspace
 - `ui_raw.js` - RAW Sniffer center panel

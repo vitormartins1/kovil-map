@@ -29,5 +29,5 @@ FastAPI backend
 - local-first and file-backed instead of DB-centric
 - Electron security hardening with preload bridge and sandboxed renderer
 - service-oriented backend modules for cracking, analytics, RAW, sync, and WarDrive
-- workspace-driven frontend UX for Analytics, WarDrive, and Sniffer flows
+- workspace-driven frontend UX for Recon Center, WarDrive, and Sniffer flows, with the tactical map as the default cockpit
 - progressive modularization of large frontend workspaces through feature-local helper modules

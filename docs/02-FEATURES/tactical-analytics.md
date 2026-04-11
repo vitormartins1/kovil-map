@@ -1,15 +1,14 @@
-# Analytics v2
+# Tactical Analytics
 
-Analytics v2 replaces the old fixed-cell tactical hotspot workflow with adaptive spatial clustering and a cleaner workspace UX.
+Tactical Analytics is the geospatial intelligence layer behind heatmaps, hotspots, opportunity scoring, and channel summaries.
 
 ## Current Product Behavior
 
-When Analytics opens:
+In the current product, operators consume this intelligence through the tactical map and Recon-led workflows rather than a separate top-level Analytics screen.
 
-- the heatmap loads immediately
-- the hotspot list loads immediately
-- no hotspot is auto-selected
-- no hotspot circle is drawn on the map until the operator clicks a hotspot
+- adaptive hotspots and heatmap payloads remain part of the backend/domain model
+- the operator-facing intelligence workspace is Recon Center
+- analytics endpoints stay available for integrations and future UI composition
 
 ## Hotspots Are Adaptive Now
 
@@ -61,7 +60,7 @@ The ranking favors:
 
 ## Filters
 
-Analytics still supports the current common filters:
+The analytics layer still supports the current common filters:
 
 - metric
 - time window (`all`, `24h`)
@@ -72,16 +71,16 @@ Analytics still supports the current common filters:
 
 The old hotspot `cell_size_m` selector is gone from the UI. The backend still accepts `cell_size_m` on `/api/analytics/hotspots` for compatibility, but the parameter is deprecated and ignored by hotspot generation.
 
-## WarDrive Context in Analytics
+## WarDrive Context in Analytics Payloads
 
-Analytics also shows non-filtering WarDrive context in the right panel, including:
+Analytics payloads can also include non-filtering WarDrive context, including:
 
 - session count
 - networks count
 - points count
 - top transport modes (up to 8)
 
-This context respects the selected analytics `time_window` but does not turn Analytics into a WarDrive-session filter in this phase.
+This context respects the selected analytics `time_window` but does not turn the analytics layer into a WarDrive-session filter in this phase.
 
 ## Related Endpoints
 
