@@ -7,34 +7,32 @@
 
 English | [Portuguese (BR)](README__ptbr.md)
 
+<p align="center">
+  <img src="docs/assets/illustrations/wardrive-rio-de-janeiro-hero.png" alt="Wardriving illustration in Rio de Janeiro" />
+</p>
+
 KOVIL MAP is a local-first desktop command center for Wi-Fi reconnaissance, WarDrive analysis, remote capture sync, RAW/PCAP enrichment, and cracking workflows.
 
 It combines an Electron frontend with a FastAPI backend so operators can inspect networks on a tactical map, move into specialized workspaces, run long-lived jobs locally, and keep the operational state in one place.
 
-The current operator-facing surfaces are the Tactical Map, Recon Center, WarDrive Workspace, and Raw Sniffer. Older internal names may still use `analytics`, but there is no separate Analytics screen in the current UI.
+The product is organized around the Tactical Map plus dedicated workspaces for Recon, WarDrive, and Raw Sniffer.
 
-## Wardrive in Rio de Janeiro
+## WarDrive Workspace
 
-<table>
-  <tr>
-    <td width="58%">
-      <img src="docs/assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png" alt="KOVIL MAP WarDrive workspace replaying a session in Rio de Janeiro" />
-    </td>
-    <td width="42%">
-      <img src="docs/assets/illustrations/wardrive-rio-de-janeiro-hero.png" alt="Illustrative wardriving hero image set in Rio de Janeiro" />
-    </td>
-  </tr>
-  <tr>
-    <td>Real WarDrive workspace view with replay controls, active-region context, and workspace explorer over Rio de Janeiro data.</td>
-    <td>Illustrative concept art used to frame the Wardrive workflow in Rio de Janeiro.</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png" alt="KOVIL MAP WarDrive workspace replaying a session in Rio de Janeiro" />
+</p>
+
+- session hierarchy and region drilldown for large CSV-derived route datasets
+- route replay with pace, zoom, focus-track, and operator-controlled timeline playback
+- active-region context with network totals and open/cracked/locked breakdowns
+- workspace explorer for regions and zones, plus handoff to map inventory views
+- local-first route review that lets operators move from wardrive sessions back into the tactical map and the wider target workflow
 
 ## What It Does
 
 - **Tactical Map** for known networks, clusters, zones, favorites, targets, and popup actions.
 - **Recon Center** for attack surface review, target intelligence, SIGINT, COMMS, GEO, OPS, and reporting flows.
-- **WarDrive Workspace** for CSV session hierarchy, replay, active-region inspection, and map inventory.
 - **Raw Sniffer** for RAW capture ingestion, metadata analysis, enrichment, and crack-ready artifact preparation.
 - **Cracking Operations** with Hashcat, Aircrack-ng, HCX conversion, PMK/WPS helpers, batch execution, history, and process tracking.
 - **Remote Sync** for Pwnagotchi over SSH/SFTP and Bruce/M5Evil over WebUI-based flows.
@@ -120,6 +118,56 @@ High-value entry points:
 ## Responsible Use
 
 KOVIL MAP is intended for authorized security research, lab work, auditing, and learning. Many capabilities are dual-use. Use it only on networks, captures, devices, and systems you own or are explicitly authorized to assess.
+
+### Legal Compliance, Ethics, and Civil Liability
+
+This software is classified as a dual-use tool. Although developed for educational use and security auditing, improper use can lead to serious legal consequences.
+
+The summary below is provided for awareness and responsible use. It is informational only and does not replace legal advice.
+
+#### 1. Criminal Law Scope
+
+Unauthorized use of this tool may fall under criminal offenses defined by Brazilian law and by international instruments to which Brazil is a signatory, including the Budapest Convention on Cybercrime.
+
+**Unauthorized device or network intrusion**  
+Law No. 12.737/2012 (`Lei Carolina Dieckmann`), Art. 154-A, criminalizes invading another person’s computing device, including routers and networks, whether connected or not, through the improper violation of a security mechanism.
+
+Attention:
+Attempting to break a Wi-Fi password or otherwise bypass security without authorization may itself be understood as an unlawful violation of a security mechanism.
+
+**Service disruption**  
+Deauthentication attacks used to capture handshakes may also be treated as unlawful service interference under Art. 266 of the Brazilian Penal Code when they affect the connectivity or service availability of third parties.
+
+#### 2. Civil Liability and Privacy
+
+In addition to possible criminal penalties, an unauthorized operator may also face civil liability, including the duty to repair material and moral damages.
+
+**Brazilian General Data Protection Law (`LGPD`, Law No. 13.709/2018)**  
+Technical data such as MAC addresses and handshake material may be treated as personal data when they identify or make an individual identifiable. Collecting or processing that data without a valid legal basis, such as consent or a demonstrable legitimate interest, may lead to sanctions.
+
+**Brazilian Civil Rights Framework for the Internet (`Marco Civil da Internet`, Law No. 12.965/2014)**  
+Brazilian law protects privacy and the confidentiality of communications and provides for compensation when those rights are violated.
+
+#### 3. The Myth of the “Open Network”
+
+From a legal perspective, the fact that a Wi-Fi network is open or uses weak protection does not amount to implicit authorization for intrusion, traffic interception, or attacks.
+
+**Express authorization**  
+To conduct penetration testing lawfully, you should have a written contract or formal authorization from the network owner.
+
+**Reasonable expectation of privacy**  
+Users of a network, including open networks, may still have a legally protected expectation of privacy over their data and communications.
+
+### User Code of Conduct
+
+By using KOVIL MAP, you agree to follow these principles:
+
+- **Authorization:** never attack networks, devices, or infrastructure without explicit permission from the owner.
+- **Privacy:** do not collect, store, or disclose personal data belonging to third parties that may be obtained accidentally.
+- **Non-destruction:** do not perform actions that may degrade, interrupt, or destroy services, including persistent DoS-style behavior.
+- **Responsibility:** you are solely responsible for your actions. Ignorance of the law is not a defense.
+
+KOVIL MAP — The world is yours to audit, ethically.
 
 ## Community
 
