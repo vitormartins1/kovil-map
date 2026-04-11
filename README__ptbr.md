@@ -17,6 +17,34 @@ Ele combina um frontend Electron com um backend FastAPI para que o operador cons
 
 O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Recon, WarDrive e Raw Sniffer.
 
+## Mapa Tatico
+
+- cockpit principal para redes conhecidas, revisao de clusters, acoes de popup e triagem rapida de alvos
+- overlays espaciais para zonas conquistadas, a conquistar, descobertas e zonas de inteligencia
+- busca e revisao por status em datasets locais densos com contexto source-aware
+- pontos de handoff para cracking, Recon e revisao de rotas a partir da mesma superficie operacional
+
+## No-GPS
+
+- workspace dedicado para redes que ainda nao possuem coordenadas utilizaveis no mapa tatico
+- filtros por busca de SSID ou MAC, dispositivo de origem, status, visibilidade do nome e presenca de artefatos
+- revisao separada entre itens cracked e locked para manter a triagem de evidencias sem GPS mais rapida
+- handoff com um clique para operacoes de cracking a partir da entrada selecionada
+
+## Batch
+
+- workspace de alta vazao para montar um unico job de cracking a partir de varias redes e artefatos de handshake
+- filtros operacionais por busca, localizacao, origem e presenca de artefatos antes de gerar o batch
+- inventario de batches gerados e revisao do conteudo de cada batch depois da criacao
+- pensado para datasets grandes de wardrive e pentest, em que subir o cracking engine por alvo seria ineficiente
+
+## Recon Center
+
+- workspace unificado de inteligencia com as abas SURFACE, INTEL, OPS, GEO, SIGINT, REPORT e COMMS
+- hidratacao cache-first por aba para reabrir views densas mais rapido sem recarregar tudo de uma vez
+- inteligencia de clusters em COMMS e Intelligence Zones projetadas de volta no mapa
+- drilldown por alvo para superficie de ataque, threat analysis, signal intelligence e planejamento operacional
+
 ## WarDrive Workspace
 
 <p align="center">
@@ -29,13 +57,24 @@ O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Rec
 - workspace explorer para regioes e zonas, com handoff para visoes de map inventory
 - fluxo local-first para revisar sessoes de wardrive e depois voltar ao mapa tatico e ao restante da operacao
 
-## O Que o Projeto Faz
+## Raw Sniffer
 
-- **Mapa Tatico** para redes conhecidas, clusters, zonas, favoritos, alvos e acoes de popup.
-- **Recon Center** para revisao de superficie de ataque, target intel, SIGINT, COMMS, GEO, OPS e fluxos de relatorios.
-- **Raw Sniffer** para ingestao de capturas RAW, analise de metadados, enriquecimento e preparacao de artefatos prontos para cracking.
-- **Operacoes de cracking** com Hashcat, Aircrack-ng, conversao HCX, helpers de PMK/WPS, execucao em lote, historico e acompanhamento de processos.
-- **Sync remoto** para Pwnagotchi via SSH/SFTP e para Bruce/M5Evil via fluxos baseados em WebUI.
+- workspace source-aware para ingestao de capturas RAW de Bruce e M5Evil, metadados e limpeza de artefatos
+- revisao de estado de cache, metadados de captura, hashes gerados e relatorios completos de RAW analysis
+- ponte network-aware para fluxos de cracking por meio de hashes canonicos hibridos e artefatos de raw context
+- pensado para gerenciar evidencias RAW sem empurrar todo artefato bruto para o mapa principal
+
+## Zones, Targets e Favorites
+
+- `ZONES` mantem overlays do mapa acionaveis com vistas dedicadas para zonas conquistadas, a conquistar, descobertas e de inteligencia
+- `TARGETS` funciona como a lista de missao das redes que voce pretende atacar, analisar ou agrupar em batch
+- `FAVORITES` mantem uma shortlist mais duravel de redes ou locais que valem revisita rapida
+- esses paineis ajudam a sair da exploracao ampla do mapa para decisoes operacionais mais focadas
+
+## Capacidades de Apoio
+
+- **Operacoes de cracking** com Hashcat, Aircrack-ng, conversao HCX, helpers de PMK/WPS, execucao em lote, historico e acompanhamento de processos
+- **Sync remoto** para Pwnagotchi via SSH/SFTP e para Bruce/M5Evil via fluxos baseados em WebUI
 
 ## Fluxo Tipico
 

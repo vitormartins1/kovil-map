@@ -17,6 +17,34 @@ It combines an Electron frontend with a FastAPI backend so operators can inspect
 
 The product is organized around the Tactical Map plus dedicated workspaces for Recon, WarDrive, and Raw Sniffer.
 
+## Tactical Map
+
+- map-first cockpit for known networks, cluster review, popup actions, and rapid target triage
+- spatial overlays for conquered, to-conquer, discovered, and intelligence-driven zone layers
+- search and status-driven review across dense local datasets with source-aware context
+- direct pivot points into cracking, Recon, and route review from the same operational surface
+
+## No-GPS
+
+- dedicated workspace for networks that do not yet have usable coordinates on the tactical map
+- filters for SSID or MAC search, source device, status, name visibility, and artifact presence
+- split review between cracked and locked items so non-geolocated evidence can still be triaged fast
+- one-click handoff into cracking operations from a selected no-gps network entry
+
+## Batch
+
+- high-throughput workspace for building a single crack job from many networks and handshake artifacts
+- operator filters for search, location, source, and artifact presence before creating the batch
+- generated-batch inventory plus batch-contents review so work packages stay inspectable after creation
+- optimized for wardrive and large pentest datasets where launching the cracking engine per target is too expensive
+
+## Recon Center
+
+- unified intelligence workspace across SURFACE, INTEL, OPS, GEO, SIGINT, REPORT, and COMMS
+- cache-first tab hydration so dense analysis views reopen faster without eager full-workspace loading
+- COMMS cluster intelligence and map-facing Intelligence Zones for geospatial relationship review
+- target-level drilldown for attack surface, threat analysis, signal intelligence, and operational planning
+
 ## WarDrive Workspace
 
 <p align="center">
@@ -29,13 +57,24 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 - workspace explorer for regions and zones, plus handoff to map inventory views
 - local-first route review that lets operators move from wardrive sessions back into the tactical map and the wider target workflow
 
-## What It Does
+## Raw Sniffer
 
-- **Tactical Map** for known networks, clusters, zones, favorites, targets, and popup actions.
-- **Recon Center** for attack surface review, target intelligence, SIGINT, COMMS, GEO, OPS, and reporting flows.
-- **Raw Sniffer** for RAW capture ingestion, metadata analysis, enrichment, and crack-ready artifact preparation.
-- **Cracking Operations** with Hashcat, Aircrack-ng, HCX conversion, PMK/WPS helpers, batch execution, history, and process tracking.
-- **Remote Sync** for Pwnagotchi over SSH/SFTP and Bruce/M5Evil over WebUI-based flows.
+- source-aware RAW capture workspace for Bruce and M5Evil ingest, metadata, and cleanup flows
+- review of cache state, capture metadata, generated hashes, and capture-scoped RAW analysis reports
+- network-aware bridge into cracking workflows through canonical hybrid hash preparation and raw-context artifacts
+- intended for RAW evidence management without forcing every raw artifact into the main map
+
+## Zones, Targets, and Favorites
+
+- `ZONES` keeps map overlays actionable with dedicated views for conquered, to-conquer, discovered, and intelligence zones
+- `TARGETS` acts as the mission list for networks you plan to attack, analyze, or batch together
+- `FAVORITES` keeps a longer-lived shortlist of networks or places worth revisiting quickly
+- these panels make it easier to move from wide map exploration into focused operational decisions
+
+## Supporting Capabilities
+
+- **Cracking Operations** with Hashcat, Aircrack-ng, HCX conversion, PMK/WPS helpers, batch execution, history, and process tracking
+- **Remote Sync** for Pwnagotchi over SSH/SFTP and Bruce/M5Evil over WebUI-based flows
 
 ## Typical Flow
 
