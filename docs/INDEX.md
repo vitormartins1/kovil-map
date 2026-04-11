@@ -17,6 +17,8 @@ This is the canonical documentation index for the repository. Use `docs/` as the
 - [`00-GETTING_STARTED/README.md`](00-GETTING_STARTED/README.md)
 - [`00-GETTING_STARTED/installation.md`](00-GETTING_STARTED/installation.md)
 - [`00-GETTING_STARTED/first-run.md`](00-GETTING_STARTED/first-run.md)
+- [`00-GETTING_STARTED/current-product-surface.md`](00-GETTING_STARTED/current-product-surface.md)
+- [`00-GETTING_STARTED/runtime-modes.md`](00-GETTING_STARTED/runtime-modes.md)
 - [`00-GETTING_STARTED/manual-import-layout.md`](00-GETTING_STARTED/manual-import-layout.md)
 - [`00-GETTING_STARTED/common-issues.md`](00-GETTING_STARTED/common-issues.md)
 - [`00-GETTING_STARTED/demo-mode.md`](00-GETTING_STARTED/demo-mode.md)
@@ -82,6 +84,7 @@ This is the canonical documentation index for the repository. Use `docs/` as the
 
 ### Operations
 
+- [`07-OPERATIONS/workflows-by-objective.md`](07-OPERATIONS/workflows-by-objective.md)
 - [`07-OPERATIONS/map-operations.md`](07-OPERATIONS/map-operations.md)
 - [`07-OPERATIONS/cracking-workflow.md`](07-OPERATIONS/cracking-workflow.md)
 - [`07-OPERATIONS/remote-sync-howto.md`](07-OPERATIONS/remote-sync-howto.md)

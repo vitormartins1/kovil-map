@@ -11,13 +11,17 @@ The tactical map is the center of the application. It is where operators review 
 
 ## Current Top Action Model
 
-The right-side workspace group uses three main buttons:
+The current view switcher keeps the tactical map as the default surface and exposes dedicated context buttons on the right:
 
-- `ANALYTICS`
+- `NO-GPS`
+- `BATCH`
+- `RECON`
 - `WARDRIVE`
 - `SNIFFER`
 
-When Analytics or WarDrive is active, the UI temporarily suspends other panels and some map toggles so the workspace can own the screen cleanly.
+`RECON`, `WARDRIVE`, and `SNIFFER` are the main specialized workspaces. Older internal IDs may still use `analytics` naming, but the current user-facing intelligence workspace is `RECON` / Recon Center.
+
+When Recon, WarDrive, or Sniffer is active, the UI temporarily suspends or reshapes other panels so the selected workspace can own the center workflow cleanly.
 
 The older user-facing `Locate Me` and `Export SSIDs` actions are no longer part of the current product flow.
 
@@ -32,7 +36,7 @@ Operators can still work with the classic map overlays:
 - discovered zones
 - Intelligence Zones generated from Recon Center COMMS cluster analysis
 
-WarDrive and Analytics add their own workspace-specific overlays on top of the same map surface.
+WarDrive adds its own workspace-specific overlays on top of the same map surface. Recon Center contributes intelligence-driven map context such as Intelligence Zones.
 
 ### Intelligence Zones
 
@@ -82,11 +86,11 @@ Wardrive-only / GPS-only networks do not show the access section used for cracki
 
 ## Workspace Expectations
 
-### Analytics
+### Recon Center
 
-- opens in heatmap + list mode
-- no hotspot is auto-selected
-- map highlight appears only after hotspot selection
+- opens as the current intelligence workspace
+- centralizes attack surface, target intel, SIGINT, COMMS, GEO, OPS, and reports
+- contributes map-facing outputs such as Intelligence Zones instead of behaving like a separate analytics screen
 
 ### WarDrive
 

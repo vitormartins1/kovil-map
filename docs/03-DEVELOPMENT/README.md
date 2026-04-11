@@ -48,12 +48,13 @@ Or use the root launchers:
 - Electron main process
 - sandboxed renderer with vanilla JavaScript modules
 - Leaflet-based map rendering
-- UI logic split by domain (`ui_analytics.js`, `ui_wardrive.js`, `ui_raw.js`, `ui_components/`)
+- UI logic split by domain (`ui_recon.js`, `ui_analytics.js`, `ui_wardrive.js`, `ui_raw.js`, `ui_components/`)
 
 ## Practical Notes
 
 - there is no React runtime in the renderer
 - there is no legacy one-shot build script; use the current launcher/build steps documented in this repo
+- use [Runtime Modes](../00-GETTING_STARTED/runtime-modes.md) when you need a concise packaged-vs-dev comparison
 - prefer documenting feature behavior in `docs/02-FEATURES/` and public API behavior in `docs/05-API-ENDPOINTS/`
 
 ## Where to Contribute

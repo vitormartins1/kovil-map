@@ -4,6 +4,11 @@ This section explains the main operational workflows in KOVIL MAP.
 
 ## Operational Guides
 
+### [Workflows by Objective](workflows-by-objective.md)
+
+- start from a goal instead of a module name
+- choose the shortest path through map, Recon, WarDrive, Raw Sniffer, and cracking flows
+
 ### [Map Operations](map-operations.md)
 
 - navigate the map
@@ -81,8 +86,8 @@ This section explains the main operational workflows in KOVIL MAP.
 
 1. Import multiple sources.
 2. Apply filters.
-3. Generate heatmaps.
-4. Export a report.
+3. Review the Tactical Map and move into Recon Center.
+4. Export or summarize the resulting findings.
 
 ---
 

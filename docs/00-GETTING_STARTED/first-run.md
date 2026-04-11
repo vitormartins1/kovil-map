@@ -66,6 +66,8 @@ If you already have captures or wardrive CSVs:
 
 Once data is loaded, the map becomes interactive.
 
+For the canonical naming of the current UI surfaces, see [Current Product Surface](current-product-surface.md).
+
 ### Tactical Map
 
 - **Clusters:** colored groups represent nearby networks.
@@ -81,6 +83,14 @@ Once data is loaded, the map becomes interactive.
 - **Handshakes:** only networks with captured handshakes
 - **Cracked:** networks whose password is known
 - **No GPS:** networks without location data
+
+### Example Workspace View
+
+The Tactical Map is the default cockpit, but specialized workflows can take over the center view when needed.
+
+![WarDrive workspace replaying a Rio de Janeiro session](../assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png)
+
+This example shows the current `WARDRIVE` workspace with route replay, active-region context, and the workspace explorer.
 
 ---
 
@@ -101,6 +111,9 @@ To verify everything works:
 
 ## Next Steps
 
+- [Current Product Surface](current-product-surface.md)
+- [Runtime Modes](runtime-modes.md)
 - [Map Operations](../07-OPERATIONS/map-operations.md)
+- [Workflows by Objective](../07-OPERATIONS/workflows-by-objective.md)
 - [Cracking Workflow](../07-OPERATIONS/cracking-workflow.md)
 - [Troubleshooting](../07-OPERATIONS/troubleshooting.md)
