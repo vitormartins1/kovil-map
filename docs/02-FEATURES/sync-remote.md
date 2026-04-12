@@ -83,6 +83,7 @@ The sync result exposes separate remote stages for each profile:
 
 The frontend also creates dedicated Process panel entries for:
 
+- `Pwnagotchi handshakes`
 - `M5Evil handshakes`
 - `M5Evil raw sniffer`
 - `M5Evil master sniffer`

@@ -1380,14 +1380,14 @@ describe("ui module", () => {
       expect.stringContaining("sync::m5evil::"),
       100,
       "COMPLETED",
-      "Imported 2/2 handshake file(s)",
+      "2/2",
       false
     );
     expect(mockProcesses.updateProcess).toHaveBeenCalledWith(
       expect.stringContaining("sync::m5evil::"),
       100,
       "COMPLETED",
-      "Imported 1/1 Wardrive CSV file(s)",
+      "1/1",
       false
     );
   });
@@ -1488,7 +1488,7 @@ describe("ui module", () => {
       expect.stringContaining("sync::pwnagotchi::"),
       100,
       "COMPLETED",
-      "Imported 3/3 handshake file(s)",
+      "3/3",
       false
     );
   });
@@ -1524,7 +1524,7 @@ describe("ui module", () => {
       expect.stringContaining("sync::m5evil::"),
       100,
       "PARTIAL",
-      "Imported 3/4 Wardrive CSV file(s) | 1 failed",
+      "3/4 | 1 failed",
       false
     );
   });
@@ -2127,6 +2127,28 @@ describe("ui module", () => {
       data: { percentage: 0, stage: "RUNNING", extra: "", eta: "" },
     });
     expect(mockPlatform.setProgressBar).toHaveBeenCalledWith(0, "indeterminate");
+  });
+
+  test("socket job_progress formats sparse extra info without empty pipe segments", async () => {
+    const ui = loadUiModule();
+    ui.initUI();
+    await flushAsync();
+
+    mockActiveProcesses["job-sync"] = { type: "SYNC", status: "RUNNING", details: "M5Evil handshakes" };
+    const progressCb = getSocketHandler("job_progress");
+
+    progressCb({
+      job_id: "job-sync",
+      data: { percentage: 60, stage: "RUNNING", extra: "HS_A.pcap [1.0 KB / 2.0 KB]" },
+    });
+
+    expect(mockProcesses.updateProcess).toHaveBeenCalledWith(
+      "job-sync",
+      60,
+      "RUNNING",
+      "HS_A.pcap [1.0 KB / 2.0 KB]",
+      false
+    );
   });
 
   test("socket job_update and fingerprint finalize errors are caught", async () => {

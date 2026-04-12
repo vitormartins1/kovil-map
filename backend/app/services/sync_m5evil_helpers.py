@@ -1,3 +1,28 @@
+def _format_bytes(value):
+    try:
+        size = float(value or 0)
+    except (TypeError, ValueError):
+        return "0 B"
+    units = ["B", "KB", "MB", "GB"]
+    unit_index = 0
+    while size >= 1024 and unit_index < len(units) - 1:
+        size /= 1024.0
+        unit_index += 1
+    if unit_index == 0:
+        return f"{int(size)} {units[unit_index]}"
+    return f"{size:.1f} {units[unit_index]}"
+
+
+def _format_m5evil_download_label(filename, downloaded_bytes, total_bytes, speed_bps):
+    name = str(filename or "").strip() or "download"
+    downloaded_label = _format_bytes(downloaded_bytes)
+    total_label = _format_bytes(total_bytes) if total_bytes else "unknown size"
+    if speed_bps:
+        speed_label = f"{_format_bytes(speed_bps)}/s"
+        return f"{name} [{downloaded_label} / {total_label} @ {speed_label}]"
+    return f"{name} [{downloaded_label} / {total_label}]"
+
+
 def m5evil_phase_details(
     profile,
     *,
@@ -56,20 +81,14 @@ def emit_m5evil_progress(
     else:
         percentage = min(95, max(10, round((safe_processed / safe_total) * 100)))
 
-    if mode == "handshakes":
-        label = "handshake file(s)"
-    elif mode == "rawsniffer":
-        label = "RAW sniffer file(s)"
-    elif mode == "mastersniffer":
-        label = "Master Sniffer file(s)"
-    else:
-        label = "Wardrive CSV file(s)"
-    progress_bits = [f"{safe_downloaded}/{safe_total} imported"]
+    progress_bits = []
+    if safe_total > 0:
+        progress_bits.append(f"{safe_downloaded}/{safe_total}")
     if safe_failed > 0:
         progress_bits.append(f"{safe_failed} failed")
-    extra = f"{' | '.join(progress_bits)} {label}"
     if current_file:
-        extra = f"{extra} | {current_file}"
+        progress_bits.append(current_file)
+    extra = " | ".join(progress_bits)
 
     progress_callback(
         mode,
@@ -1023,11 +1042,50 @@ def perform_m5evil_sync(
                             resolved_download.get("details") or last_failure_details
                         )
                         continue
+                    emit_m5evil_progress_fn(
+                        progress_callback,
+                        mode,
+                        processed_count,
+                        len(candidate_entries),
+                        stats[mode]["downloaded"],
+                        stats[mode]["failed"],
+                        current_file=f"Starting {filename}",
+                        stage="RUNNING",
+                    )
                     download_web_file(
                         resolved_download.get("download_url"),
                         entry["local_file"],
                         username=profile.get("web_user"),
                         password=profile.get("web_password"),
+                        progress_hook=lambda downloaded_bytes, total_bytes, speed_bps, done, _filename=filename, _processed_count=processed_count, _total_entries=len(
+                            candidate_entries
+                        ), _downloaded=stats[
+                            mode
+                        ][
+                            "downloaded"
+                        ], _failed=stats[
+                            mode
+                        ][
+                            "failed"
+                        ]: emit_m5evil_progress_fn(
+                            progress_callback,
+                            mode,
+                            _processed_count,
+                            _total_entries,
+                            _downloaded,
+                            _failed,
+                            current_file=_format_m5evil_download_label(
+                                _filename,
+                                (
+                                    downloaded_bytes
+                                    if not done
+                                    else (total_bytes or downloaded_bytes)
+                                ),
+                                total_bytes,
+                                speed_bps,
+                            ),
+                            stage="RUNNING",
+                        ),
                     )
                     collector.append(entry["local_name"])
                     stats[mode]["downloaded"] += 1
@@ -1046,6 +1104,29 @@ def perform_m5evil_sync(
                         current_file=filename,
                         stage="RUNNING",
                     )
+
+            mode_total = stats[mode]["files_to_download"]
+            mode_downloaded = stats[mode]["downloaded"]
+            mode_failed = stats[mode]["failed"]
+            if mode_total <= 0:
+                final_stage = "UP TO DATE"
+                final_file = "No new files"
+            elif mode_failed > 0:
+                final_stage = "PARTIAL"
+                final_file = ""
+            else:
+                final_stage = "COMPLETED"
+                final_file = ""
+            emit_m5evil_progress_fn(
+                progress_callback,
+                mode,
+                mode_total,
+                mode_total,
+                mode_downloaded,
+                mode_failed,
+                current_file=final_file,
+                stage=final_stage,
+            )
 
         if not had_listing_success and errors:
             return {

@@ -186,6 +186,35 @@ describe("ui_processes", () => {
     );
   });
 
+  test("updateProcess normalizes extra info and removes empty pipe segments", () => {
+    const uiProcesses = loadModule();
+
+    uiProcesses.addProcess("job-clean", "SYNC", "Bruce handshakes", "RUNNING");
+    uiProcesses.updateProcess(
+      "job-clean",
+      60,
+      "RUNNING",
+      " | ETA: 1m |  | HS_A.pcap [1.0 KB / 2.0 KB]",
+      false
+    );
+
+    expect(uiProcesses.activeProcesses["job-clean"].extraInfo).toBe(
+      "ETA: 1m | HS_A.pcap [1.0 KB / 2.0 KB]"
+    );
+  });
+
+  test("updateProcess ignores stale running updates after a process is finalized", () => {
+    const uiProcesses = loadModule();
+
+    uiProcesses.addProcess("job-final", "SYNC", "M5Evil handshakes", "RUNNING");
+    uiProcesses.updateProcess("job-final", 100, "COMPLETED", "Imported 1/1 handshake file(s)", false);
+    uiProcesses.updateProcess("job-final", 95, "RUNNING", "1/1 imported | HS_TEST.pcap", false);
+
+    expect(uiProcesses.activeProcesses["job-final"].percentage).toBe(100);
+    expect(uiProcesses.activeProcesses["job-final"].status).toBe("COMPLETED");
+    expect(uiProcesses.activeProcesses["job-final"].extraInfo).toBe("Imported 1/1 handshake file(s)");
+  });
+
   test("renderProcessList renders running and finished actions", () => {
     const uiProcesses = loadModule();
 
@@ -562,6 +591,68 @@ describe("ui_processes", () => {
       })
     );
     expect(clickSpy).toHaveBeenCalled();
+  });
+
+  test("restoreActiveJobs restores sync import jobs with locked controls", async () => {
+    const uiProcesses = loadModule();
+
+    mockAPI.listJobs.mockResolvedValueOnce([
+      {
+        id: "sync-m5-hs",
+        type: "sync_import",
+        status: "running",
+        command: "internal:sync",
+        meta: {
+          display_type: "SYNC",
+          display_details: "M5Evil handshakes",
+          no_cancel: true,
+        },
+        progress_data: {
+          percentage: 42,
+          stage: "RUNNING",
+          extra: "HS_A.pcap [512 B / 1.0 KB @ 2.0 KB/s]",
+        },
+      },
+      {
+        id: "sync-bruce-raw",
+        type: "sync_import",
+        status: "queued",
+        command: "internal:sync",
+        meta: {
+          display_type: "SYNC",
+          display_details: "Bruce raw sniffer",
+          no_cancel: true,
+        },
+        progress_data: {
+          percentage: 0,
+          stage: "QUEUED",
+          extra: "Queued behind Bruce handshakes",
+        },
+      },
+    ]);
+    mockAPI.listMultiFiles.mockResolvedValueOnce([]);
+
+    await uiProcesses.restoreActiveJobs();
+
+    expect(uiProcesses.activeProcesses["sync-m5-hs"]).toEqual(
+      expect.objectContaining({
+        type: "SYNC",
+        details: "M5Evil handshakes",
+        status: "RUNNING",
+        percentage: 42,
+        extraInfo: "HS_A.pcap [512 B / 1.0 KB @ 2.0 KB/s]",
+        noCancel: true,
+      })
+    );
+    expect(uiProcesses.activeProcesses["sync-bruce-raw"]).toEqual(
+      expect.objectContaining({
+        type: "SYNC",
+        details: "Bruce raw sniffer",
+        status: "QUEUED",
+        extraInfo: "Queued behind Bruce handshakes",
+        noCancel: true,
+      })
+    );
   });
 
   test("setupProcessListeners toggles panel and opens cracking for clicked process", async () => {

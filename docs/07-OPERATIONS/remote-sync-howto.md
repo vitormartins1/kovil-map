@@ -174,6 +174,7 @@ The UI now logs target-specific sync feedback, for example:
 
 The Process panel also creates dedicated M5Evil sync entries for each imported artifact group:
 
+- `Pwnagotchi handshakes`
 - `M5Evil handshakes`
 - `M5Evil raw sniffer`
 - `M5Evil master sniffer`
