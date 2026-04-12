@@ -1488,7 +1488,7 @@ describe("ui module", () => {
       expect.stringContaining("sync::pwnagotchi::"),
       100,
       "COMPLETED",
-      "Imported 3/3 handshake file(s)",
+      "Imported 3/3 sync file(s)",
       false
     );
   });

@@ -1,6 +1,28 @@
 import os
 
 
+def _format_bytes(value):
+    try:
+        size = float(value or 0)
+    except (TypeError, ValueError):
+        return "0 B"
+    units = ["B", "KB", "MB", "GB"]
+    unit_index = 0
+    while size >= 1024 and unit_index < len(units) - 1:
+        size /= 1024.0
+        unit_index += 1
+    if unit_index == 0:
+        return f"{int(size)} {units[unit_index]}"
+    return f"{size:.1f} {units[unit_index]}"
+
+
+def _format_pwnagotchi_download_label(filename, downloaded_bytes, total_bytes):
+    name = str(filename or "").strip() or "download"
+    downloaded_label = _format_bytes(downloaded_bytes)
+    total_label = _format_bytes(total_bytes) if total_bytes else "unknown size"
+    return f"{name} [{downloaded_label} / {total_label}]"
+
+
 def emit_pwnagotchi_progress(
     progress_callback,
     processed,
@@ -33,7 +55,7 @@ def emit_pwnagotchi_progress(
     progress_bits = [f"{safe_downloaded}/{safe_total} imported"]
     if safe_failed > 0:
         progress_bits.append(f"{safe_failed} failed")
-    extra = f"{' | '.join(progress_bits)} handshake file(s)"
+    extra = f"{' | '.join(progress_bits)} sync file(s)"
     if current_file:
         extra = f"{extra} | {current_file}"
 
@@ -52,10 +74,15 @@ def emit_pwnagotchi_progress(
     )
 
 
-def download_remote_file(sftp, remote_path, local_path, *, os_module=os):
+def download_remote_file(
+    sftp, remote_path, local_path, *, os_module=os, progress_hook=None
+):
     directory = os.path.dirname(local_path)
     if directory:
         os_module.makedirs(directory, exist_ok=True)
+    if callable(progress_hook):
+        sftp.get(remote_path, local_path, callback=progress_hook)
+        return
     sftp.get(remote_path, local_path)
 
 
@@ -377,9 +404,25 @@ def perform_pwnagotchi_sync(
                 for ext in [".pcap", ".gps.json", ".geo.json", ".paw-gps.json"]
             )
         ]
-        total_candidates = len(candidate_files)
+        download_queue = []
         downloaded = []
         errors = []
+
+        for file in candidate_files:
+            local_file = os.path.join(handshakes_dir, file)
+            should_download = should_download_entry_fn(
+                local_file, remote_entries.get(file), force, errors, file
+            )
+            if should_download:
+                download_queue.append(
+                    {
+                        "filename": file,
+                        "local_file": local_file,
+                        "remote_size": getattr(remote_entries.get(file), "st_size", 0),
+                    }
+                )
+
+        total_candidates = len(download_queue)
 
         emit_progress(
             progress_callback,
@@ -392,18 +435,42 @@ def perform_pwnagotchi_sync(
         )
 
         processed = 0
-        for file in candidate_files:
-            local_file = os.path.join(handshakes_dir, file)
-            should_download = should_download_entry_fn(
-                local_file, remote_entries.get(file), force, errors, file
-            )
-            if should_download:
-                try:
-                    remote_file = posixpath_module.join(remote_path.rstrip("/"), file)
-                    download_remote_file_fn(sftp, remote_file, local_file)
-                    downloaded.append(file)
-                except Exception as exc:
-                    errors.append(f"Failed to download {file}: {str(exc)}")
+        for item in download_queue:
+            file = item["filename"]
+            local_file = item["local_file"]
+            remote_size = item["remote_size"]
+            try:
+                remote_file = posixpath_module.join(remote_path.rstrip("/"), file)
+                emit_progress(
+                    progress_callback,
+                    processed,
+                    total_candidates,
+                    len(downloaded),
+                    len(errors),
+                    current_file=f"Starting {file}",
+                    stage="RUNNING",
+                )
+                download_remote_file_fn(
+                    sftp,
+                    remote_file,
+                    local_file,
+                    progress_hook=lambda transferred, total, _filename=file, _processed=processed, _remote_size=remote_size: emit_progress(
+                        progress_callback,
+                        _processed,
+                        total_candidates,
+                        len(downloaded),
+                        len(errors),
+                        current_file=_format_pwnagotchi_download_label(
+                            _filename,
+                            transferred,
+                            total or _remote_size,
+                        ),
+                        stage="RUNNING",
+                    ),
+                )
+                downloaded.append(file)
+            except Exception as exc:
+                errors.append(f"Failed to download {file}: {str(exc)}")
             processed += 1
             emit_progress(
                 progress_callback,
@@ -434,14 +501,25 @@ def perform_pwnagotchi_sync(
             stage=final_stage,
         )
 
+        if errors and downloaded:
+            status = "partial"
+            message = "Pwnagotchi sync completed with errors"
+        elif errors:
+            status = "error"
+            message = errors[0] if len(errors) == 1 else "Pwnagotchi sync failed"
+        else:
+            status = "success"
+            message = "Pwnagotchi sync completed"
+
         return {
-            "status": "success",
-            "message": "Pwnagotchi sync completed",
+            "status": status,
+            "message": message,
             "details": {
                 "target": profile["target"],
                 "handshakes": downloaded,
                 "wardrive_csvs": [],
                 "errors": errors,
+                "handshake_remote_files_found": len(candidate_files),
                 "handshake_files_to_download": total_candidates,
                 "handshake_files_failed": len(errors),
                 "sync_ms": round((time_module.perf_counter() - started_at) * 1000, 2),

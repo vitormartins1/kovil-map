@@ -311,6 +311,15 @@ async def trigger_sync(payload: SyncRequest = Body(default=SyncRequest())):
             "downloaded_wardrive_csvs": len(
                 pwn_remote.get("details", {}).get("wardrive_csvs", []) or []
             ),
+            "handshake_remote_files_found": pwn_remote.get("details", {}).get(
+                "handshake_remote_files_found", 0
+            ),
+            "handshake_files_to_download": pwn_remote.get("details", {}).get(
+                "handshake_files_to_download", 0
+            ),
+            "handshake_files_failed": pwn_remote.get("details", {}).get(
+                "handshake_files_failed", 0
+            ),
             "sync_ms": pwn_remote.get("details", {}).get("sync_ms", 0),
         },
         "m5evil_remote_sync": {
@@ -462,9 +471,19 @@ async def trigger_sync(payload: SyncRequest = Body(default=SyncRequest())):
         "downloaded_wardrive_csvs": len(
             pwn_remote.get("details", {}).get("wardrive_csvs", []) or []
         ),
+        "handshake_remote_files_found": pwn_remote.get("details", {}).get(
+            "handshake_remote_files_found", 0
+        ),
+        "handshake_files_to_download": pwn_remote.get("details", {}).get(
+            "handshake_files_to_download", 0
+        ),
+        "handshake_files_failed": pwn_remote.get("details", {}).get(
+            "handshake_files_failed", 0
+        ),
         "errors": pwn_remote.get("details", {}).get("errors", []) or [],
         "sync_ms": pwn_remote.get("details", {}).get("sync_ms", 0),
         "status": pwn_remote.get("status", "skipped"),
+        "message": pwn_remote.get("message"),
     }
     details["m5evil_remote_sync"] = {
         "downloaded_handshakes": len(

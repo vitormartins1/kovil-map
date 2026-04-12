@@ -27,6 +27,7 @@ Body:
   "pwn_force_sync": false,
   "m5_force_sync": false,
   "bruce_force_sync": false,
+  "pwn_handshakes_process_id": "sync::pwnagotchi::...::handshakes",
   "m5_handshakes_process_id": "sync::m5::...::handshakes",
   "m5_rawsniffer_process_id": "sync::m5::...::rawsniffer",
   "m5_mastersniffer_process_id": "sync::m5::...::mastersniffer",
@@ -45,6 +46,7 @@ Field summary:
 | `pwn_force_sync` | boolean | no | per-target force for Pwnagotchi |
 | `m5_force_sync` | boolean | no | per-target force for M5Evil |
 | `bruce_force_sync` | boolean | no | per-target force for Bruce |
+| `pwn_handshakes_process_id` | string | no | process ID used to stream Pwnagotchi sync progress into the Process panel |
 | `m5_*_process_id` | string | no | process IDs used to stream M5Evil progress into the Process panel |
 | `bruce_*_process_id` | string | no | process IDs used to stream Bruce progress into the Process panel |
 

@@ -82,9 +82,14 @@ class _FakeSFTP:
             attrs.append(_FakeAttr(file_name, size))
         return attrs
 
-    def get(self, remote_path, local_path):
+    def get(self, remote_path, local_path, callback=None):
         if any(flag in remote_path for flag in self.fail_for):
             raise RuntimeError("download failed")
+        total = self.size_map.get(Path(remote_path).name, 5) or 5
+        if callable(callback):
+            midpoint = max(int(total // 2), 1)
+            callback(midpoint, total)
+            callback(total, total)
         with open(local_path, "w", encoding="utf-8") as f:
             f.write("dummy")
 
@@ -265,6 +270,46 @@ def test_sync_incremental_size_check(tmp_path, monkeypatch):
     assert "same.pcap" not in result["details"]["handshakes"]
 
 
+def test_sync_service_pwnagotchi_emits_visual_download_progress(tmp_path, monkeypatch):
+    monkeypatch.setattr(ss_module, "HANDSHAKES_DIR", str(tmp_path))
+    fake_sftp = _FakeSFTP(
+        ["HS_A.pcap", "HS_A.gps.json"],
+        size_map={"HS_A.pcap": 12, "HS_A.gps.json": 8},
+    )
+    monkeypatch.setattr(ss_module.paramiko, "SSHClient", lambda: _FakeSSH(fake_sftp))
+
+    service = ss_module.SyncService()
+    service.config = {
+        "pwn_host": "127.0.0.1",
+        "pwn_port": 22,
+        "pwn_user": "u",
+        "pwn_pass": "p",
+        "remote_path": "/remote",
+    }
+    events = []
+
+    result = service._perform_pwnagotchi_sync(
+        force=True,
+        progress_callback=lambda mode, payload: events.append((mode, payload)),
+    )
+
+    assert result["status"] == "success"
+    assert result["details"]["handshakes"] == ["HS_A.pcap", "HS_A.gps.json"]
+    assert result["details"]["handshake_remote_files_found"] == 2
+    assert result["details"]["handshake_files_to_download"] == 2
+    assert result["details"]["handshake_files_failed"] == 0
+    assert any(mode == "pwnagotchi_handshakes" for mode, _payload in events)
+    assert any(
+        mode == "pwnagotchi_handshakes"
+        and str(payload.get("current_file") or "").startswith("HS_A.pcap [")
+        for mode, payload in events
+    )
+    assert any(
+        mode == "pwnagotchi_handshakes" and payload["stage"] == "COMPLETED"
+        for mode, payload in events
+    )
+
+
 def test_sync_stat_error_empty_size_download_error_and_global_error(
     tmp_path, monkeypatch
 ):
@@ -289,9 +334,11 @@ def test_sync_stat_error_empty_size_download_error_and_global_error(
         "remote_path": "/remote",
     }
     result = service.perform_sync(force=False)
-    assert result["status"] == "success"
-    assert any("err.pcap" in e for e in result["details"]["errors"])
-    assert any("fail.pcap" in e for e in result["details"]["errors"])
+    assert result["status"] == "error"
+    assert any("pwnagotchi" in e for e in result["details"]["errors"])
+    stage_errors = result["details"]["pwnagotchi_remote_sync"]["errors"]
+    assert any("err.pcap" in e for e in stage_errors)
+    assert any("fail.pcap" in e for e in stage_errors)
 
     monkeypatch.setattr(
         ss_module.paramiko,

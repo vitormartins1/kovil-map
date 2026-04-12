@@ -130,6 +130,10 @@ def test_sync_endpoint_triggers_reload(client, monkeypatch):
     assert "pwnagotchi_remote_sync" in payload["details"]["sync_stages"]
     assert "m5evil_remote_sync" in payload["details"]["sync_stages"]
     assert "bruce_remote_sync" in payload["details"]["sync_stages"]
+    assert "handshake_files_to_download" in payload["details"]["sync_stages"]["pwnagotchi_remote_sync"]
+    assert "handshake_files_failed" in payload["details"]["sync_stages"]["pwnagotchi_remote_sync"]
+    assert "handshake_files_to_download" in payload["details"]["pwnagotchi_remote_sync"]
+    assert "handshake_files_failed" in payload["details"]["pwnagotchi_remote_sync"]
     assert payload["details"]["sync_stages"]["bruce_fingerprint"]["status"] == "skipped"
     assert (
         payload["details"]["sync_stages"]["rawsniffer_extract"]["status"] == "skipped"

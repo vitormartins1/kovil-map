@@ -7,10 +7,6 @@
 
 [English](README.md) | Portugues (BR)
 
-<p align="center">
-  <img src="docs/assets/illustrations/wardrive-rio-de-janeiro-hero.png" alt="Ilustracao de wardriving no Rio de Janeiro" />
-</p>
-
 KOVIL MAP e um centro de comando desktop local-first para reconhecimento Wi-Fi, analise de WarDrive, sync remoto de capturas, enriquecimento RAW/PCAP e fluxos de cracking.
 
 Ele combina um frontend Electron com um backend FastAPI para que o operador consiga inspecionar redes em um mapa tatico, entrar em workspaces especializados, executar jobs locais de longa duracao e manter o estado operacional em um unico lugar.

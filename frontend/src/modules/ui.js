@@ -1224,10 +1224,16 @@ function logSyncSuccess(data) {
         log(`Downloaded: ${handshakes.length} files`, 'success');
         // loadData will be triggered by WS event
     }
-    if (pwnRemote.status === 'success') {
+    if (pwnRemote.status === 'success' || pwnRemote.status === 'partial') {
+        const pwnDownloaded = Number(pwnRemote.downloaded_handshakes || 0);
+        const pwnTotal = Number(pwnRemote.handshake_files_to_download || pwnDownloaded || 0);
+        const pwnFailed = Number(pwnRemote.handshake_files_failed || 0);
+        const pwnSuffix = pwnFailed > 0 ? ` | ${pwnFailed} failed` : '';
         log(
-            `Pwnagotchi remote sync: ${Number(pwnRemote.downloaded_handshakes || 0)} handshake file(s)`,
-            'success'
+            pwnTotal > 0
+                ? `Pwnagotchi SSH sync${pwnRemote.status === 'partial' ? ' (partial)' : ''}: ${pwnDownloaded}/${pwnTotal} sync file(s)${pwnSuffix}`
+                : 'Pwnagotchi SSH sync: no new sync files',
+            pwnRemote.status === 'partial' ? 'warn' : 'success'
         );
     }
     if (m5Remote.status === 'success' || m5Remote.status === 'partial') {
@@ -1320,7 +1326,7 @@ function startPwnagotchiSyncProcess(config = {}) {
         processId,
         15,
         'RUNNING',
-        'Importing handshake captures from Pwnagotchi SSH',
+        'Importing handshake captures and GPS sidecars from Pwnagotchi SSH',
         true
     );
     return processId;
@@ -1647,8 +1653,8 @@ function finalizePwnagotchiSyncProcess(processId, syncResult) {
             downloaded,
             total,
             failed,
-            label: 'handshake file(s)',
-            skippedMessage: 'No new handshake files',
+            label: 'sync file(s)',
+            skippedMessage: 'No new sync files',
         });
         updateProcess(processId, 100, result.status, result.message, false);
         return;
