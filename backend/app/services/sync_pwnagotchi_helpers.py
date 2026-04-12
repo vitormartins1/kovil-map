@@ -52,12 +52,14 @@ def emit_pwnagotchi_progress(
     else:
         percentage = min(95, max(10, round((safe_processed / safe_total) * 100)))
 
-    progress_bits = [f"{safe_downloaded}/{safe_total} imported"]
+    progress_bits = []
+    if safe_total > 0:
+        progress_bits.append(f"{safe_downloaded}/{safe_total}")
     if safe_failed > 0:
         progress_bits.append(f"{safe_failed} failed")
-    extra = f"{' | '.join(progress_bits)} sync file(s)"
     if current_file:
-        extra = f"{extra} | {current_file}"
+        progress_bits.append(current_file)
+    extra = " | ".join(progress_bits)
 
     progress_callback(
         "pwnagotchi_handshakes",

@@ -379,6 +379,19 @@ const LOAD_IDLE_RECHECK_MS = 1500;
 let loadDataTimer = null;
 let hasLoadedMapOnce = false;
 
+function buildJobProgressExtraInfo({ speed, eta, extra } = {}) {
+    const parts = [];
+    const speedText = String(speed || '').trim();
+    const etaText = String(eta || '').trim();
+    const extraText = String(extra || '').trim();
+
+    if (speedText) parts.push(speedText);
+    if (etaText) parts.push(`ETA: ${etaText}`);
+    if (extraText) parts.push(extraText);
+
+    return parts.join(' | ');
+}
+
 function scheduleLoadData() {
     if (loadDataTimer) clearTimeout(loadDataTimer);
     loadDataTimer = setTimeout(() => {
@@ -395,6 +408,7 @@ export const __testUiHelpers = {
     updateFilterClearButtonVisibility,
     applyMainSearchFilter,
     buildCrackingTitle,
+    buildJobProgressExtraInfo,
     syncRightPanelsLayout,
     setAppTitle,
     resetAppTitle,
@@ -415,10 +429,7 @@ function setupSocketListeners() {
         // Update parent job if present
         if (activeProcesses[job_id]) {
             const { percentage, speed, eta, stage, extra } = data;
-            let extraInfo = "";
-            if (speed) extraInfo += speed;
-            if (eta) extraInfo += ` | ETA: ${eta}`;
-            if (extra) extraInfo += ` | ${extra}`;
+            const extraInfo = buildJobProgressExtraInfo({ speed, eta, extra });
             const isIndeterminate = (stage === 'RUNNING' && (!percentage || percentage === 100) && !eta);
             updateProcess(job_id, percentage || 0, stage, extraInfo, isIndeterminate);
 
@@ -450,6 +461,7 @@ function setupSocketListeners() {
         try {
             const details = job.progress_data?.extra || job.meta?.output_file || job.command || job.type || 'process';
             const isFingerprintMulti = job.type === 'fingerprint_multi';
+            const isSyncImport = job.type === 'sync_import';
             const isRawsnifferMulti = job.type === 'rawsniffer_multi';
             const isRawPrepareAll = job.type === 'raw_prepare_all';
             const isProbeIntelScan = job.type === 'probe_intel_scan';
@@ -468,6 +480,27 @@ function setupSocketListeners() {
                 );
                 if (job.progress_data) {
                     updateProcess(job.id, job.progress_data.percentage || 0, job.progress_data.stage || (job.status || '').toUpperCase(), job.progress_data.extra || niceDetails, false);
+                }
+            } else if (isSyncImport) {
+                const niceType = job.meta?.display_type || 'SYNC';
+                const niceDetails = job.meta?.display_details || details;
+                addProcess(
+                    job.id,
+                    niceType,
+                    niceDetails,
+                    job.status ? job.status.toUpperCase() : 'STARTING'
+                );
+                if (activeProcesses[job.id] && job.meta?.no_cancel) {
+                    activeProcesses[job.id].noCancel = true;
+                }
+                if (job.progress_data) {
+                    updateProcess(
+                        job.id,
+                        job.progress_data.percentage || 0,
+                        job.progress_data.stage || (job.status || '').toUpperCase(),
+                        job.progress_data.extra || "",
+                        false
+                    );
                 }
             } else if (isFingerprintMulti || isRawsnifferMulti || isRawPrepareAll) {
                 const count = job.meta?.files_to_process?.length || job.progress_data?.total_steps || '';
@@ -1448,7 +1481,6 @@ function buildM5ProcessResult({
     downloaded = 0,
     total = 0,
     failed = 0,
-    label = 'file(s)',
     skippedMessage = 'No new files',
 }) {
     if (total <= 0) {
@@ -1460,12 +1492,12 @@ function buildM5ProcessResult({
     if (failed > 0) {
         return {
             status: 'PARTIAL',
-            message: `Imported ${downloaded}/${total} ${label} | ${failed} failed`,
+            message: `${downloaded}/${total} | ${failed} failed`,
         };
     }
     return {
         status: 'COMPLETED',
-        message: `Imported ${downloaded}/${total} ${label}`,
+        message: `${downloaded}/${total}`,
     };
 }
 
@@ -1494,29 +1526,25 @@ function finalizeM5SyncProcesses(processIds, syncResult) {
             downloaded: handshakeCount,
             total: handshakeTotal,
             failed: handshakeFailed,
-            label: 'handshake file(s)',
-            skippedMessage: 'No new handshake files',
+            skippedMessage: 'No new files',
         });
         const rawsnifferResult = buildM5ProcessResult({
             downloaded: rawsnifferCount,
             total: rawsnifferTotal,
             failed: rawsnifferFailed,
-            label: 'RAW sniffer file(s)',
-            skippedMessage: 'No new RAW sniffer files',
+            skippedMessage: 'No new files',
         });
         const mastersnifferResult = buildM5ProcessResult({
             downloaded: mastersnifferCount,
             total: mastersnifferTotal,
             failed: mastersnifferFailed,
-            label: 'Master Sniffer file(s)',
-            skippedMessage: 'No new Master Sniffer files',
+            skippedMessage: 'No new files',
         });
         const wardriveResult = buildM5ProcessResult({
             downloaded: wardriveCount,
             total: wardriveTotal,
             failed: wardriveFailed,
-            label: 'Wardrive CSV file(s)',
-            skippedMessage: 'No new Wardrive CSV files',
+            skippedMessage: 'No new files',
         });
         updateProcess(
             processIds.handshakes,
@@ -1593,22 +1621,19 @@ function finalizeBruceSyncProcesses(processIds, syncResult) {
             downloaded: handshakeCount,
             total: handshakeTotal,
             failed: handshakeFailed,
-            label: 'handshake file(s)',
-            skippedMessage: 'No new handshake files',
+            skippedMessage: 'No new files',
         });
         const rawsnifferResult = buildM5ProcessResult({
             downloaded: rawsnifferCount,
             total: rawsnifferTotal,
             failed: rawsnifferFailed,
-            label: 'RAW sniffer file(s)',
-            skippedMessage: 'No new RAW sniffer files',
+            skippedMessage: 'No new files',
         });
         const wardriveResult = buildM5ProcessResult({
             downloaded: wardriveCount,
             total: wardriveTotal,
             failed: wardriveFailed,
-            label: 'Wardrive CSV file(s)',
-            skippedMessage: 'No new Wardrive CSV files',
+            skippedMessage: 'No new files',
         });
 
         updateProcess(processIds.handshakes, 100, handshakeResult.status, handshakeResult.message, false);
@@ -1653,8 +1678,7 @@ function finalizePwnagotchiSyncProcess(processId, syncResult) {
             downloaded,
             total,
             failed,
-            label: 'sync file(s)',
-            skippedMessage: 'No new sync files',
+            skippedMessage: 'No new files',
         });
         updateProcess(processId, 100, result.status, result.message, false);
         return;

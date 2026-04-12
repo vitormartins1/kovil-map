@@ -14,7 +14,14 @@ logger = logging.getLogger(__name__)
 
 
 class JobManager:
-    TERMINAL_STATUSES = {"success", "failed", "canceled", "error"}
+    TERMINAL_STATUSES = {
+        "success",
+        "failed",
+        "canceled",
+        "error",
+        "partial",
+        "up_to_date",
+    }
 
     def __init__(self):
         self.jobs = {}
@@ -222,6 +229,119 @@ class JobManager:
         thread = threading.Thread(target=self._run_multi_worker, args=(job_id, worker))
         thread.start()
         return job_id
+
+    def _status_from_stage(self, stage, fallback="running"):
+        normalized = str(stage or "").strip().upper()
+        if normalized == "QUEUED":
+            return "queued"
+        if normalized == "PENDING":
+            return "pending"
+        if normalized in {
+            "STARTING",
+            "RUNNING",
+            "CRACKING",
+            "AUTOTUNING",
+            "BUILDING CACHE",
+            "INIT KERNELS",
+        }:
+            return "running"
+        if normalized == "COMPLETED":
+            return "success"
+        if normalized == "PARTIAL":
+            return "partial"
+        if normalized in {"UP TO DATE", "UP_TO_DATE"}:
+            return "up_to_date"
+        if normalized in {"ERROR", "FAILED"}:
+            return "error"
+        if normalized == "CANCELED":
+            return "canceled"
+        return fallback
+
+    def register_external_job(
+        self,
+        job_id,
+        *,
+        job_type="external",
+        command="internal:external",
+        cwd=None,
+        status="running",
+        total_steps=1,
+        meta=None,
+        progress_data=None,
+    ):
+        if not job_id:
+            return None
+
+        existing = self.jobs.get(job_id) or {}
+        now = datetime.now().isoformat()
+        merged_progress = {
+            "percentage": 0,
+            "speed": "",
+            "eta": "",
+            "stage": str(status or "running").upper(),
+            "extra": "",
+            "current_step": 0,
+            "total_steps": total_steps,
+        }
+        if isinstance(existing.get("progress_data"), dict):
+            merged_progress.update(existing["progress_data"])
+        if isinstance(progress_data, dict):
+            merged_progress.update(progress_data)
+
+        normalized_status = str(status or "running").strip().lower() or "running"
+        self._prune_jobs()
+        self.jobs[job_id] = {
+            "id": job_id,
+            "type": job_type,
+            "command": command,
+            "cwd": cwd,
+            "status": normalized_status,
+            "start_time": existing.get("start_time") or now,
+            "end_time": (
+                None if normalized_status not in self.TERMINAL_STATUSES else now
+            ),
+            "logs": list(existing.get("logs") or []),
+            "meta": meta or existing.get("meta") or {},
+            "progress_data": merged_progress,
+            "return_code": (
+                None if normalized_status not in self.TERMINAL_STATUSES else 0
+            ),
+        }
+        self._fire_and_forget_emit("job_update", self.get_job(job_id))
+        return job_id
+
+    def update_external_job(self, job_id, *, progress_data=None, status=None):
+        job = self.jobs.get(job_id)
+        if not job:
+            return False
+
+        if isinstance(progress_data, dict):
+            job["progress_data"].update(progress_data)
+        next_status = status
+        if next_status is None and isinstance(progress_data, dict):
+            next_status = self._status_from_stage(
+                progress_data.get("stage"), fallback=job.get("status") or "running"
+            )
+        if next_status:
+            job["status"] = str(next_status).strip().lower()
+        self._fire_and_forget_emit("job_update", self.get_job(job_id))
+        return True
+
+    def complete_external_job(self, job_id, *, status="success", progress_data=None):
+        job = self.jobs.get(job_id)
+        if not job:
+            return False
+
+        if isinstance(progress_data, dict):
+            job["progress_data"].update(progress_data)
+        job["status"] = str(status or "success").strip().lower() or "success"
+        job["end_time"] = datetime.now().isoformat()
+        job["return_code"] = (
+            0 if job["status"] in {"success", "partial", "up_to_date"} else 1
+        )
+        self._prune_jobs()
+        self._fire_and_forget_emit("job_complete", self.get_job(job_id))
+        return True
 
     def _run_multi_worker(self, job_id, worker):
         job = self.jobs[job_id]

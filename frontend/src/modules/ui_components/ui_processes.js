@@ -61,6 +61,16 @@ function normalizeProcessText(value) {
     }
 }
 
+function normalizeProcessExtraInfo(value) {
+    const raw = normalizeProcessText(value).trim();
+    if (!raw) return "";
+    return raw
+        .split("|")
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .join(" | ");
+}
+
 export function getActiveHashcatJob() {
     const runningStatuses = ['RUNNING', 'AUTOTUNING', 'BUILDING CACHE', 'INIT KERNELS'];
     return Object.values(activeProcesses).find(proc =>
@@ -94,9 +104,19 @@ export function updateProcess(jobId, percentage, status, extraInfo = "", indeter
         const prev = activeProcesses[jobId];
         const prevStatus = (prev.status || '').trim().toUpperCase();
         const nextStatus = normalizeProcessText(status || '').trim().toUpperCase();
+        const prevFinished = PROCESS_FINISHED_STATUSES.has(prevStatus);
+        const nextFinished = PROCESS_FINISHED_STATUSES.has(nextStatus);
+
+        // Sync progress events are emitted fire-and-forget, so a delayed RUNNING
+        // update can arrive after the API response has already finalized a process.
+        // Ignore those stale regressions to keep completed imports terminal in the UI.
+        if (prevFinished && !nextFinished) {
+            return;
+        }
+
         const statusChanged = prevStatus !== nextStatus;
         const percentChanged = Math.abs((prev.percentage || 0) - (percentage || 0)) >= PROCESS_PERCENT_THRESHOLD;
-        const normalizedExtraInfo = normalizeProcessText(extraInfo);
+        const normalizedExtraInfo = normalizeProcessExtraInfo(extraInfo);
         const extraChanged = (normalizedExtraInfo && normalizedExtraInfo !== prev.extraInfo);
         const shouldRender = statusChanged || percentChanged || extraChanged || (prev.indeterminate !== indeterminate);
         const shouldUpdateTargets = statusChanged;
@@ -376,6 +396,9 @@ export async function restoreActiveJobs() {
                         selectedBatch = batches[0].name;
                     }
                     details = selectedBatch || "multi";
+                } else if (job.type === 'sync_import') {
+                    type = job.meta?.display_type || "SYNC";
+                    details = job.meta?.display_details || details;
                 } else if (job.type === 'fingerprint_multi') {
                     type = "BRUCE PCAP IMPORT";
                     const count = job.meta?.files_to_process?.length || job.progress_data?.total_steps || '';
@@ -399,6 +422,18 @@ export async function restoreActiveJobs() {
 
                 const mac = extractMacFromDetails(details);
                 addProcess(job.id, type, details, job.status.toUpperCase(), mac);
+                if (job.meta?.no_cancel && activeProcesses[job.id]) {
+                    activeProcesses[job.id].noCancel = true;
+                }
+                if (job.progress_data) {
+                    updateProcess(
+                        job.id,
+                        job.progress_data.percentage || 0,
+                        job.progress_data.stage || (job.status || '').toUpperCase(),
+                        job.progress_data.extra || '',
+                        false
+                    );
+                }
             });
             
             if (!STATE.modes.process) {

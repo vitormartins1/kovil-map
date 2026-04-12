@@ -531,6 +531,26 @@ def test_sync_service_m5evil_partial_download_emits_progress(tmp_path, monkeypat
         for mode, payload in events
     )
     assert any(
+        mode == "handshakes"
+        and str(payload.get("current_file") or "").startswith("HS_A.pcap [")
+        for mode, payload in events
+    )
+    assert any(
+        mode == "rawsniffer"
+        and str(payload.get("current_file") or "").startswith("RawSniff_00.pcap [")
+        for mode, payload in events
+    )
+    assert any(
+        mode == "mastersniffer"
+        and str(payload.get("current_file") or "").startswith("masterSniffer_0.pcap [")
+        for mode, payload in events
+    )
+    assert any(
+        mode == "wardrive"
+        and str(payload.get("current_file") or "").startswith("trip.csv [")
+        for mode, payload in events
+    )
+    assert any(
         mode == "rawsniffer" and payload["stage"] == "COMPLETED"
         for mode, payload in events
     )
@@ -542,6 +562,17 @@ def test_sync_service_m5evil_partial_download_emits_progress(tmp_path, monkeypat
         mode == "wardrive" and payload["stage"] == "COMPLETED"
         for mode, payload in events
     )
+    first_handshake_final = next(
+        idx
+        for idx, (mode, payload) in enumerate(events)
+        if mode == "handshakes" and payload["stage"] == "PARTIAL"
+    )
+    first_rawsniffer_running = next(
+        idx
+        for idx, (mode, payload) in enumerate(events)
+        if mode == "rawsniffer" and payload["stage"] == "RUNNING"
+    )
+    assert first_handshake_final < first_rawsniffer_running
 
 
 def test_sync_service_parses_realistic_m5evil_admin_webui_pages(tmp_path, monkeypatch):
@@ -893,6 +924,17 @@ def test_sync_service_bruce_downloads_handshakes_and_rawsniffer(tmp_path, monkey
         mode == "bruce_wardrive" and payload["stage"] == "COMPLETED"
         for mode, payload in events
     )
+    first_handshake_final = next(
+        idx
+        for idx, (mode, payload) in enumerate(events)
+        if mode == "bruce_handshakes" and payload["stage"] == "COMPLETED"
+    )
+    first_rawsniffer_running = next(
+        idx
+        for idx, (mode, payload) in enumerate(events)
+        if mode == "bruce_rawsniffer" and payload["stage"] == "RUNNING"
+    )
+    assert first_handshake_final < first_rawsniffer_running
 
 
 def test_probe_pwnagotchi_ssh_success(tmp_path, monkeypatch):

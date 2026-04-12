@@ -114,19 +114,14 @@ def emit_bruce_progress(
     else:
         percentage = min(95, max(10, round((safe_processed / safe_total) * 100)))
 
-    if mode == "bruce_handshakes":
-        label = "handshake file(s)"
-    elif mode == "bruce_rawsniffer":
-        label = "RAW sniffer file(s)"
-    else:
-        label = "Wardrive CSV file(s)"
-
-    progress_bits = [f"{safe_downloaded}/{safe_total} imported"]
+    progress_bits = []
+    if safe_total > 0:
+        progress_bits.append(f"{safe_downloaded}/{safe_total}")
     if safe_failed > 0:
         progress_bits.append(f"{safe_failed} failed")
-    extra = f"{' | '.join(progress_bits)} {label}"
     if current_file:
-        extra = f"{extra} | {current_file}"
+        progress_bits.append(current_file)
+    extra = " | ".join(progress_bits)
 
     progress_callback(
         mode,
@@ -661,6 +656,32 @@ def perform_bruce_sync(
                         current_file=filename,
                         stage="RUNNING",
                     )
+
+            mode_total = stats[mode]["files_to_download"]
+            mode_downloaded = stats[mode]["downloaded"]
+            mode_failed = stats[mode]["failed"]
+            if mode_total <= 0 and mode_failed > 0:
+                final_stage = "ERROR"
+                final_file = "Listing failed"
+            elif mode_total <= 0:
+                final_stage = "UP TO DATE"
+                final_file = "No new files"
+            elif mode_failed > 0:
+                final_stage = "PARTIAL"
+                final_file = ""
+            else:
+                final_stage = "COMPLETED"
+                final_file = ""
+            emit_bruce_progress_fn(
+                progress_callback,
+                progress_mode,
+                mode_total,
+                mode_total,
+                mode_downloaded,
+                mode_failed,
+                current_file=final_file,
+                stage=final_stage,
+            )
 
         status = "partial" if errors else "success"
         message = (

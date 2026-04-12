@@ -31,6 +31,254 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+_SYNC_PROCESS_TEMPLATES = {
+    "pwnagotchi_handshakes": {
+        "status": "running",
+        "details": "Pwnagotchi handshakes",
+        "percentage": 15,
+        "stage": "RUNNING",
+        "extra": "Importing handshake captures and GPS sidecars from Pwnagotchi SSH",
+        "target": "pwnagotchi",
+        "mode": "handshakes",
+    },
+    "handshakes": {
+        "status": "running",
+        "details": "M5Evil handshakes",
+        "percentage": 15,
+        "stage": "RUNNING",
+        "extra": "Importing handshake captures from Admin WebUI",
+        "target": "m5evil",
+        "mode": "handshakes",
+    },
+    "rawsniffer": {
+        "status": "queued",
+        "details": "M5Evil raw sniffer",
+        "percentage": 0,
+        "stage": "QUEUED",
+        "extra": "Queued behind M5Evil handshakes",
+        "target": "m5evil",
+        "mode": "rawsniffer",
+    },
+    "mastersniffer": {
+        "status": "queued",
+        "details": "M5Evil master sniffer",
+        "percentage": 0,
+        "stage": "QUEUED",
+        "extra": "Queued behind M5Evil RAW sniffer",
+        "target": "m5evil",
+        "mode": "mastersniffer",
+    },
+    "wardrive": {
+        "status": "queued",
+        "details": "M5Evil Wardrive CSVs",
+        "percentage": 0,
+        "stage": "QUEUED",
+        "extra": "Queued behind M5Evil Master Sniffer",
+        "target": "m5evil",
+        "mode": "wardrive",
+    },
+    "bruce_handshakes": {
+        "status": "running",
+        "details": "Bruce handshakes",
+        "percentage": 15,
+        "stage": "RUNNING",
+        "extra": "Importing handshake captures from Bruce WebUI",
+        "target": "bruce",
+        "mode": "handshakes",
+    },
+    "bruce_rawsniffer": {
+        "status": "queued",
+        "details": "Bruce raw sniffer",
+        "percentage": 0,
+        "stage": "QUEUED",
+        "extra": "Queued behind Bruce handshakes",
+        "target": "bruce",
+        "mode": "rawsniffer",
+    },
+    "bruce_wardrive": {
+        "status": "queued",
+        "details": "Bruce Wardrive CSVs",
+        "percentage": 0,
+        "stage": "QUEUED",
+        "extra": "Queued behind Bruce RAW sniffer",
+        "target": "bruce",
+        "mode": "wardrive",
+    },
+}
+
+
+def _register_sync_process_jobs(process_id_map):
+    for mode, process_id in (process_id_map or {}).items():
+        if not process_id:
+            continue
+        template = _SYNC_PROCESS_TEMPLATES.get(mode)
+        if not template:
+            continue
+        job_manager.register_external_job(
+            process_id,
+            job_type="sync_import",
+            command="internal:sync",
+            status=template["status"],
+            total_steps=1,
+            meta={
+                "display_type": "SYNC",
+                "display_details": template["details"],
+                "no_cancel": True,
+                "sync_target": template["target"],
+                "sync_mode": template["mode"],
+            },
+            progress_data={
+                "percentage": template["percentage"],
+                "speed": "",
+                "eta": "",
+                "stage": template["stage"],
+                "extra": template["extra"],
+                "current_step": 0,
+                "total_steps": 1,
+            },
+        )
+
+
+def _complete_sync_process_job(process_id, *, status, stage, extra):
+    if not process_id:
+        return
+    job_manager.complete_external_job(
+        process_id,
+        status=status,
+        progress_data={
+            "percentage": 100,
+            "stage": stage,
+            "extra": extra,
+        },
+    )
+
+
+def _finalize_sync_process_jobs(process_id_map, details):
+    pwn_remote = details.get("pwnagotchi_remote_sync") or {}
+    pwn_total = int(pwn_remote.get("handshake_files_to_download") or 0)
+    pwn_downloaded = int(pwn_remote.get("downloaded_handshakes") or 0)
+    pwn_failed = int(pwn_remote.get("handshake_files_failed") or 0)
+    if pwn_total <= 0:
+        _complete_sync_process_job(
+            process_id_map.get("pwnagotchi_handshakes"),
+            status="up_to_date",
+            stage="UP TO DATE",
+            extra="No new files",
+        )
+    elif pwn_failed > 0:
+        _complete_sync_process_job(
+            process_id_map.get("pwnagotchi_handshakes"),
+            status="partial",
+            stage="PARTIAL",
+            extra=f"{pwn_downloaded}/{pwn_total} | {pwn_failed} failed",
+        )
+    else:
+        _complete_sync_process_job(
+            process_id_map.get("pwnagotchi_handshakes"),
+            status="success",
+            stage="COMPLETED",
+            extra=f"{pwn_downloaded}/{pwn_total}",
+        )
+
+    m5_remote = details.get("m5evil_remote_sync") or {}
+    for mode, downloaded_key, total_key, failed_key in (
+        (
+            "handshakes",
+            "downloaded_handshakes",
+            "handshake_files_to_download",
+            "handshake_files_failed",
+        ),
+        (
+            "rawsniffer",
+            "downloaded_rawsniffer_pcaps",
+            "rawsniffer_files_to_download",
+            "rawsniffer_files_failed",
+        ),
+        (
+            "mastersniffer",
+            "downloaded_mastersniffer_pcaps",
+            "mastersniffer_files_to_download",
+            "mastersniffer_files_failed",
+        ),
+        (
+            "wardrive",
+            "downloaded_wardrive_csvs",
+            "wardrive_files_to_download",
+            "wardrive_files_failed",
+        ),
+    ):
+        total = int(m5_remote.get(total_key) or 0)
+        downloaded = int(m5_remote.get(downloaded_key) or 0)
+        failed = int(m5_remote.get(failed_key) or 0)
+        if total <= 0:
+            _complete_sync_process_job(
+                process_id_map.get(mode),
+                status="up_to_date",
+                stage="UP TO DATE",
+                extra="No new files",
+            )
+        elif failed > 0:
+            _complete_sync_process_job(
+                process_id_map.get(mode),
+                status="partial",
+                stage="PARTIAL",
+                extra=f"{downloaded}/{total} | {failed} failed",
+            )
+        else:
+            _complete_sync_process_job(
+                process_id_map.get(mode),
+                status="success",
+                stage="COMPLETED",
+                extra=f"{downloaded}/{total}",
+            )
+
+    bruce_remote = details.get("bruce_remote_sync") or {}
+    for mode, downloaded_key, total_key, failed_key in (
+        (
+            "bruce_handshakes",
+            "downloaded_handshakes",
+            "handshake_files_to_download",
+            "handshake_files_failed",
+        ),
+        (
+            "bruce_rawsniffer",
+            "downloaded_rawsniffer_pcaps",
+            "rawsniffer_files_to_download",
+            "rawsniffer_files_failed",
+        ),
+        (
+            "bruce_wardrive",
+            "downloaded_wardrive_csvs",
+            "wardrive_files_to_download",
+            "wardrive_files_failed",
+        ),
+    ):
+        total = int(bruce_remote.get(total_key) or 0)
+        downloaded = int(bruce_remote.get(downloaded_key) or 0)
+        failed = int(bruce_remote.get(failed_key) or 0)
+        if total <= 0:
+            _complete_sync_process_job(
+                process_id_map.get(mode),
+                status="up_to_date",
+                stage="UP TO DATE",
+                extra="No new files",
+            )
+        elif failed > 0:
+            _complete_sync_process_job(
+                process_id_map.get(mode),
+                status="partial",
+                stage="PARTIAL",
+                extra=f"{downloaded}/{total} | {failed} failed",
+            )
+        else:
+            _complete_sync_process_job(
+                process_id_map.get(mode),
+                status="success",
+                stage="COMPLETED",
+                extra=f"{downloaded}/{total}",
+            )
+
+
 def _fingerprint_worker(job, emit):
     return fingerprint_jobs._fingerprint_worker_impl(
         job,
@@ -130,11 +378,13 @@ async def trigger_sync(payload: SyncRequest = Body(default=SyncRequest())):
         "bruce_rawsniffer": str(payload.bruce_rawsniffer_process_id or "").strip(),
         "bruce_wardrive": str(payload.bruce_wardrive_process_id or "").strip(),
     }
+    _register_sync_process_jobs(m5_progress_ids)
 
     def _emit_sync_progress(mode, data):
         process_id = m5_progress_ids.get(str(mode or "").strip().lower())
         if not process_id:
             return
+        job_manager.update_external_job(process_id, progress_data=data)
         job_manager._fire_and_forget_emit(
             "job_progress",
             {"job_id": process_id, "data": data},
@@ -579,6 +829,7 @@ async def trigger_sync(payload: SyncRequest = Body(default=SyncRequest())):
         "sync_ms": bruce_remote.get("details", {}).get("sync_ms", 0),
         "status": bruce_remote.get("status", "skipped"),
     }
+    _finalize_sync_process_jobs(m5_progress_ids, details)
     result["details"] = details
 
     return ok(result)

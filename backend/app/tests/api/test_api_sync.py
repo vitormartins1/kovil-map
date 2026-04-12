@@ -70,6 +70,9 @@ class _FakeManager:
 class _FakeJobManager:
     def __init__(self):
         self.started_jobs = []
+        self.registered_jobs = []
+        self.updated_jobs = []
+        self.completed_jobs = []
 
     def start_multi_job(self, worker, job_type=None, total_steps=1, meta=None):
         job_id = str(uuid.uuid4())
@@ -82,6 +85,44 @@ class _FakeJobManager:
             }
         )
         return job_id
+
+    def register_external_job(
+        self,
+        job_id,
+        *,
+        job_type="external",
+        command="internal:external",
+        cwd=None,
+        status="running",
+        total_steps=1,
+        meta=None,
+        progress_data=None,
+    ):
+        self.registered_jobs.append(
+            {
+                "job_id": job_id,
+                "job_type": job_type,
+                "command": command,
+                "cwd": cwd,
+                "status": status,
+                "total_steps": total_steps,
+                "meta": meta,
+                "progress_data": progress_data,
+            }
+        )
+        return job_id
+
+    def update_external_job(self, job_id, *, progress_data=None, status=None):
+        self.updated_jobs.append(
+            {"job_id": job_id, "progress_data": progress_data, "status": status}
+        )
+        return True
+
+    def complete_external_job(self, job_id, *, status="success", progress_data=None):
+        self.completed_jobs.append(
+            {"job_id": job_id, "status": status, "progress_data": progress_data}
+        )
+        return True
 
 
 @pytest.fixture(autouse=True)
@@ -130,8 +171,14 @@ def test_sync_endpoint_triggers_reload(client, monkeypatch):
     assert "pwnagotchi_remote_sync" in payload["details"]["sync_stages"]
     assert "m5evil_remote_sync" in payload["details"]["sync_stages"]
     assert "bruce_remote_sync" in payload["details"]["sync_stages"]
-    assert "handshake_files_to_download" in payload["details"]["sync_stages"]["pwnagotchi_remote_sync"]
-    assert "handshake_files_failed" in payload["details"]["sync_stages"]["pwnagotchi_remote_sync"]
+    assert (
+        "handshake_files_to_download"
+        in payload["details"]["sync_stages"]["pwnagotchi_remote_sync"]
+    )
+    assert (
+        "handshake_files_failed"
+        in payload["details"]["sync_stages"]["pwnagotchi_remote_sync"]
+    )
     assert "handshake_files_to_download" in payload["details"]["pwnagotchi_remote_sync"]
     assert "handshake_files_failed" in payload["details"]["pwnagotchi_remote_sync"]
     assert payload["details"]["sync_stages"]["bruce_fingerprint"]["status"] == "skipped"
@@ -243,6 +290,32 @@ def test_sync_endpoint_passes_m5_progress_callback(client, monkeypatch):
             "data": {"percentage": 60, "stage": "RUNNING"},
         },
     ) in emitted
+    assert any(
+        item["job_id"] == "pwn-hs-1" for item in sync_router.job_manager.registered_jobs
+    )
+    assert any(
+        item["job_id"] == "m5-hs-1" for item in sync_router.job_manager.registered_jobs
+    )
+    assert any(
+        item["job_id"] == "bruce-wd-1"
+        for item in sync_router.job_manager.registered_jobs
+    )
+    assert any(
+        item["job_id"] == "m5-hs-1" for item in sync_router.job_manager.updated_jobs
+    )
+    assert any(
+        item["job_id"] == "bruce-wd-1" for item in sync_router.job_manager.updated_jobs
+    )
+    assert any(
+        item["job_id"] == "pwn-hs-1" for item in sync_router.job_manager.completed_jobs
+    )
+    assert any(
+        item["job_id"] == "m5-hs-1" for item in sync_router.job_manager.completed_jobs
+    )
+    assert any(
+        item["job_id"] == "bruce-wd-1"
+        for item in sync_router.job_manager.completed_jobs
+    )
 
 
 def test_sync_endpoint_plans_hidden_missing_invalid_hs_files(

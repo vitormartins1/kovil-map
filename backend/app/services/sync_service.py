@@ -680,9 +680,7 @@ class SyncService:
             },
         }
 
-    def _download_remote_file(
-        self, sftp, remote_path, local_path, progress_hook=None
-    ):
+    def _download_remote_file(self, sftp, remote_path, local_path, progress_hook=None):
         return _download_remote_file_helper(
             sftp, remote_path, local_path, progress_hook=progress_hook
         )
