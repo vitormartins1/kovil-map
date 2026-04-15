@@ -418,6 +418,9 @@ export async function restoreActiveJobs() {
                     type = "AIRCRACK-NG";
                     const match = cmdStr.match(/[/\\]([^/\\]+\.pcap)/);
                     if (match) details = match[1];
+                } else if (job.meta?.display_type || job.meta?.display_details) {
+                    type = job.meta?.display_type || type;
+                    details = job.meta?.display_details || details;
                 }
 
                 const mac = extractMacFromDetails(details);

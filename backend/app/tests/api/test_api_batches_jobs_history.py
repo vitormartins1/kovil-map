@@ -78,6 +78,33 @@ def test_maintenance_endpoints(client, monkeypatch):
             "analytics_cache_cleared": True,
         },
     )
+    monkeypatch.setattr(
+        maintenance_router.maintenance_service,
+        "get_demo_status",
+        lambda: {
+            "active": False,
+            "available_profiles": [{"profile_id": "showcase-core-v1"}],
+            "snapshot_available": False,
+        },
+    )
+    monkeypatch.setattr(
+        maintenance_router.maintenance_service,
+        "start_demo_install",
+        lambda profile_id="showcase-core-v1", frontend_state=None: {
+            "job_id": "demo-job-1",
+            "profile_id": profile_id,
+            "ui_seed": {},
+        },
+    )
+    monkeypatch.setattr(
+        maintenance_router.maintenance_service,
+        "start_demo_remove",
+        lambda: {
+            "job_id": "demo-job-2",
+            "restore_mode": "snapshot",
+            "ui_restore": {},
+        },
+    )
 
     resp = client.delete("/api/maintenance/details")
     assert resp.status_code == 200
@@ -86,6 +113,24 @@ def test_maintenance_endpoints(client, monkeypatch):
     resp = client.delete("/api/maintenance/cache")
     assert resp.status_code == 200
     assert resp.json()["data"]["raw_metadata_deleted_count"] == 7
+
+    resp = client.get("/api/maintenance/demo")
+    assert resp.status_code == 200
+    assert resp.json()["data"]["active"] is False
+
+    resp = client.post(
+        "/api/maintenance/demo/install",
+        json={
+            "profile_id": "showcase-core-v1",
+            "frontend_state": {"lists": {"targets": []}},
+        },
+    )
+    assert resp.status_code == 200
+    assert resp.json()["data"]["job_id"] == "demo-job-1"
+
+    resp = client.delete("/api/maintenance/demo")
+    assert resp.status_code == 200
+    assert resp.json()["data"]["restore_mode"] == "snapshot"
 
 
 def test_batches_invalid_and_error_paths(client, tmp_path, monkeypatch):

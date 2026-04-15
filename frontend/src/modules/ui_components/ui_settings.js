@@ -429,6 +429,35 @@ function setBruceProbeStatus(message = '', tone = 'neutral') {
     node.dataset.state = tone || 'neutral';
 }
 
+export function renderDemoDataStatus(status = null) {
+    const badge = document.getElementById('demo-data-status');
+    const summary = document.getElementById('demo-data-summary');
+    const installButton = document.getElementById('btn-install-demo-data');
+    const removeButton = document.getElementById('btn-remove-demo-data');
+    const payload = status && typeof status === 'object' ? status : {};
+    const isActive = !!payload.active;
+    const activeLabel = String(payload.active_profile_label || payload.active_profile_id || 'showcase-core-v1');
+    const metrics = payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
+
+    if (badge) {
+        badge.textContent = isActive ? `DEMO DATA: ACTIVE (${activeLabel})` : 'DEMO DATA: INACTIVE';
+        badge.dataset.tone = isActive ? 'active' : 'idle';
+    }
+    if (summary) {
+        if (isActive) {
+            const networks = Number(metrics.networks_total || 0);
+            const wardrive = Number(metrics.wardrive_sessions || 0);
+            const raw = Number(metrics.raw_files || 0);
+            const snapshotNote = payload.snapshot_available ? ' Snapshot available for restore.' : '';
+            summary.textContent = `Synthetic showcase pack loaded with ${networks} networks, ${wardrive} Wardrive sessions and ${raw} RAW captures.${snapshotNote}`;
+        } else {
+            summary.textContent = 'Optional synthetic showcase data for onboarding, screenshots and feature walkthroughs. Real runtime data stays untouched until you install the pack.';
+        }
+    }
+    if (installButton) installButton.disabled = isActive;
+    if (removeButton) removeButton.disabled = !isActive;
+}
+
 function formatM5ProbeFeedback(result = {}) {
     const details = result?.details || {};
     if (result?.status === 'success') {
@@ -867,10 +896,12 @@ export async function openSettings() {
     if (advanced) advanced.open = false;
     
     try {
-        const [config, devices] = await Promise.all([
+        const [config, devices, demoStatus] = await Promise.all([
             API.getConfig(),
-            API.getHashcatDevices()
+            API.getHashcatDevices(),
+            API.getDemoDataStatus().catch(() => null),
         ]);
+        renderDemoDataStatus(demoStatus);
         setInputValue('conf-ip', config.pwn_host, '');
         setInputValue('conf-port', config.pwn_port ?? 22, '22');
         setInputValue('conf-user', config.pwn_user, '');
@@ -1005,6 +1036,7 @@ export async function openSettings() {
         
     } catch (e) {
         log("Failed to load config from backend", "error");
+        renderDemoDataStatus(null);
     }
 }
 
@@ -1151,6 +1183,7 @@ export const __testUiSettingsHelpers = {
     setPwnProbeStatus,
     setM5ProbeStatus,
     setBruceProbeStatus,
+    renderDemoDataStatus,
     formatPwnProbeFeedback,
     formatM5ProbeFeedback,
     formatBruceProbeFeedback,

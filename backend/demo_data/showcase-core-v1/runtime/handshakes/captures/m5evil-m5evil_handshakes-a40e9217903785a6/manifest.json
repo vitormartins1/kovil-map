@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "m5evil-m5evil_handshakes-a40e9217903785a6",
+  "demo_profile": "showcase-core-v1",
+  "mac": "0E:11:22:33:44:53",
+  "network_id": "ops_truck_alpha",
+  "source": "m5evil",
+  "source_filename": "HS_0E1122334453_ops_truck_alpha_m5evil.pcap",
+  "source_path_role": "m5evil_handshakes",
+  "ssid": "OPS-TRUCK-ALPHA",
+  "version": 1
+}

@@ -1,6 +1,7 @@
 const mockAPI = {
   getConfig: jest.fn(),
   getHashcatDevices: jest.fn(),
+  getDemoDataStatus: jest.fn(),
   saveConfig: jest.fn(),
   probePwnagotchiSync: jest.fn(),
   probeM5EvilSync: jest.fn(),
@@ -47,6 +48,10 @@ function mountSettingsDom() {
       <div id="conf-m5-test-status"></div>
       <button id="btn-conf-bruce-test" type="button">test</button>
       <div id="conf-bruce-test-status"></div>
+      <div id="demo-data-status"></div>
+      <div id="demo-data-summary"></div>
+      <button id="btn-install-demo-data" type="button">install</button>
+      <button id="btn-remove-demo-data" type="button">remove</button>
     </div>
     <details id="settings-advanced"></details>
 
@@ -302,6 +307,12 @@ function setDefaults() {
     { id: "1", name: "GPU 1", type: "OpenCL", backend: "OpenCL" },
     { id: "2", name: "GPU 2", type: "CUDA", backend: "CUDA" },
   ]);
+  mockAPI.getDemoDataStatus.mockResolvedValue({
+    active: false,
+    available_profiles: [{ profile_id: "showcase-core-v1", label: "Showcase Core v1" }],
+    snapshot_available: false,
+    summary: null,
+  });
 
   mockAPI.saveConfig.mockResolvedValue({ status: "ok" });
   mockAPI.probePwnagotchiSync.mockResolvedValue({
@@ -473,6 +484,9 @@ describe("ui_settings", () => {
     expect(document.getElementById("conf-wardrive-primary-zone-accent-color").value).toBe("purple");
     expect(document.getElementById("conf-wardrive-secondary-accent-color").value).toBe("white");
     expect(document.getElementById("settings-advanced").open).toBe(false);
+    expect(document.getElementById("demo-data-status").textContent).toBe("DEMO DATA: INACTIVE");
+    expect(document.getElementById("btn-install-demo-data").disabled).toBe(false);
+    expect(document.getElementById("btn-remove-demo-data").disabled).toBe(true);
   });
 
   test("openSettings fallback device to all when default not available", async () => {

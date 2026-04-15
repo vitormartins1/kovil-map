@@ -166,19 +166,21 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 ### Cleanup and mock data
 
 - Priority: `CRITICAL`
-- Status: `IN PROGRESS`
+- Status: `DONE`
 - Estimate: `16-20h`
 - Complexity: `High`
 - Goal: prepare the codebase for public publication with safe demo-ready data.
 - Current state:
   - tracked source, config, docs, and Git history were already sanitized for the public repository
   - live runtime capture data is no longer versioned in the public tree
-  - remaining work is to formalize a dedicated versioned demo dataset/bootstrap flow
+  - public demo dataset flow is now implemented with a versioned pack under `backend/demo_data/showcase-core-v1/`
+  - demo install/remove is available from `System Settings > Maintenance`
+  - runtime snapshots are stored under `backend/data_backups/demo/` and real/demo datasets are not mixed in v1
 - Tasks:
   - keep personal absolute paths, credentials, and local artifacts out of tracked files
   - keep public examples and starter config sanitized
   - provide demo datasets under a dedicated data root
-  - add a first-run demo bootstrap script
+  - keep the maintainer-side builder and manifest deterministic
 
 ### Data-sensitivity review before publishing
 

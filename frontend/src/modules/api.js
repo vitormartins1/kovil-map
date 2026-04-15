@@ -534,6 +534,27 @@ export const API = {
         return await this._unwrap(res);
     },
 
+    async getDemoDataStatus() {
+        const res = await fetchWithAuth(`${API_BASE}/api/maintenance/demo`);
+        return await this._unwrap(res);
+    },
+
+    async installDemoData(payload = {}) {
+        const res = await fetchWithAuth(`${API_BASE}/api/maintenance/demo/install`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload || {}),
+        });
+        return await this._unwrap(res);
+    },
+
+    async removeDemoData() {
+        const res = await fetchWithAuth(`${API_BASE}/api/maintenance/demo`, {
+            method: 'DELETE',
+        });
+        return await this._unwrap(res);
+    },
+
     // Fingerprint
     async extractFingerprint(filename, force = false, captureId = null, rawItemId = null, bssid = null) {
         const res = await fetchWithAuth(`${API_BASE}/api/fingerprint/extract`, {

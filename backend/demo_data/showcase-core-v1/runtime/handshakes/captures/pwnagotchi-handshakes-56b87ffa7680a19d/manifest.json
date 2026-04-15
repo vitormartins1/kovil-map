@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-56b87ffa7680a19d",
+  "demo_profile": "showcase-core-v1",
+  "mac": "06:AA:11:22:33:55",
+  "network_id": "hidden_relay_07",
+  "source": "pwnagotchi",
+  "source_filename": "hidden_06AA11223355.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "",
+  "version": 1
+}

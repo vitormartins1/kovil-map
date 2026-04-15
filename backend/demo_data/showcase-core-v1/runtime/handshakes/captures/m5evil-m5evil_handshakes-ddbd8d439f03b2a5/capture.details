@@ -1,0 +1,28 @@
+{
+  "bssid": "02:11:22:33:44:50",
+  "classification": {
+    "confidence": 0.94,
+    "type": "router"
+  },
+  "demo": {
+    "category": "easy_dictionary",
+    "profile_id": "showcase-core-v1",
+    "source": "m5evil"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 6,
+    "frequency_mhz": 2437
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": false,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "RIO_CAFE_LOOP",
+  "vendor": "RioSignals Labs",
+  "wps": {
+    "present": false
+  }
+}

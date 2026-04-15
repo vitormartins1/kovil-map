@@ -1,0 +1,71 @@
+{
+  "capture": {
+    "clients_count": 2,
+    "duration_s": 72.0,
+    "frame_totals": {
+      "beacons": 28,
+      "eapol": 4,
+      "probe_requests": 6
+    },
+    "networks_count": 2,
+    "warnings": []
+  },
+  "demo_profile": "showcase-core-v1",
+  "device_label": "Bruce",
+  "highlights": {
+    "handshake_candidate_count": 2,
+    "handshake_candidates": [
+      {
+        "bssid": "02:11:22:33:44:50",
+        "eapol_count": 2,
+        "ssid": "RIO_CAFE_LOOP",
+        "tier": "ready"
+      },
+      {
+        "bssid": "06:11:22:33:44:51",
+        "eapol_count": 2,
+        "ssid": "LAPA_EVENT_GUEST",
+        "tier": "ready"
+      }
+    ],
+    "hidden_network_count": 0,
+    "noisy_capture": false,
+    "revealed_hidden_count": 0,
+    "top_clients": [
+      {
+        "eapol_count": 2,
+        "mac": "1A:2B:3C:4D:5E:60",
+        "network_count": 1,
+        "total_frames": 18
+      },
+      {
+        "eapol_count": 2,
+        "mac": "1A:2B:3C:4D:5E:61",
+        "network_count": 1,
+        "total_frames": 25
+      }
+    ],
+    "top_networks": [
+      {
+        "beacon_count": 12,
+        "bssid": "02:11:22:33:44:50",
+        "client_count": 1,
+        "ssid": "RIO_CAFE_LOOP"
+      },
+      {
+        "beacon_count": 16,
+        "bssid": "06:11:22:33:44:51",
+        "client_count": 2,
+        "ssid": "LAPA_EVENT_GUEST"
+      }
+    ]
+  },
+  "processed_at": "2026-04-12T00:00:00Z",
+  "raw_item_id": "raw::pcap::b7f2791ebca71141",
+  "schema_version": 1,
+  "source": "brucegotchi",
+  "source_file": "rio_bruce_patrol.pcap",
+  "source_mtime": 1776022314.965812,
+  "source_path_role": "rawsniffer",
+  "source_size": 472
+}

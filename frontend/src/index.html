@@ -773,10 +773,20 @@
                 </div>
 
                 <div class="settings-maintenance-row">
-                    <div class="section-title section-title--danger">
-                        <i class="fa-solid fa-trash"></i> MAINTENANCE
+                    <div class="settings-maintenance-copy">
+                        <div class="section-title section-title--danger">
+                            <i class="fa-solid fa-trash"></i> MAINTENANCE
+                        </div>
+                        <div class="settings-maintenance-status" id="demo-data-status">DEMO DATA: INACTIVE</div>
+                        <p class="settings-note" id="demo-data-summary">Optional synthetic showcase data for onboarding, screenshots and feature walkthroughs.</p>
                     </div>
                     <div class="settings-maintenance-actions">
+                        <button class="cyber-button-small bg-green fg-black settings-maintenance-button" id="btn-install-demo-data">
+                            <i class="fa-solid fa-box-open"></i> INSTALL DEMO DATA
+                        </button>
+                        <button class="cyber-button-small bg-yellow fg-black settings-maintenance-button" id="btn-remove-demo-data">
+                            <i class="fa-solid fa-box-archive"></i> REMOVE DEMO DATA
+                        </button>
                         <button class="cyber-button-small bg-red fg-white settings-maintenance-button" id="btn-clear-history">
                             <i class="fa-solid fa-trash-can"></i> CLEAR HISTORY (.try FILES)
                         </button>

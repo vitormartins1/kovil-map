@@ -1,0 +1,42 @@
+{
+  "demo_profile": "showcase-core-v1",
+  "device_label": "Bruce",
+  "networks": [
+    {
+      "beacon_count": 12,
+      "bssid": "02:11:22:33:44:50",
+      "channel": 6,
+      "eapol_count": 2,
+      "frequency_mhz": 2437,
+      "last_seen_offset_s": 18.0,
+      "probe_client_count": 1,
+      "ssid": "RIO_CAFE_LOOP",
+      "ssid_raw_hex": "52494f5f434146455f4c4f4f50"
+    },
+    {
+      "beacon_count": 16,
+      "bssid": "06:11:22:33:44:51",
+      "channel": 11,
+      "eapol_count": 2,
+      "frequency_mhz": 2462,
+      "last_seen_offset_s": 29.0,
+      "probe_client_count": 2,
+      "ssid": "LAPA_EVENT_GUEST",
+      "ssid_raw_hex": "4c4150415f4556454e545f4755455354"
+    }
+  ],
+  "processed_at": "2026-04-12T00:00:00Z",
+  "raw_item_id": "raw::pcap::b7f2791ebca71141",
+  "schema_version": 1,
+  "source": "brucegotchi",
+  "source_file": "rio_bruce_patrol.pcap",
+  "source_mtime": 1776022314.965812,
+  "source_path_role": "rawsniffer",
+  "source_size": 472,
+  "stats": {
+    "beacon_frames": 28,
+    "eapol_frames": 4,
+    "networks_count": 2
+  },
+  "warnings": []
+}
