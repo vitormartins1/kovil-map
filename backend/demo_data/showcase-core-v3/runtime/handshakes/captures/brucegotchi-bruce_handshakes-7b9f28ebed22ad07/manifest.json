@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "brucegotchi-bruce_handshakes-7b9f28ebed22ad07",
+  "demo_profile": "showcase-core-v3",
+  "mac": "0E:AA:11:22:33:47",
+  "network_id": "copa_media_node",
+  "source": "brucegotchi",
+  "source_filename": "HS_0EAA11223347_copa_media_node_bruce.pcap",
+  "source_path_role": "bruce_handshakes",
+  "ssid": "COPA_MEDIA_NODE",
+  "version": 1
+}

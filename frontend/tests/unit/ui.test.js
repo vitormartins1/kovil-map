@@ -489,9 +489,9 @@ function resetMocks() {
   mockAPI.clearDetailsFiles.mockResolvedValue({ deleted_count: 0, failed_count: 0 });
   mockAPI.clearCache.mockResolvedValue({ raw_metadata_deleted_count: 0, raw_metadata_failed_count: 0 });
   mockAPI.installDemoData.mockResolvedValue({
-    profile_id: "showcase-core-v1",
-    label: "Showcase Core v1",
-    summary: { networks_total: 10, wardrive_sessions: 3, raw_files: 3 },
+    profile_id: "showcase-core-v4",
+    label: "Showcase Core v4",
+    summary: { networks_total: 4600, wardrive_sessions: 11, raw_files: 5 },
     ui_seed: {
       lists: { targets: ["AA:BB:CC:DD:EE:FF"], favs: ["11:22:33:44:55:66"] },
       modes: { targets: true, favs: true, process: true, logs: true, zones: true, conquered: true },

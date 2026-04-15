@@ -436,7 +436,7 @@ export function renderDemoDataStatus(status = null) {
     const removeButton = document.getElementById('btn-remove-demo-data');
     const payload = status && typeof status === 'object' ? status : {};
     const isActive = !!payload.active;
-    const activeLabel = String(payload.active_profile_label || payload.active_profile_id || 'showcase-core-v1');
+    const activeLabel = String(payload.active_profile_label || payload.active_profile_id || 'showcase-core-v4');
     const metrics = payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
 
     if (badge) {

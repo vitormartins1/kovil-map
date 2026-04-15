@@ -928,18 +928,18 @@ function setupEventListeners() {
             if (!window.confirm('Install the showcase demo data pack and temporarily replace the current runtime dataset?')) return;
             try {
                 const out = await API.installDemoData({
-                    profile_id: 'showcase-core-v1',
+                    profile_id: 'showcase-core-v4',
                     frontend_state: snapshotDemoUiState(),
                 });
                 applyDemoUiState(out?.ui_seed || null);
                 renderDemoDataStatus({
                     active: true,
-                    active_profile_label: out?.label || out?.profile_id || 'showcase-core-v1',
-                    active_profile_id: out?.profile_id || 'showcase-core-v1',
+                    active_profile_label: out?.label || out?.profile_id || 'showcase-core-v4',
+                    active_profile_id: out?.profile_id || 'showcase-core-v4',
                     summary: out?.summary || {},
                     snapshot_available: true,
                 });
-                log(`Demo data install started: ${out?.label || out?.profile_id || 'showcase-core-v1'}.`, 'success');
+                log(`Demo data install started: ${out?.label || out?.profile_id || 'showcase-core-v4'}.`, 'success');
             } catch (e) {
                 log(`Failed to install demo data: ${e.message}`, 'error');
             }

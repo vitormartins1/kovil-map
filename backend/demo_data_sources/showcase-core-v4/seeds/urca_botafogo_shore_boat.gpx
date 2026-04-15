@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:gpx xmlns:ns0="http://www.topografix.com/GPX/1/1" version="1.1" creator="KOVIL MAP Demo V4 Builder">
+  <ns0:trk>
+    <ns0:name>urca_botafogo_shore_boat</ns0:name>
+    <ns0:trkseg>
+      <ns0:trkpt lat="-22.952600" lon="-43.166450">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T04:45:00Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.952050" lon="-43.167350">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T04:45:08Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.951300" lon="-43.168450">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T04:45:16Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.950350" lon="-43.169700">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T04:45:24Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.949450" lon="-43.171050">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T04:45:32Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.948450" lon="-43.172450">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T04:45:40Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.947450" lon="-43.173900">
+        <ns0:ele>8.9</ns0:ele>
+        <ns0:time>2026-04-11T04:45:48Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.946450" lon="-43.175300">
+        <ns0:ele>9.3</ns0:ele>
+        <ns0:time>2026-04-11T04:45:56Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.945500" lon="-43.176700">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T04:46:04Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.944500" lon="-43.178100">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T04:46:12Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.943700" lon="-43.179350">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T04:46:20Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.943050" lon="-43.180250">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T04:46:28Z</ns0:time>
+      </ns0:trkpt>
+    </ns0:trkseg>
+  </ns0:trk>
+</ns0:gpx>

@@ -1,0 +1,89 @@
+{
+  "capture": {
+    "clients_count": 3,
+    "duration_s": 95.0,
+    "frame_totals": {
+      "beacons": 72,
+      "eapol": 12,
+      "probe_requests": 12
+    },
+    "networks_count": 3,
+    "warnings": []
+  },
+  "demo_profile": "showcase-core-v3",
+  "device_label": "M5Evil",
+  "highlights": {
+    "handshake_candidate_count": 3,
+    "handshake_candidates": [
+      {
+        "bssid": "02:11:22:33:44:60",
+        "eapol_count": 4,
+        "ssid": "RIO_CAFE_LOOP",
+        "tier": "ready"
+      },
+      {
+        "bssid": "0E:11:22:33:44:63",
+        "eapol_count": 4,
+        "ssid": "GLORIA_PRESS_HUB",
+        "tier": "ready"
+      },
+      {
+        "bssid": "0A:CC:11:22:33:4E",
+        "eapol_count": 4,
+        "ssid": "PORTO_LINK_BACKHAUL",
+        "tier": "ready"
+      }
+    ],
+    "hidden_network_count": 0,
+    "noisy_capture": false,
+    "revealed_hidden_count": 0,
+    "top_clients": [
+      {
+        "eapol_count": 4,
+        "mac": "5A:6B:7C:8D:9E:A0",
+        "network_count": 1,
+        "total_frames": 20
+      },
+      {
+        "eapol_count": 4,
+        "mac": "5A:6B:7C:8D:9E:A1",
+        "network_count": 1,
+        "total_frames": 27
+      },
+      {
+        "eapol_count": 4,
+        "mac": "5A:6B:7C:8D:9E:A2",
+        "network_count": 1,
+        "total_frames": 34
+      }
+    ],
+    "top_networks": [
+      {
+        "beacon_count": 18,
+        "bssid": "02:11:22:33:44:60",
+        "client_count": 1,
+        "ssid": "RIO_CAFE_LOOP"
+      },
+      {
+        "beacon_count": 24,
+        "bssid": "0E:11:22:33:44:63",
+        "client_count": 2,
+        "ssid": "GLORIA_PRESS_HUB"
+      },
+      {
+        "beacon_count": 30,
+        "bssid": "0A:CC:11:22:33:4E",
+        "client_count": 3,
+        "ssid": "PORTO_LINK_BACKHAUL"
+      }
+    ]
+  },
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::1e989705f3302979",
+  "schema_version": 1,
+  "source": "m5evil",
+  "source_file": "rio_m5_centro_revisit.pcap",
+  "source_mtime": 1776274941.8094397,
+  "source_path_role": "rawsniffer",
+  "source_size": 2679
+}

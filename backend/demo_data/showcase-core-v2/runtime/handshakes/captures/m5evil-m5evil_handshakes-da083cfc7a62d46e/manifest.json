@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "m5evil-m5evil_handshakes-da083cfc7a62d46e",
+  "demo_profile": "showcase-core-v2",
+  "mac": "02:11:22:33:44:60",
+  "network_id": "rio_cafe_loop",
+  "source": "m5evil",
+  "source_filename": "HS_021122334460_rio_cafe_loop_m5evil.pcap",
+  "source_path_role": "m5evil_handshakes",
+  "ssid": "RIO_CAFE_LOOP",
+  "version": 1
+}

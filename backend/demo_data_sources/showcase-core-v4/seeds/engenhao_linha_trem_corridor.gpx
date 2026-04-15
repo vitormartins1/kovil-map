@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:gpx xmlns:ns0="http://www.topografix.com/GPX/1/1" version="1.1" creator="KOVIL MAP Demo V4 Builder">
+  <ns0:trk>
+    <ns0:name>engenhao_linha_trem_corridor</ns0:name>
+    <ns0:trkseg>
+      <ns0:trkpt lat="-22.893850" lon="-43.291900">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T06:05:00Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.894100" lon="-43.289900">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T06:05:08Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.894350" lon="-43.287700">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T06:05:16Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.894650" lon="-43.285500">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T06:05:24Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.894900" lon="-43.283300">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T06:05:32Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895050" lon="-43.281250">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T06:05:40Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895100" lon="-43.279100">
+        <ns0:ele>8.9</ns0:ele>
+        <ns0:time>2026-04-11T06:05:48Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895200" lon="-43.276950">
+        <ns0:ele>9.3</ns0:ele>
+        <ns0:time>2026-04-11T06:05:56Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895350" lon="-43.274850">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T06:06:04Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895500" lon="-43.272700">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T06:06:12Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895600" lon="-43.270400">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T06:06:20Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895700" lon="-43.268050">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T06:06:28Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.895800" lon="-43.265950">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T06:06:36Z</ns0:time>
+      </ns0:trkpt>
+    </ns0:trkseg>
+  </ns0:trk>
+</ns0:gpx>

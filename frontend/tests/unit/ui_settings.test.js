@@ -309,7 +309,7 @@ function setDefaults() {
   ]);
   mockAPI.getDemoDataStatus.mockResolvedValue({
     active: false,
-    available_profiles: [{ profile_id: "showcase-core-v1", label: "Showcase Core v1" }],
+    available_profiles: [{ profile_id: "showcase-core-v4", label: "Showcase Core v4" }],
     snapshot_available: false,
     summary: null,
   });

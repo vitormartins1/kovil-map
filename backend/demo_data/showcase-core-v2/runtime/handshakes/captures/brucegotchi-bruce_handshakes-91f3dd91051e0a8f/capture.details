@@ -1,0 +1,28 @@
+{
+  "bssid": "06:AA:11:22:33:45",
+  "classification": {
+    "confidence": 0.87,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "digits_mask",
+    "profile_id": "showcase-core-v2",
+    "source": "brucegotchi"
+  },
+  "radio": {
+    "band": "5GHz",
+    "channel": 149,
+    "frequency_mhz": 5745
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "BOTAFOGO_KIOSK_NET",
+  "vendor": "Beachside Retail",
+  "wps": {
+    "present": false
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-357ccefe48205aa7",
+  "demo_profile": "showcase-core-v2",
+  "mac": "06:BB:11:22:33:49",
+  "network_id": "ipanema_boardwalk",
+  "source": "pwnagotchi",
+  "source_filename": "IPANEMA_BOARDWALK_06BB11223349.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "IPANEMA_BOARDWALK",
+  "version": 1
+}

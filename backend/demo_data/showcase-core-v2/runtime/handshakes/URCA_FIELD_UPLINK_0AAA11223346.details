@@ -1,0 +1,28 @@
+{
+  "bssid": "0A:AA:11:22:33:46",
+  "classification": {
+    "confidence": 0.84,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "wardrive_extra",
+    "profile_id": "showcase-core-v2",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "5GHz",
+    "channel": 149,
+    "frequency_mhz": 5745
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "URCA_FIELD_UPLINK",
+  "vendor": "Field Research Network",
+  "wps": {
+    "present": false
+  }
+}

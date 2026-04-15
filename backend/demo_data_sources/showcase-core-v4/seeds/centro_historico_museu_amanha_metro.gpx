@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:gpx xmlns:ns0="http://www.topografix.com/GPX/1/1" version="1.1" creator="KOVIL MAP Demo V4 Builder">
+  <ns0:trk>
+    <ns0:name>centro_historico_museu_amanha_metro</ns0:name>
+    <ns0:trkseg>
+      <ns0:trkpt lat="-22.908700" lon="-43.177900">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T07:15:00Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.907800" lon="-43.178300">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T07:15:08Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.906700" lon="-43.178400">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T07:15:16Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.905600" lon="-43.178150">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T07:15:24Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.904450" lon="-43.177500">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T07:15:32Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.903550" lon="-43.176500">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T07:15:40Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902850" lon="-43.175150">
+        <ns0:ele>8.9</ns0:ele>
+        <ns0:time>2026-04-11T07:15:48Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902500" lon="-43.173850">
+        <ns0:ele>9.3</ns0:ele>
+        <ns0:time>2026-04-11T07:15:56Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902400" lon="-43.172350">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T07:16:04Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902350" lon="-43.170850">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T07:16:12Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902250" lon="-43.169300">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T07:16:20Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902050" lon="-43.167900">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T07:16:28Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.901850" lon="-43.166400">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T07:16:36Z</ns0:time>
+      </ns0:trkpt>
+    </ns0:trkseg>
+  </ns0:trk>
+</ns0:gpx>

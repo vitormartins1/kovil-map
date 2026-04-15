@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:gpx xmlns:ns0="http://www.topografix.com/GPX/1/1" version="1.1" creator="KOVIL MAP Demo V4 Builder">
+  <ns0:trk>
+    <ns0:name>lagoa_jardim_botanico_bike</ns0:name>
+    <ns0:trkseg>
+      <ns0:trkpt lat="-22.965900" lon="-43.214200">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T03:35:00Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.966650" lon="-43.213120">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T03:35:08Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.967300" lon="-43.211900">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T03:35:16Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.968100" lon="-43.210420">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T03:35:24Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.968950" lon="-43.208700">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T03:35:32Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.969950" lon="-43.206650">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T03:35:40Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.970900" lon="-43.204600">
+        <ns0:ele>8.9</ns0:ele>
+        <ns0:time>2026-04-11T03:35:48Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.971900" lon="-43.202250">
+        <ns0:ele>9.3</ns0:ele>
+        <ns0:time>2026-04-11T03:35:56Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.973050" lon="-43.199950">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T03:36:04Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.974250" lon="-43.197800">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T03:36:12Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.975350" lon="-43.195850">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T03:36:20Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.976550" lon="-43.193850">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T03:36:28Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.977650" lon="-43.191950">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T03:36:36Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.978650" lon="-43.190300">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T03:36:44Z</ns0:time>
+      </ns0:trkpt>
+    </ns0:trkseg>
+  </ns0:trk>
+</ns0:gpx>

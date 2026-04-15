@@ -7,7 +7,7 @@ from app.services import demo_data_service as dds_module
 
 
 def _write_demo_pack(root: Path) -> None:
-    profile_root = root / "showcase-core-v1"
+    profile_root = root / "showcase-core-v4"
     runtime_root = profile_root / "runtime"
     (runtime_root / "handshakes").mkdir(parents=True, exist_ok=True)
     (runtime_root / "BrucePCAP" / "rawsniffer").mkdir(parents=True, exist_ok=True)
@@ -30,17 +30,21 @@ def _write_demo_pack(root: Path) -> None:
         "demo-wardrive",
         encoding="utf-8",
     )
+    (runtime_root / "wardrive" / "session_tags.json").write_text(
+        json.dumps({"20260412_demo": "car"}, ensure_ascii=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
     (runtime_root / "demo_wordlists" / "demo_easy.txt").write_text(
         "cafeloop2026\n",
         encoding="utf-8",
     )
 
     manifest = {
-        "profile_id": "showcase-core-v1",
-        "label": "Showcase Core v1",
-        "description": "Synthetic showcase dataset",
-        "version": 1,
-        "build_stamp": "2026-04-12T00:00:00Z",
+        "profile_id": "showcase-core-v4",
+        "label": "Showcase Core v4",
+        "description": "Synthetic showcase dataset with expanded WarDrive coverage",
+        "version": 4,
+        "build_stamp": "2026-04-15T00:00:00Z",
         "runtime_roots": [
             "handshakes",
             "BrucePCAP",
@@ -49,8 +53,8 @@ def _write_demo_pack(root: Path) -> None:
             "demo_wordlists",
         ],
         "summary": {
-            "networks_total": 10,
-            "wardrive_sessions": 3,
+            "networks_total": 1500,
+            "wardrive_sessions": 1,
             "raw_files": 1,
         },
         "ui_seed": {

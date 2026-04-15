@@ -128,6 +128,41 @@ def test_load_real_data_cache_and_reload(monkeypatch):
     assert calls["n"] == 2
 
 
+def test_reload_data_clears_wardrive_session_tag_cache(tmp_path, monkeypatch):
+    wardrive_dir = tmp_path / "wardrive"
+    wardrive_dir.mkdir()
+    (wardrive_dir / "session_tags.json").write_text(
+        json.dumps({"session-a": "car"}, ensure_ascii=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(dl_module, "WARDRIVE_DIR", str(wardrive_dir))
+    monkeypatch.setattr(dl_module, "_WARDRIVE_SESSION_TAGS", {"session-a": "walk"})
+    monkeypatch.setattr(dl_module, "_WARDRIVE_SESSIONS", [])
+    monkeypatch.setattr(dl_module, "_DATA_CACHE", None)
+
+    def _fake_load_from_disk():
+        dl_module._set_wardrive_sessions(
+            [
+                {
+                    "session_id": "session-a",
+                    "source_file": "session-a.csv",
+                    "networks_count": 10,
+                    "points_count": 10,
+                }
+            ]
+        )
+        return {"loaded": True}
+
+    monkeypatch.setattr(dl_module, "_load_from_disk", _fake_load_from_disk)
+
+    data = dl_module.reload_data()
+
+    assert data == {"loaded": True}
+    sessions = dl_module.get_wardrive_sessions()
+    assert sessions[0]["transport_mode"] == "car"
+
+
 def test_data_revision_increments_on_disk_load_and_reload(tmp_path, monkeypatch):
     monkeypatch.setattr(dl_module, "HANDSHAKES_DIR", str(tmp_path))
     monkeypatch.setattr(dl_module, "_DATA_CACHE", None)

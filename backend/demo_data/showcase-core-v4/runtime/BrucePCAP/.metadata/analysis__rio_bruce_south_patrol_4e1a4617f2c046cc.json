@@ -1,0 +1,89 @@
+{
+  "capture": {
+    "clients_count": 3,
+    "duration_s": 95.0,
+    "frame_totals": {
+      "beacons": 72,
+      "eapol": 12,
+      "probe_requests": 12
+    },
+    "networks_count": 3,
+    "warnings": []
+  },
+  "demo_profile": "showcase-core-v4",
+  "device_label": "Bruce",
+  "highlights": {
+    "handshake_candidate_count": 3,
+    "handshake_candidates": [
+      {
+        "bssid": "0E:AA:11:22:33:47",
+        "eapol_count": 4,
+        "ssid": "COPA_MEDIA_NODE",
+        "tier": "ready"
+      },
+      {
+        "bssid": "02:BB:11:22:33:48",
+        "eapol_count": 4,
+        "ssid": "METRO_LINE_4",
+        "tier": "ready"
+      },
+      {
+        "bssid": "06:BB:11:22:33:49",
+        "eapol_count": 4,
+        "ssid": "IPANEMA_BOARDWALK",
+        "tier": "ready"
+      }
+    ],
+    "hidden_network_count": 0,
+    "noisy_capture": false,
+    "revealed_hidden_count": 0,
+    "top_clients": [
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:90",
+        "network_count": 1,
+        "total_frames": 20
+      },
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:91",
+        "network_count": 1,
+        "total_frames": 27
+      },
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:92",
+        "network_count": 1,
+        "total_frames": 34
+      }
+    ],
+    "top_networks": [
+      {
+        "beacon_count": 18,
+        "bssid": "0E:AA:11:22:33:47",
+        "client_count": 1,
+        "ssid": "COPA_MEDIA_NODE"
+      },
+      {
+        "beacon_count": 24,
+        "bssid": "02:BB:11:22:33:48",
+        "client_count": 2,
+        "ssid": "METRO_LINE_4"
+      },
+      {
+        "beacon_count": 30,
+        "bssid": "06:BB:11:22:33:49",
+        "client_count": 3,
+        "ssid": "IPANEMA_BOARDWALK"
+      }
+    ]
+  },
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::4e1a4617f2c046cc",
+  "schema_version": 1,
+  "source": "brucegotchi",
+  "source_file": "rio_bruce_south_patrol.pcap",
+  "source_mtime": 1776277009.127987,
+  "source_path_role": "rawsniffer",
+  "source_size": 2671
+}

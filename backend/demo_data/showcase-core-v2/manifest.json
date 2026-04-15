@@ -1,0 +1,1457 @@
+{
+  "batch_file": "batch_showcase_core_v2.22000",
+  "build_stamp": "2026-04-15T00:00:00Z",
+  "combined_candidates": [
+    {
+      "build_id": "build-0ee684303d89",
+      "included_capture_ids": [
+        "pwnagotchi-handshakes-4d7541cec6029bfe",
+        "brucegotchi-bruce_handshakes-2cbc0b9c52473489",
+        "m5evil-m5evil_handshakes-da083cfc7a62d46e"
+      ],
+      "mac": "02:11:22:33:44:60",
+      "network_id": "rio_cafe_loop"
+    },
+    {
+      "build_id": "build-d8eff6270dae",
+      "included_capture_ids": [
+        "pwnagotchi-handshakes-fd486ca7a322c396",
+        "brucegotchi-bruce_handshakes-7b9f28ebed22ad07",
+        "m5evil-m5evil_handshakes-d5987517594b73b2"
+      ],
+      "mac": "0E:AA:11:22:33:47",
+      "network_id": "copa_media_node"
+    }
+  ],
+  "description": "Synthetic Rio de Janeiro showcase dataset with sanitized real-world route geometry, richer cross-surface coverage, and public-safe demo cracking data.",
+  "files": [
+    "BrucePCAP/.metadata/analysis__rio_bruce_centro_patrol_2dad5473b1f9f2a0.json",
+    "BrucePCAP/.metadata/analysis__rio_bruce_south_patrol_4e1a4617f2c046cc.json",
+    "BrucePCAP/.metadata/brucegotchi__rawsniffer__rio_bruce_centro_patrol.pcap.json",
+    "BrucePCAP/.metadata/brucegotchi__rawsniffer__rio_bruce_south_patrol.pcap.json",
+    "BrucePCAP/handshakes/HS_021122334460_rio_cafe_loop_bruce.pcap",
+    "BrucePCAP/handshakes/HS_02BB11223348_metro_line_4_bruce.pcap",
+    "BrucePCAP/handshakes/HS_06AA11223345_botafogo_kiosk_net_bruce.pcap",
+    "BrucePCAP/handshakes/HS_0A1122334462_santa_teresa_bonde_bruce.pcap",
+    "BrucePCAP/handshakes/HS_0E1122334463_gloria_press_hub_bruce.pcap",
+    "BrucePCAP/handshakes/HS_0EAA11223347_copa_media_node_bruce.pcap",
+    "BrucePCAP/rawsniffer/rio_bruce_centro_patrol.pcap",
+    "BrucePCAP/rawsniffer/rio_bruce_south_patrol.pcap",
+    "demo_wordlists/demo_association.txt",
+    "demo_wordlists/demo_digits.txt",
+    "demo_wordlists/demo_easy.txt",
+    "handshakes/COPA_MEDIA_NODE_0EAA11223347.22000",
+    "handshakes/COPA_MEDIA_NODE_0EAA11223347.details",
+    "handshakes/COPA_MEDIA_NODE_0EAA11223347.paw-gps.json",
+    "handshakes/COPA_MEDIA_NODE_0EAA11223347.pcap",
+    "handshakes/COPA_MEDIA_NODE_0EAA11223347.try",
+    "handshakes/IPANEMA_BOARDWALK_06BB11223349.22000",
+    "handshakes/IPANEMA_BOARDWALK_06BB11223349.details",
+    "handshakes/IPANEMA_BOARDWALK_06BB11223349.paw-gps.json",
+    "handshakes/IPANEMA_BOARDWALK_06BB11223349.pcap",
+    "handshakes/IPANEMA_BOARDWALK_06BB11223349.try",
+    "handshakes/LAPA_EVENT_GUEST_061122334461.22000",
+    "handshakes/LAPA_EVENT_GUEST_061122334461.details",
+    "handshakes/LAPA_EVENT_GUEST_061122334461.paw-gps.json",
+    "handshakes/LAPA_EVENT_GUEST_061122334461.pcap",
+    "handshakes/LAPA_EVENT_GUEST_061122334461.pcap.cracked",
+    "handshakes/LAPA_EVENT_GUEST_061122334461.try",
+    "handshakes/RIO_CAFE_LOOP_021122334460.22000",
+    "handshakes/RIO_CAFE_LOOP_021122334460.details",
+    "handshakes/RIO_CAFE_LOOP_021122334460.paw-gps.json",
+    "handshakes/RIO_CAFE_LOOP_021122334460.pcap",
+    "handshakes/RIO_CAFE_LOOP_021122334460.try",
+    "handshakes/URCA_FIELD_UPLINK_0AAA11223346.22000",
+    "handshakes/URCA_FIELD_UPLINK_0AAA11223346.details",
+    "handshakes/URCA_FIELD_UPLINK_0AAA11223346.paw-gps.json",
+    "handshakes/URCA_FIELD_UPLINK_0AAA11223346.pcap",
+    "handshakes/URCA_FIELD_UPLINK_0AAA11223346.try",
+    "handshakes/batch_showcase_core_v2.22000",
+    "handshakes/batch_showcase_core_v2.22000.batch.json",
+    "handshakes/captures/brucegotchi-bruce_handshakes-189aa9d6a02d97cf/capture.22000",
+    "handshakes/captures/brucegotchi-bruce_handshakes-189aa9d6a02d97cf/capture.cracked",
+    "handshakes/captures/brucegotchi-bruce_handshakes-189aa9d6a02d97cf/capture.details",
+    "handshakes/captures/brucegotchi-bruce_handshakes-189aa9d6a02d97cf/capture.try",
+    "handshakes/captures/brucegotchi-bruce_handshakes-189aa9d6a02d97cf/manifest.json",
+    "handshakes/captures/brucegotchi-bruce_handshakes-2cbc0b9c52473489/capture.22000",
+    "handshakes/captures/brucegotchi-bruce_handshakes-2cbc0b9c52473489/capture.details",
+    "handshakes/captures/brucegotchi-bruce_handshakes-2cbc0b9c52473489/capture.try",
+    "handshakes/captures/brucegotchi-bruce_handshakes-2cbc0b9c52473489/manifest.json",
+    "handshakes/captures/brucegotchi-bruce_handshakes-61fc467749fa8f06/capture.22000",
+    "handshakes/captures/brucegotchi-bruce_handshakes-61fc467749fa8f06/capture.details",
+    "handshakes/captures/brucegotchi-bruce_handshakes-61fc467749fa8f06/capture.try",
+    "handshakes/captures/brucegotchi-bruce_handshakes-61fc467749fa8f06/manifest.json",
+    "handshakes/captures/brucegotchi-bruce_handshakes-7b9f28ebed22ad07/capture.22000",
+    "handshakes/captures/brucegotchi-bruce_handshakes-7b9f28ebed22ad07/capture.details",
+    "handshakes/captures/brucegotchi-bruce_handshakes-7b9f28ebed22ad07/capture.try",
+    "handshakes/captures/brucegotchi-bruce_handshakes-7b9f28ebed22ad07/manifest.json",
+    "handshakes/captures/brucegotchi-bruce_handshakes-852a92e8ba17e09f/capture.22000",
+    "handshakes/captures/brucegotchi-bruce_handshakes-852a92e8ba17e09f/capture.details",
+    "handshakes/captures/brucegotchi-bruce_handshakes-852a92e8ba17e09f/capture.try",
+    "handshakes/captures/brucegotchi-bruce_handshakes-852a92e8ba17e09f/manifest.json",
+    "handshakes/captures/brucegotchi-bruce_handshakes-91f3dd91051e0a8f/capture.22000",
+    "handshakes/captures/brucegotchi-bruce_handshakes-91f3dd91051e0a8f/capture.details",
+    "handshakes/captures/brucegotchi-bruce_handshakes-91f3dd91051e0a8f/capture.try",
+    "handshakes/captures/brucegotchi-bruce_handshakes-91f3dd91051e0a8f/manifest.json",
+    "handshakes/captures/m5evil-m5evil_handshakes-094c5737c15aecea/capture.22000",
+    "handshakes/captures/m5evil-m5evil_handshakes-094c5737c15aecea/capture.details",
+    "handshakes/captures/m5evil-m5evil_handshakes-094c5737c15aecea/capture.try",
+    "handshakes/captures/m5evil-m5evil_handshakes-094c5737c15aecea/manifest.json",
+    "handshakes/captures/m5evil-m5evil_handshakes-702d54ba4de65d00/capture.22000",
+    "handshakes/captures/m5evil-m5evil_handshakes-702d54ba4de65d00/capture.details",
+    "handshakes/captures/m5evil-m5evil_handshakes-702d54ba4de65d00/capture.try",
+    "handshakes/captures/m5evil-m5evil_handshakes-702d54ba4de65d00/manifest.json",
+    "handshakes/captures/m5evil-m5evil_handshakes-d5987517594b73b2/capture.22000",
+    "handshakes/captures/m5evil-m5evil_handshakes-d5987517594b73b2/capture.details",
+    "handshakes/captures/m5evil-m5evil_handshakes-d5987517594b73b2/capture.try",
+    "handshakes/captures/m5evil-m5evil_handshakes-d5987517594b73b2/manifest.json",
+    "handshakes/captures/m5evil-m5evil_handshakes-da083cfc7a62d46e/capture.22000",
+    "handshakes/captures/m5evil-m5evil_handshakes-da083cfc7a62d46e/capture.details",
+    "handshakes/captures/m5evil-m5evil_handshakes-da083cfc7a62d46e/capture.try",
+    "handshakes/captures/m5evil-m5evil_handshakes-da083cfc7a62d46e/manifest.json",
+    "handshakes/captures/pwnagotchi-handshakes-357ccefe48205aa7/capture.22000",
+    "handshakes/captures/pwnagotchi-handshakes-357ccefe48205aa7/capture.details",
+    "handshakes/captures/pwnagotchi-handshakes-357ccefe48205aa7/capture.try",
+    "handshakes/captures/pwnagotchi-handshakes-357ccefe48205aa7/manifest.json",
+    "handshakes/captures/pwnagotchi-handshakes-4d7541cec6029bfe/capture.22000",
+    "handshakes/captures/pwnagotchi-handshakes-4d7541cec6029bfe/capture.details",
+    "handshakes/captures/pwnagotchi-handshakes-4d7541cec6029bfe/capture.try",
+    "handshakes/captures/pwnagotchi-handshakes-4d7541cec6029bfe/manifest.json",
+    "handshakes/captures/pwnagotchi-handshakes-6cf63fab6bc713fa/capture.22000",
+    "handshakes/captures/pwnagotchi-handshakes-6cf63fab6bc713fa/capture.details",
+    "handshakes/captures/pwnagotchi-handshakes-6cf63fab6bc713fa/capture.try",
+    "handshakes/captures/pwnagotchi-handshakes-6cf63fab6bc713fa/manifest.json",
+    "handshakes/captures/pwnagotchi-handshakes-6e92f59657bfb83e/capture.22000",
+    "handshakes/captures/pwnagotchi-handshakes-6e92f59657bfb83e/capture.cracked",
+    "handshakes/captures/pwnagotchi-handshakes-6e92f59657bfb83e/capture.details",
+    "handshakes/captures/pwnagotchi-handshakes-6e92f59657bfb83e/capture.try",
+    "handshakes/captures/pwnagotchi-handshakes-6e92f59657bfb83e/manifest.json",
+    "handshakes/captures/pwnagotchi-handshakes-76063dc219082b42/capture.details",
+    "handshakes/captures/pwnagotchi-handshakes-76063dc219082b42/capture.try",
+    "handshakes/captures/pwnagotchi-handshakes-76063dc219082b42/manifest.json",
+    "handshakes/captures/pwnagotchi-handshakes-fd486ca7a322c396/capture.22000",
+    "handshakes/captures/pwnagotchi-handshakes-fd486ca7a322c396/capture.details",
+    "handshakes/captures/pwnagotchi-handshakes-fd486ca7a322c396/capture.try",
+    "handshakes/captures/pwnagotchi-handshakes-fd486ca7a322c396/manifest.json",
+    "handshakes/combined/021122334460/build-0ee684303d89/combined.22000",
+    "handshakes/combined/021122334460/build-0ee684303d89/manifest.json",
+    "handshakes/combined/0eaa11223347/build-d8eff6270dae/combined.22000",
+    "handshakes/combined/0eaa11223347/build-d8eff6270dae/manifest.json",
+    "handshakes/hidden_0EBB1122334B.details",
+    "handshakes/hidden_0EBB1122334B.pcap",
+    "handshakes/hidden_0EBB1122334B.try",
+    "handshakes/raw_1.22000",
+    "handshakes/raw_10.22000",
+    "handshakes/raw_11.22000",
+    "handshakes/raw_12.22000",
+    "handshakes/raw_13.22000",
+    "handshakes/raw_14.22000",
+    "handshakes/raw_2.22000",
+    "handshakes/raw_3.22000",
+    "handshakes/raw_4.22000",
+    "handshakes/raw_5.22000",
+    "handshakes/raw_6.22000",
+    "handshakes/raw_7.22000",
+    "handshakes/raw_8.22000",
+    "handshakes/raw_9.22000",
+    "m5evil/.metadata/analysis__rio_m5_aterro_patrol_1d7d331455d1bf1d.json",
+    "m5evil/.metadata/analysis__rio_m5_centro_revisit_1e989705f3302979.json",
+    "m5evil/.metadata/analysis__rio_m5_urca_master_patrol_e6c9f2a06d9a552d.json",
+    "m5evil/.metadata/m5evil__master_sniffer__rio_m5_urca_master_patrol.pcap.json",
+    "m5evil/.metadata/m5evil__rawsniffer__rio_m5_aterro_patrol.pcap.json",
+    "m5evil/.metadata/m5evil__rawsniffer__rio_m5_centro_revisit.pcap.json",
+    "m5evil/handshakes/HS_021122334460_rio_cafe_loop_m5evil.pcap",
+    "m5evil/handshakes/HS_02AA11223344_ops_truck_alpha_m5evil.pcap",
+    "m5evil/handshakes/HS_0ABB1122334A_nogps_lab_01_m5evil.pcap",
+    "m5evil/handshakes/HS_0EAA11223347_copa_media_node_m5evil.pcap",
+    "m5evil/mastersniffer/rio_m5_urca_master_patrol.pcap",
+    "m5evil/rawsniffer/rio_m5_aterro_patrol.pcap",
+    "m5evil/rawsniffer/rio_m5_centro_revisit.pcap",
+    "wardrive/20260411_001500_wardriving.csv",
+    "wardrive/20260411_020500_wardriving.csv",
+    "wardrive/m5evil__20260411_011000_wardriving.csv"
+  ],
+  "handshake_captures": [
+    {
+      "capture_id": "pwnagotchi-handshakes-4d7541cec6029bfe",
+      "cracked": false,
+      "filename": "RIO_CAFE_LOOP_021122334460.pcap",
+      "hash_ready": true,
+      "network_id": "rio_cafe_loop",
+      "pcap_path": "handshakes/RIO_CAFE_LOOP_021122334460.pcap",
+      "role": "handshakes",
+      "source": "pwnagotchi"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-2cbc0b9c52473489",
+      "cracked": false,
+      "filename": "HS_021122334460_rio_cafe_loop_bruce.pcap",
+      "hash_ready": true,
+      "network_id": "rio_cafe_loop",
+      "pcap_path": "BrucePCAP/handshakes/HS_021122334460_rio_cafe_loop_bruce.pcap",
+      "role": "bruce_handshakes",
+      "source": "brucegotchi"
+    },
+    {
+      "capture_id": "m5evil-m5evil_handshakes-da083cfc7a62d46e",
+      "cracked": false,
+      "filename": "HS_021122334460_rio_cafe_loop_m5evil.pcap",
+      "hash_ready": true,
+      "network_id": "rio_cafe_loop",
+      "pcap_path": "m5evil/handshakes/HS_021122334460_rio_cafe_loop_m5evil.pcap",
+      "role": "m5evil_handshakes",
+      "source": "m5evil"
+    },
+    {
+      "capture_id": "pwnagotchi-handshakes-6e92f59657bfb83e",
+      "cracked": true,
+      "filename": "LAPA_EVENT_GUEST_061122334461.pcap",
+      "hash_ready": true,
+      "network_id": "lapa_event_guest",
+      "pcap_path": "handshakes/LAPA_EVENT_GUEST_061122334461.pcap",
+      "role": "handshakes",
+      "source": "pwnagotchi"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-61fc467749fa8f06",
+      "cracked": false,
+      "filename": "HS_0A1122334462_santa_teresa_bonde_bruce.pcap",
+      "hash_ready": true,
+      "network_id": "santa_teresa_bonde",
+      "pcap_path": "BrucePCAP/handshakes/HS_0A1122334462_santa_teresa_bonde_bruce.pcap",
+      "role": "bruce_handshakes",
+      "source": "brucegotchi"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-189aa9d6a02d97cf",
+      "cracked": true,
+      "filename": "HS_0E1122334463_gloria_press_hub_bruce.pcap",
+      "hash_ready": true,
+      "network_id": "gloria_press_hub",
+      "pcap_path": "BrucePCAP/handshakes/HS_0E1122334463_gloria_press_hub_bruce.pcap",
+      "role": "bruce_handshakes",
+      "source": "brucegotchi"
+    },
+    {
+      "capture_id": "m5evil-m5evil_handshakes-094c5737c15aecea",
+      "cracked": false,
+      "filename": "HS_02AA11223344_ops_truck_alpha_m5evil.pcap",
+      "hash_ready": true,
+      "network_id": "ops_truck_alpha",
+      "pcap_path": "m5evil/handshakes/HS_02AA11223344_ops_truck_alpha_m5evil.pcap",
+      "role": "m5evil_handshakes",
+      "source": "m5evil"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-91f3dd91051e0a8f",
+      "cracked": false,
+      "filename": "HS_06AA11223345_botafogo_kiosk_net_bruce.pcap",
+      "hash_ready": true,
+      "network_id": "botafogo_kiosk_net",
+      "pcap_path": "BrucePCAP/handshakes/HS_06AA11223345_botafogo_kiosk_net_bruce.pcap",
+      "role": "bruce_handshakes",
+      "source": "brucegotchi"
+    },
+    {
+      "capture_id": "pwnagotchi-handshakes-6cf63fab6bc713fa",
+      "cracked": false,
+      "filename": "URCA_FIELD_UPLINK_0AAA11223346.pcap",
+      "hash_ready": true,
+      "network_id": "urca_field_uplink",
+      "pcap_path": "handshakes/URCA_FIELD_UPLINK_0AAA11223346.pcap",
+      "role": "handshakes",
+      "source": "pwnagotchi"
+    },
+    {
+      "capture_id": "pwnagotchi-handshakes-fd486ca7a322c396",
+      "cracked": false,
+      "filename": "COPA_MEDIA_NODE_0EAA11223347.pcap",
+      "hash_ready": true,
+      "network_id": "copa_media_node",
+      "pcap_path": "handshakes/COPA_MEDIA_NODE_0EAA11223347.pcap",
+      "role": "handshakes",
+      "source": "pwnagotchi"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-7b9f28ebed22ad07",
+      "cracked": false,
+      "filename": "HS_0EAA11223347_copa_media_node_bruce.pcap",
+      "hash_ready": true,
+      "network_id": "copa_media_node",
+      "pcap_path": "BrucePCAP/handshakes/HS_0EAA11223347_copa_media_node_bruce.pcap",
+      "role": "bruce_handshakes",
+      "source": "brucegotchi"
+    },
+    {
+      "capture_id": "m5evil-m5evil_handshakes-d5987517594b73b2",
+      "cracked": false,
+      "filename": "HS_0EAA11223347_copa_media_node_m5evil.pcap",
+      "hash_ready": true,
+      "network_id": "copa_media_node",
+      "pcap_path": "m5evil/handshakes/HS_0EAA11223347_copa_media_node_m5evil.pcap",
+      "role": "m5evil_handshakes",
+      "source": "m5evil"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-852a92e8ba17e09f",
+      "cracked": false,
+      "filename": "HS_02BB11223348_metro_line_4_bruce.pcap",
+      "hash_ready": true,
+      "network_id": "metro_line_4",
+      "pcap_path": "BrucePCAP/handshakes/HS_02BB11223348_metro_line_4_bruce.pcap",
+      "role": "bruce_handshakes",
+      "source": "brucegotchi"
+    },
+    {
+      "capture_id": "pwnagotchi-handshakes-357ccefe48205aa7",
+      "cracked": false,
+      "filename": "IPANEMA_BOARDWALK_06BB11223349.pcap",
+      "hash_ready": true,
+      "network_id": "ipanema_boardwalk",
+      "pcap_path": "handshakes/IPANEMA_BOARDWALK_06BB11223349.pcap",
+      "role": "handshakes",
+      "source": "pwnagotchi"
+    },
+    {
+      "capture_id": "m5evil-m5evil_handshakes-702d54ba4de65d00",
+      "cracked": false,
+      "filename": "HS_0ABB1122334A_nogps_lab_01_m5evil.pcap",
+      "hash_ready": true,
+      "network_id": "nogps_lab_01",
+      "pcap_path": "m5evil/handshakes/HS_0ABB1122334A_nogps_lab_01_m5evil.pcap",
+      "role": "m5evil_handshakes",
+      "source": "m5evil"
+    },
+    {
+      "capture_id": "pwnagotchi-handshakes-76063dc219082b42",
+      "cracked": false,
+      "filename": "hidden_0EBB1122334B.pcap",
+      "hash_ready": false,
+      "network_id": "hidden_relay_07",
+      "pcap_path": "handshakes/hidden_0EBB1122334B.pcap",
+      "role": "handshakes",
+      "source": "pwnagotchi"
+    }
+  ],
+  "label": "Showcase Core v2",
+  "network_catalog": {
+    "aterro_do_flamengo_botafogo_urca__01": {
+      "bssid": "A6:E9:25:EA:C6:04",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ATERRO_GUEST_01",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__02": {
+      "bssid": "F2:37:33:50:BA:B8",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BOTAFOGO_KIOSK_02",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__03": {
+      "bssid": "12:29:E0:95:A5:67",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "URCA_TERRACE_03",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__04": {
+      "bssid": "1E:40:12:F4:56:56",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "PRAIA_PASS_04",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__05": {
+      "bssid": "CE:99:D2:F5:A2:73",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ENSEADA_STUDIO_05",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__06": {
+      "bssid": "F2:44:49:13:55:B0",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "ATERRO_HUB_06",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__07": {
+      "bssid": "82:08:7C:7B:85:39",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BOTAFOGO_LOUNGE_07",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__08": {
+      "bssid": "76:E8:5C:EF:4D:F6",
+      "category": "wardrive_density_open",
+      "encryption": "OPEN",
+      "ssid": "URCA_LINK_08",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__09": {
+      "bssid": "FE:20:F1:F3:9E:00",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "PRAIA_VIEW_09",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__10": {
+      "bssid": "7A:24:63:44:15:A7",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ENSEADA_MESH_10",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__11": {
+      "bssid": "3E:C9:B7:04:70:CF",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ATERRO_GUEST_11",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__12": {
+      "bssid": "7E:14:F2:DF:44:F0",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BOTAFOGO_KIOSK_12",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__13": {
+      "bssid": "E2:1D:3D:79:8E:A6",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "URCA_TERRACE_13",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__14": {
+      "bssid": "F6:33:FD:39:FC:FC",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "PRAIA_PASS_14",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__15": {
+      "bssid": "82:BD:4F:D4:B7:E2",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ENSEADA_STUDIO_15",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__16": {
+      "bssid": "2A:E1:9E:FD:3E:EB",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ATERRO_HUB_16",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__17": {
+      "bssid": "9A:DA:E9:D9:DD:7B",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BOTAFOGO_LOUNGE_17",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__18": {
+      "bssid": "FA:3C:61:1E:49:38",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "URCA_LINK_18",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__19": {
+      "bssid": "B6:68:64:5D:0C:9F",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "PRAIA_VIEW_19",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__20": {
+      "bssid": "9A:95:E6:3C:D9:2D",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ENSEADA_MESH_20",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__21": {
+      "bssid": "7A:DA:78:11:B3:01",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ATERRO_GUEST_21",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__22": {
+      "bssid": "E6:39:7C:1C:DF:AA",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BOTAFOGO_KIOSK_22",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__23": {
+      "bssid": "1A:B6:37:EA:54:4E",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "URCA_TERRACE_23",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__24": {
+      "bssid": "76:7F:3F:73:34:EF",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "PRAIA_PASS_24",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__25": {
+      "bssid": "26:79:5E:DC:DB:44",
+      "category": "wardrive_density_open",
+      "encryption": "OPEN",
+      "ssid": "ENSEADA_STUDIO_25",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__26": {
+      "bssid": "92:98:12:B0:45:9E",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ATERRO_HUB_26",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__27": {
+      "bssid": "0E:AD:04:45:D0:83",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BOTAFOGO_LOUNGE_27",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "aterro_do_flamengo_botafogo_urca__28": {
+      "bssid": "56:68:AA:95:C6:1C",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "URCA_LINK_28",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "botafogo_kiosk_net": {
+      "bssid": "06:AA:11:22:33:45",
+      "category": "digits_mask",
+      "encryption": "WPA2",
+      "ssid": "BOTAFOGO_KIOSK_NET",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "centro_lapa_santa_teresa__01": {
+      "bssid": "AA:E8:D5:E1:60:3C",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAPA_GUEST_01",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__02": {
+      "bssid": "42:B3:BD:3E:E6:7F",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "CARIOCA_KIOSK_02",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__03": {
+      "bssid": "8E:F7:44:DE:54:66",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "BONDE_TERRACE_03",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__04": {
+      "bssid": "12:AE:8E:0C:0F:F1",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARCOS_PASS_04",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__05": {
+      "bssid": "AE:AD:38:1E:BF:E2",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CINELANDIA_STUDIO_05",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__06": {
+      "bssid": "66:E7:BA:12:31:1C",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAPA_HUB_06",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__07": {
+      "bssid": "A2:B7:D3:4C:92:C7",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CARIOCA_LOUNGE_07",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__08": {
+      "bssid": "E6:B6:8E:C3:64:35",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BONDE_LINK_08",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__09": {
+      "bssid": "5E:ED:EF:6F:E0:C2",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARCOS_VIEW_09",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__10": {
+      "bssid": "D6:15:53:55:BD:61",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "CINELANDIA_MESH_10",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__11": {
+      "bssid": "12:4D:A9:14:22:ED",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAPA_GUEST_11",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__12": {
+      "bssid": "BA:97:CB:87:AC:CA",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CARIOCA_KIOSK_12",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__13": {
+      "bssid": "D6:B5:F8:79:F9:07",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BONDE_TERRACE_13",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__14": {
+      "bssid": "96:1B:30:5E:4A:26",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "ARCOS_PASS_14",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__15": {
+      "bssid": "A2:75:D4:9F:4D:62",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CINELANDIA_STUDIO_15",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__16": {
+      "bssid": "A2:0D:7C:7E:66:B6",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAPA_HUB_16",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__17": {
+      "bssid": "B6:1B:45:A8:EB:D8",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CARIOCA_LOUNGE_17",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__18": {
+      "bssid": "E2:D1:0F:D6:5D:5B",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BONDE_LINK_18",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__19": {
+      "bssid": "82:27:C5:F6:EB:7E",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARCOS_VIEW_19",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__20": {
+      "bssid": "66:64:53:8A:BC:E7",
+      "category": "wardrive_density_open",
+      "encryption": "OPEN",
+      "ssid": "CINELANDIA_MESH_20",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__21": {
+      "bssid": "3E:FF:A3:42:0B:B7",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "LAPA_GUEST_21",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__22": {
+      "bssid": "EE:59:44:0A:05:7B",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CARIOCA_KIOSK_22",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__23": {
+      "bssid": "A6:CF:7A:42:55:AA",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "BONDE_TERRACE_23",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__24": {
+      "bssid": "9E:CA:27:5B:48:04",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARCOS_PASS_24",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__25": {
+      "bssid": "FE:5F:0F:DA:AB:F7",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CINELANDIA_STUDIO_25",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__26": {
+      "bssid": "E2:77:72:9A:41:3A",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "LAPA_HUB_26",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__27": {
+      "bssid": "E6:49:06:AC:5F:5A",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "CARIOCA_LOUNGE_27",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "centro_lapa_santa_teresa__28": {
+      "bssid": "52:08:D9:74:B4:D8",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "BONDE_LINK_28",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copa_media_node": {
+      "bssid": "0E:AA:11:22:33:47",
+      "category": "wardrive_extra",
+      "encryption": "WPA3",
+      "ssid": "COPA_MEDIA_NODE",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__01": {
+      "bssid": "6E:E2:A5:A3:B1:F8",
+      "category": "wardrive_density_open",
+      "encryption": "OPEN",
+      "ssid": "COPA_GUEST_01",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__02": {
+      "bssid": "3A:E6:6D:EA:A8:E1",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARPOADOR_KIOSK_02",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__03": {
+      "bssid": "16:55:A4:25:9D:80",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "IPANEMA_TERRACE_03",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__04": {
+      "bssid": "5A:77:C1:6C:C1:87",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAGOA_PASS_04",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__05": {
+      "bssid": "26:EC:C7:6C:DC:4A",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ORLA_STUDIO_05",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__06": {
+      "bssid": "12:E9:D4:F5:0D:4A",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "COPA_HUB_06",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__07": {
+      "bssid": "96:E3:19:A6:4C:92",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "ARPOADOR_LOUNGE_07",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__08": {
+      "bssid": "CE:CA:05:31:28:D3",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "IPANEMA_LINK_08",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__09": {
+      "bssid": "76:54:5D:DA:37:E2",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "LAGOA_VIEW_09",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__10": {
+      "bssid": "3A:FC:A5:AC:48:D6",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ORLA_MESH_10",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__11": {
+      "bssid": "82:2C:7C:C0:88:CF",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "COPA_GUEST_11",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__12": {
+      "bssid": "D2:A1:CB:71:D0:B5",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARPOADOR_KIOSK_12",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__13": {
+      "bssid": "4E:20:DF:04:DF:AF",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "IPANEMA_TERRACE_13",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__14": {
+      "bssid": "82:8E:3A:28:ED:38",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAGOA_PASS_14",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__15": {
+      "bssid": "72:4E:AE:9B:3B:E8",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "ORLA_STUDIO_15",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__16": {
+      "bssid": "D2:58:10:F1:D9:F8",
+      "category": "wardrive_density_open",
+      "encryption": "OPEN",
+      "ssid": "COPA_HUB_16",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__17": {
+      "bssid": "1E:69:F1:DF:A7:D0",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARPOADOR_LOUNGE_17",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__18": {
+      "bssid": "2E:B0:B0:AF:2A:5A",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "IPANEMA_LINK_18",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__19": {
+      "bssid": "7A:6B:76:A0:20:1E",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAGOA_VIEW_19",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__20": {
+      "bssid": "6E:A8:34:88:01:D4",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ORLA_MESH_20",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__21": {
+      "bssid": "AE:28:44:A0:7C:07",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "COPA_GUEST_21",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__22": {
+      "bssid": "5E:5E:50:32:F4:0B",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARPOADOR_KIOSK_22",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__23": {
+      "bssid": "72:70:99:03:80:24",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "IPANEMA_TERRACE_23",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__24": {
+      "bssid": "02:96:00:58:70:61",
+      "category": "wardrive_density_open",
+      "encryption": "OPEN",
+      "ssid": "LAGOA_PASS_24",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__25": {
+      "bssid": "26:0B:4C:2C:80:CA",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ORLA_STUDIO_25",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__26": {
+      "bssid": "1A:CC:14:44:C2:59",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "COPA_HUB_26",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__27": {
+      "bssid": "56:8E:58:AC:18:B2",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARPOADOR_LOUNGE_27",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__28": {
+      "bssid": "36:CC:FC:D7:3F:CB",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "IPANEMA_LINK_28",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__29": {
+      "bssid": "66:3F:C6:75:35:41",
+      "category": "wardrive_density_open",
+      "encryption": "OPEN",
+      "ssid": "LAGOA_VIEW_29",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__30": {
+      "bssid": "AA:BF:E2:A6:F7:2A",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "ORLA_MESH_30",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__31": {
+      "bssid": "12:B4:12:CB:FF:DB",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "COPA_GUEST_31",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__32": {
+      "bssid": "3A:12:F6:A7:D5:B0",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "ARPOADOR_KIOSK_32",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__33": {
+      "bssid": "2E:C2:38:53:70:D5",
+      "category": "wardrive_density",
+      "encryption": "WPA3",
+      "ssid": "IPANEMA_TERRACE_33",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "copacabana_arpoador_ipanema_lagoa__34": {
+      "bssid": "02:31:11:3E:7E:96",
+      "category": "wardrive_density",
+      "encryption": "WPA2",
+      "ssid": "LAGOA_PASS_34",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "gloria_press_hub": {
+      "bssid": "0E:11:22:33:44:63",
+      "category": "already_cracked",
+      "encryption": "WPA2",
+      "ssid": "GLORIA_PRESS_HUB",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "hidden_relay_07": {
+      "bssid": "0E:BB:11:22:33:4B",
+      "category": "not_ready",
+      "encryption": "WPA2",
+      "ssid": "",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "ipanema_boardwalk": {
+      "bssid": "06:BB:11:22:33:49",
+      "category": "easy_dictionary",
+      "encryption": "WPA2",
+      "ssid": "IPANEMA_BOARDWALK",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "lapa_event_guest": {
+      "bssid": "06:11:22:33:44:61",
+      "category": "already_cracked",
+      "encryption": "WPA2",
+      "ssid": "LAPA_EVENT_GUEST",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "metro_line_4": {
+      "bssid": "02:BB:11:22:33:48",
+      "category": "digits_mask",
+      "encryption": "WPA2",
+      "ssid": "METRO_LINE_4",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "nogps_lab_01": {
+      "bssid": "0A:BB:11:22:33:4A",
+      "category": "no_gps_only",
+      "encryption": "WPA2",
+      "ssid": "NOGPS_LAB_01",
+      "surfaces": [
+        "handshake",
+        "raw"
+      ]
+    },
+    "open_sensor_mesh": {
+      "bssid": "02:CC:11:22:33:4C",
+      "category": "open",
+      "encryption": "OPEN",
+      "ssid": "OPEN_SENSOR_MESH",
+      "surfaces": [
+        "wardrive",
+        "raw"
+      ]
+    },
+    "ops_truck_alpha": {
+      "bssid": "02:AA:11:22:33:44",
+      "category": "association_hint",
+      "encryption": "WPA2",
+      "ssid": "OPS-TRUCK-ALPHA",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "porto_link_backhaul": {
+      "bssid": "0A:CC:11:22:33:4E",
+      "category": "wardrive_extra",
+      "encryption": "WPA2",
+      "ssid": "PORTO_LINK_BACKHAUL",
+      "surfaces": [
+        "wardrive",
+        "raw"
+      ]
+    },
+    "rio_cafe_loop": {
+      "bssid": "02:11:22:33:44:60",
+      "category": "easy_dictionary",
+      "encryption": "WPA2",
+      "ssid": "RIO_CAFE_LOOP",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "rj_city_iot": {
+      "bssid": "06:CC:11:22:33:4D",
+      "category": "wardrive_extra",
+      "encryption": "WEP",
+      "ssid": "RJ_CITY_IOT",
+      "surfaces": [
+        "wardrive"
+      ]
+    },
+    "santa_teresa_bonde": {
+      "bssid": "0A:11:22:33:44:62",
+      "category": "association_hint",
+      "encryption": "WPA2",
+      "ssid": "SANTA_TERESA_BONDE",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    },
+    "urca_field_uplink": {
+      "bssid": "0A:AA:11:22:33:46",
+      "category": "wardrive_extra",
+      "encryption": "WPA3",
+      "ssid": "URCA_FIELD_UPLINK",
+      "surfaces": [
+        "wardrive",
+        "handshake",
+        "raw"
+      ]
+    }
+  },
+  "profile_id": "showcase-core-v2",
+  "raw_captures": [
+    {
+      "filename": "rio_bruce_centro_patrol.pcap",
+      "networks": [
+        "rio_cafe_loop",
+        "lapa_event_guest",
+        "santa_teresa_bonde",
+        "open_sensor_mesh"
+      ],
+      "raw_item_id": "raw::pcap::2dad5473b1f9f2a0",
+      "source": "brucegotchi",
+      "source_path_role": "rawsniffer"
+    },
+    {
+      "filename": "rio_m5_aterro_patrol.pcap",
+      "networks": [
+        "gloria_press_hub",
+        "ops_truck_alpha",
+        "botafogo_kiosk_net",
+        "open_sensor_mesh"
+      ],
+      "raw_item_id": "raw::pcap::1d7d331455d1bf1d",
+      "source": "m5evil",
+      "source_path_role": "rawsniffer"
+    },
+    {
+      "filename": "rio_m5_urca_master_patrol.pcap",
+      "networks": [
+        "urca_field_uplink",
+        "hidden_relay_07",
+        "nogps_lab_01"
+      ],
+      "raw_item_id": "raw::pcap::e6c9f2a06d9a552d",
+      "source": "m5evil",
+      "source_path_role": "master_sniffer"
+    },
+    {
+      "filename": "rio_bruce_south_patrol.pcap",
+      "networks": [
+        "copa_media_node",
+        "metro_line_4",
+        "ipanema_boardwalk"
+      ],
+      "raw_item_id": "raw::pcap::4e1a4617f2c046cc",
+      "source": "brucegotchi",
+      "source_path_role": "rawsniffer"
+    },
+    {
+      "filename": "rio_m5_centro_revisit.pcap",
+      "networks": [
+        "rio_cafe_loop",
+        "gloria_press_hub",
+        "porto_link_backhaul"
+      ],
+      "raw_item_id": "raw::pcap::1e989705f3302979",
+      "source": "m5evil",
+      "source_path_role": "rawsniffer"
+    }
+  ],
+  "route_sources": [
+    "centro_lapa_santa_teresa.csv",
+    "flamengo_botafogo_urca.csv",
+    "copacabana_arpoador_ipanema_lagoa.csv"
+  ],
+  "runtime_roots": [
+    "handshakes",
+    "BrucePCAP",
+    "m5evil",
+    "wardrive",
+    "demo_wordlists"
+  ],
+  "summary": {
+    "batch_files": 1,
+    "combined_candidate_networks": 2,
+    "cross_source_capture_networks": 2,
+    "demo_wordlists": 3,
+    "handshake_captures": 16,
+    "networks_total": 105,
+    "raw_files": 5,
+    "regions": [
+      "Centro + Lapa + Santa Teresa",
+      "Aterro do Flamengo + Botafogo + Urca",
+      "Copacabana + Arpoador + Ipanema + Lagoa"
+    ],
+    "wardrive_handshake_networks": 11,
+    "wardrive_handshake_raw_networks": 11,
+    "wardrive_sessions": 3
+  },
+  "ui_seed": {
+    "lists": {
+      "favs": [
+        "06:11:22:33:44:61",
+        "0E:11:22:33:44:63",
+        "06:BB:11:22:33:49"
+      ],
+      "targets": [
+        "02:11:22:33:44:60",
+        "0E:AA:11:22:33:47",
+        "02:BB:11:22:33:48",
+        "02:AA:11:22:33:44"
+      ]
+    },
+    "modes": {
+      "conquered": true,
+      "discovered": false,
+      "favs": true,
+      "intelligence": false,
+      "logs": true,
+      "process": true,
+      "targets": true,
+      "toConquer": false,
+      "zones": true
+    }
+  },
+  "version": 2,
+  "wardrive_sessions": [
+    {
+      "corridor": "Centro + Lapa + Santa Teresa",
+      "csv_rows": 4126,
+      "networks_observed": 33,
+      "route_asset": "centro_lapa_santa_teresa.csv",
+      "route_points": 319,
+      "scan_points": 319,
+      "session_id": "20260411_001500_wardriving",
+      "source_file": "20260411_001500_wardriving.csv"
+    },
+    {
+      "corridor": "Aterro do Flamengo + Botafogo + Urca",
+      "csv_rows": 2965,
+      "networks_observed": 33,
+      "route_asset": "flamengo_botafogo_urca.csv",
+      "route_points": 374,
+      "scan_points": 374,
+      "session_id": "m5evil__20260411_011000_wardriving",
+      "source_file": "m5evil__20260411_011000_wardriving.csv"
+    },
+    {
+      "corridor": "Copacabana + Arpoador + Ipanema + Lagoa",
+      "csv_rows": 2678,
+      "networks_observed": 38,
+      "route_asset": "copacabana_arpoador_ipanema_lagoa.csv",
+      "route_points": 235,
+      "scan_points": 235,
+      "session_id": "20260411_020500_wardriving",
+      "source_file": "20260411_020500_wardriving.csv"
+    }
+  ]
+}

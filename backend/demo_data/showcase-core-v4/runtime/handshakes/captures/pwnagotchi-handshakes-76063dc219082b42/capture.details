@@ -1,0 +1,28 @@
+{
+  "bssid": "0E:BB:11:22:33:4B",
+  "classification": {
+    "confidence": 0.82,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "not_ready",
+    "profile_id": "showcase-core-v4",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "5GHz",
+    "channel": 149,
+    "frequency_mhz": 5745
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": false,
+    "pmkid_available": false,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "",
+  "vendor": "Relay Nodes",
+  "wps": {
+    "present": false
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "brucegotchi-bruce_handshakes-61fc467749fa8f06",
+  "demo_profile": "showcase-core-v4",
+  "mac": "0A:11:22:33:44:62",
+  "network_id": "santa_teresa_bonde",
+  "source": "brucegotchi",
+  "source_filename": "HS_0A1122334462_santa_teresa_bonde_bruce.pcap",
+  "source_path_role": "bruce_handshakes",
+  "ssid": "SANTA_TERESA_BONDE",
+  "version": 1
+}

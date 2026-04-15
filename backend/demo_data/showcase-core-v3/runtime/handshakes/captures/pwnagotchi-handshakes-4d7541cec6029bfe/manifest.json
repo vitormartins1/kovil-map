@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-4d7541cec6029bfe",
+  "demo_profile": "showcase-core-v3",
+  "mac": "02:11:22:33:44:60",
+  "network_id": "rio_cafe_loop",
+  "source": "pwnagotchi",
+  "source_filename": "RIO_CAFE_LOOP_021122334460.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "RIO_CAFE_LOOP",
+  "version": 1
+}

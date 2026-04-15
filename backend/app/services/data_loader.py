@@ -1215,8 +1215,11 @@ def reload_data():
     Força o recarregamento dos dados do disco e atualiza o cache.
     Deve ser chamado após Sync ou Cracking bem-sucedido.
     """
-    global _DATA_CACHE
+    global _DATA_CACHE, _WARDRIVE_SESSION_TAGS, _WARDRIVE_MANIFEST, _WARDRIVE_MANIFEST_PATH
     logger.info("Invalidando cache e recarregando dados.")
+    _WARDRIVE_SESSION_TAGS = None
+    _WARDRIVE_MANIFEST = None
+    _WARDRIVE_MANIFEST_PATH = None
     _DATA_CACHE = _load_from_disk()
     return _DATA_CACHE
 

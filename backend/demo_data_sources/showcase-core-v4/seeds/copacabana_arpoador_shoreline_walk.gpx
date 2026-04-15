@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:gpx xmlns:ns0="http://www.topografix.com/GPX/1/1" version="1.1" creator="KOVIL MAP Demo V4 Builder">
+  <ns0:trk>
+    <ns0:name>copacabana_arpoador_shoreline_walk</ns0:name>
+    <ns0:trkseg>
+      <ns0:trkpt lat="-22.971650" lon="-43.182950">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T06:40:00Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.972800" lon="-43.183650">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T06:40:08Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.974050" lon="-43.184350">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T06:40:16Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.975400" lon="-43.185050">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T06:40:24Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.976700" lon="-43.185850">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T06:40:32Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.978050" lon="-43.186650">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T06:40:40Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.979300" lon="-43.187500">
+        <ns0:ele>8.9</ns0:ele>
+        <ns0:time>2026-04-11T06:40:48Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.980500" lon="-43.188350">
+        <ns0:ele>9.3</ns0:ele>
+        <ns0:time>2026-04-11T06:40:56Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.981750" lon="-43.189350">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T06:41:04Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.982900" lon="-43.190450">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T06:41:12Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.983950" lon="-43.191650">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T06:41:20Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.984800" lon="-43.192950">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T06:41:28Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.985500" lon="-43.194350">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T06:41:36Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.985950" lon="-43.195550">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T06:41:44Z</ns0:time>
+      </ns0:trkpt>
+    </ns0:trkseg>
+  </ns0:trk>
+</ns0:gpx>

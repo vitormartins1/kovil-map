@@ -1,0 +1,12 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-fd486ca7a322c396",
+  "demo_profile": "showcase-core-v3",
+  "mac": "0E:AA:11:22:33:47",
+  "network_id": "copa_media_node",
+  "source": "pwnagotchi",
+  "source_filename": "COPA_MEDIA_NODE_0EAA11223347.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "COPA_MEDIA_NODE",
+  "version": 1
+}

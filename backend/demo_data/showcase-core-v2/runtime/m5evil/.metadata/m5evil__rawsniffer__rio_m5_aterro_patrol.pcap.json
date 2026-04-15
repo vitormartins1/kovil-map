@@ -1,0 +1,64 @@
+{
+  "demo_profile": "showcase-core-v2",
+  "device_label": "M5Evil",
+  "networks": [
+    {
+      "beacon_count": 18,
+      "bssid": "0E:11:22:33:44:63",
+      "channel": 44,
+      "eapol_count": 4,
+      "frequency_mhz": 5220,
+      "last_seen_offset_s": 18.0,
+      "probe_client_count": 1,
+      "ssid": "GLORIA_PRESS_HUB",
+      "ssid_raw_hex": "474c4f5249415f50524553535f485542"
+    },
+    {
+      "beacon_count": 24,
+      "bssid": "02:AA:11:22:33:44",
+      "channel": 36,
+      "eapol_count": 4,
+      "frequency_mhz": 5180,
+      "last_seen_offset_s": 29.0,
+      "probe_client_count": 2,
+      "ssid": "OPS-TRUCK-ALPHA",
+      "ssid_raw_hex": "4f50532d545255434b2d414c504841"
+    },
+    {
+      "beacon_count": 30,
+      "bssid": "06:AA:11:22:33:45",
+      "channel": 149,
+      "eapol_count": 4,
+      "frequency_mhz": 5745,
+      "last_seen_offset_s": 40.0,
+      "probe_client_count": 3,
+      "ssid": "BOTAFOGO_KIOSK_NET",
+      "ssid_raw_hex": "424f5441464f474f5f4b494f534b5f4e4554"
+    },
+    {
+      "beacon_count": 36,
+      "bssid": "02:CC:11:22:33:4C",
+      "channel": 3,
+      "eapol_count": 0,
+      "frequency_mhz": 2422,
+      "last_seen_offset_s": 51.0,
+      "probe_client_count": 4,
+      "ssid": "OPEN_SENSOR_MESH",
+      "ssid_raw_hex": "4f50454e5f53454e534f525f4d455348"
+    }
+  ],
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::1d7d331455d1bf1d",
+  "schema_version": 1,
+  "source": "m5evil",
+  "source_file": "rio_m5_aterro_patrol.pcap",
+  "source_mtime": 1776265195.1575758,
+  "source_path_role": "rawsniffer",
+  "source_size": 2978,
+  "stats": {
+    "beacon_frames": 108,
+    "eapol_frames": 12,
+    "networks_count": 4
+  },
+  "warnings": []
+}

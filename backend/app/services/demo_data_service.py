@@ -36,7 +36,7 @@ _TARGET_ROOTS = {
     "m5evil": Path(M5EVIL_DIR),
     "wardrive": Path(WARDRIVE_DIR),
 }
-_PROFILE_DEFAULT = "showcase-core-v1"
+_PROFILE_DEFAULT = "showcase-core-v4"
 _TERMINAL_JOB_STATUSES = set(job_manager.TERMINAL_STATUSES)
 
 
