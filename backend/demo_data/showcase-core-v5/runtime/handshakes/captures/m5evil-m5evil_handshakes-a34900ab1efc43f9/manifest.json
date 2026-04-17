@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "m5evil-m5evil_handshakes-a34900ab1efc43f9",
+  "demo_profile": "showcase-core-v5",
+  "mac": "0E:EE:11:22:33:57",
+  "network_id": "nogps_lab_02",
+  "scenario": "no_gps_locked",
+  "source": "m5evil",
+  "source_filename": "HS_0EEE11223357_nogps_lab_02_m5evil.pcap",
+  "source_path_role": "m5evil_handshakes",
+  "ssid": "NOGPS_LAB_02",
+  "version": 1
+}

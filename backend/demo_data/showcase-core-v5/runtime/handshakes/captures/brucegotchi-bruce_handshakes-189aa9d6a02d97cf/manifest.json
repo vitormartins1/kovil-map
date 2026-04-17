@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "brucegotchi-bruce_handshakes-189aa9d6a02d97cf",
+  "demo_profile": "showcase-core-v5",
+  "mac": "0E:11:22:33:44:63",
+  "network_id": "gloria_press_hub",
+  "scenario": "pcap_plus_22000_plus_cracked",
+  "source": "brucegotchi",
+  "source_filename": "HS_0E1122334463_gloria_press_hub_bruce.pcap",
+  "source_path_role": "bruce_handshakes",
+  "ssid": "GLORIA_PRESS_HUB",
+  "version": 1
+}

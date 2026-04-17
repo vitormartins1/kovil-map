@@ -1,0 +1,28 @@
+{
+  "bssid": "26:29:7B:40:98:99",
+  "classification": {
+    "confidence": 0.88,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 11,
+    "frequency_mhz": 2462
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "PRAIA_VIEW_0799",
+  "vendor": "Urca Wireless",
+  "wps": {
+    "present": false
+  }
+}

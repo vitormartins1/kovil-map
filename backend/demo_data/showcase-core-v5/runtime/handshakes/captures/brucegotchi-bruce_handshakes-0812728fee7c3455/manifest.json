@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "brucegotchi-bruce_handshakes-0812728fee7c3455",
+  "demo_profile": "showcase-core-v5",
+  "mac": "02:DD:11:22:33:50",
+  "network_id": "praca_maua_press_van",
+  "scenario": "pcap_plus_22000_plus_cracked",
+  "source": "brucegotchi",
+  "source_filename": "HS_02DD11223350_praca_maua_press_van_bruce.pcap",
+  "source_path_role": "bruce_handshakes",
+  "ssid": "PRACA_MAUA_PRESS_VAN",
+  "version": 1
+}

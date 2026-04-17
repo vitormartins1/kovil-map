@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -6,12 +7,12 @@ import pytest
 from app.tools import build_demo_data
 
 
-def test_build_demo_data_generates_v4_pack(tmp_path):
-    pack_root = tmp_path / "showcase-core-v4"
+def test_build_demo_data_generates_v5_pack(tmp_path, monkeypatch):
+    pack_root = tmp_path / "showcase-core-v5"
     source_root = (
         Path(build_demo_data.__file__).resolve().parents[2]
         / "demo_data_sources"
-        / "showcase-core-v4"
+        / "showcase-core-v5"
         / "routes"
     )
 
@@ -30,30 +31,37 @@ def test_build_demo_data_generates_v4_pack(tmp_path):
 
     summary = manifest["summary"]
     assert summary["networks_total"] >= 2000
-    assert summary["wardrive_sessions"] == 11
-    assert summary["wardrive_networks_observed"] >= 3500
+    assert summary["wardrive_sessions"] == 4
+    assert summary["wardrive_networks_observed"] >= 2500
     assert summary["cross_source_capture_networks"] >= 2
     assert summary["combined_candidate_networks"] >= 2
-    assert summary["wardrive_handshake_networks"] >= 6
-    assert summary["wardrive_handshake_raw_networks"] >= 3
+    assert summary["wardrive_handshake_networks"] >= 260
+    assert summary["wardrive_handshake_raw_networks"] >= 8
+    assert summary["handshake_captures"] >= 320
+    assert summary["gps_backed_locked_networks"] >= 250
+    assert summary["no_gps_locked_networks"] >= 4
+    assert summary["cracked_networks"] >= 50
+    assert summary["not_ready_networks"] >= 3
+    assert summary["pwnagotchi_promoted_wardrive_networks"] == 240
+    assert summary["pwnagotchi_promoted_locked_networks"] == 208
+    assert summary["pwnagotchi_promoted_cracked_networks"] == 32
+    assert summary["pwnagotchi_promoted_convertible_networks"] == 24
     assert summary["session_count_by_transport_mode"] == {
-        "bike": 1,
-        "boat": 1,
         "car": 3,
-        "metro": 1,
         "motorcycle": 1,
-        "train": 2,
-        "walk": 2,
     }
 
     wardrive_dir = pack_root / "runtime" / "wardrive"
-    assert len(list(wardrive_dir.glob("*.csv"))) == 11
+    assert len(list(wardrive_dir.glob("*.csv"))) == 4
     session_tags = json.loads(
         (wardrive_dir / "session_tags.json").read_text(encoding="utf-8")
     )
-    assert len(session_tags) == 11
+    assert len(session_tags) == 4
     assert session_tags["20260411_001500_wardriving"] == "car"
-    assert session_tags["20260411_044500_urca_botafogo_shore_boat"] == "boat"
+    sample_capture_dir = next(
+        (pack_root / "runtime" / "handshakes" / "captures").iterdir()
+    )
+    assert (sample_capture_dir / "capture.pcap").exists()
 
     for session in manifest["wardrive_sessions"]:
         multiplier = float(session["density_multiplier"])
@@ -74,6 +82,81 @@ def test_build_demo_data_generates_v4_pack(tmp_path):
             float(session["unique_bssids_per_km"])
             <= 658.11 * max(0.42, multiplier) * 1.25
         )
+
+    from app.services import data_loader as dl_module
+    from app.services import handshake_catalog as hc_module
+    from app.services.to_conquer_service import (
+        build_conquered_zones,
+        build_to_conquer_zones,
+    )
+
+    runtime_root = pack_root / "runtime"
+    runtime_paths = {
+        "HANDSHAKES_DIR": str(runtime_root / "handshakes"),
+        "WARDRIVE_DIR": str(runtime_root / "wardrive"),
+        "BRUCE_PCAP_DIR": str(runtime_root / "BrucePCAP"),
+        "BRUCE_HANDSHAKES_DIR": str(runtime_root / "BrucePCAP" / "handshakes"),
+        "M5EVIL_DIR": str(runtime_root / "m5evil"),
+        "M5EVIL_HANDSHAKES_DIR": str(runtime_root / "m5evil" / "handshakes"),
+    }
+    for name, value in runtime_paths.items():
+        if hasattr(dl_module, name):
+            monkeypatch.setattr(dl_module, name, value)
+    for name in (
+        "HANDSHAKES_DIR",
+        "BRUCE_PCAP_DIR",
+        "BRUCE_HANDSHAKES_DIR",
+        "M5EVIL_HANDSHAKES_DIR",
+    ):
+        monkeypatch.setattr(hc_module, name, runtime_paths[name])
+    monkeypatch.setattr(dl_module, "_DATA_CACHE", None)
+    monkeypatch.setattr(dl_module, "_WARDRIVE_SESSION_TAGS", None)
+    monkeypatch.setattr(dl_module, "_WARDRIVE_MANIFEST", None)
+    monkeypatch.setattr(dl_module, "_WARDRIVE_MANIFEST_PATH", None)
+
+    data = dl_module.reload_data()
+    state_counts = Counter(
+        str(item.get("network_state") or "") for item in data.values()
+    )
+    assert state_counts["locked"] >= 250
+    assert state_counts["cracked"] >= 50
+
+    locked_points = [
+        {
+            "lat": item["lat"],
+            "lng": item["lng"],
+            "acc": item.get("acc", item.get("accuracy", 0)) or 0,
+        }
+        for item in data.values()
+        if item.get("network_state") == "locked"
+        and item.get("lat") is not None
+        and item.get("lng") is not None
+    ]
+    cracked_points = [
+        {
+            "lat": item["lat"],
+            "lng": item["lng"],
+            "acc": item.get("acc", item.get("accuracy", 0)) or 0,
+        }
+        for item in data.values()
+        if item.get("network_state") == "cracked"
+        and item.get("lat") is not None
+        and item.get("lng") is not None
+    ]
+    to_conquer_zones = build_to_conquer_zones(
+        cracked_points,
+        locked_points,
+        eps_m=200,
+        min_samples=5,
+        min_zone_points=2,
+    )
+    conquered_zones = build_conquered_zones(
+        cracked_points,
+        eps_m=200,
+        min_samples=3,
+    )
+    assert len(to_conquer_zones) >= 10
+    assert len(conquered_zones) >= 4
 
 
 def test_route_loader_rejects_wifi_identity_columns(tmp_path):

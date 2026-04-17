@@ -1,0 +1,28 @@
+{
+  "bssid": "D6:7D:73:4E:FA:7C",
+  "classification": {
+    "confidence": 0.89,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "already_cracked",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "GLORIA_LOUNGE_1087",
+  "vendor": "Gloria Guest Fiber",
+  "wps": {
+    "present": false
+  }
+}

@@ -928,18 +928,18 @@ function setupEventListeners() {
             if (!window.confirm('Install the showcase demo data pack and temporarily replace the current runtime dataset?')) return;
             try {
                 const out = await API.installDemoData({
-                    profile_id: 'showcase-core-v4',
+                    profile_id: 'showcase-core-v5',
                     frontend_state: snapshotDemoUiState(),
                 });
                 applyDemoUiState(out?.ui_seed || null);
                 renderDemoDataStatus({
                     active: true,
-                    active_profile_label: out?.label || out?.profile_id || 'showcase-core-v4',
-                    active_profile_id: out?.profile_id || 'showcase-core-v4',
+                    active_profile_label: out?.label || out?.profile_id || 'showcase-core-v5',
+                    active_profile_id: out?.profile_id || 'showcase-core-v5',
                     summary: out?.summary || {},
                     snapshot_available: true,
                 });
-                log(`Demo data install started: ${out?.label || out?.profile_id || 'showcase-core-v4'}.`, 'success');
+                log(`Demo data install started: ${out?.label || out?.profile_id || 'showcase-core-v5'}.`, 'success');
             } catch (e) {
                 log(`Failed to install demo data: ${e.message}`, 'error');
             }
@@ -2116,7 +2116,7 @@ function updateStatsUI(stats) {
     const cracked = (stats.cracked || 0) + (stats.noGpsCracked || 0);
     const wardriveCount = stats.wardrive || 0;
     const openCount = stats.open || 0;
-    const noGpsLocked = Math.max(0, (stats.noGpsTotal || 0) - (stats.noGpsCracked || 0));
+    const noGpsLocked = Math.max(0, stats.noGpsLocked || 0);
     const locked = (stats.locked || 0) + noGpsLocked;
 
     document.getElementById('count-total').innerText = total;

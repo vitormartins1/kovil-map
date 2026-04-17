@@ -436,7 +436,7 @@ export function renderDemoDataStatus(status = null) {
     const removeButton = document.getElementById('btn-remove-demo-data');
     const payload = status && typeof status === 'object' ? status : {};
     const isActive = !!payload.active;
-    const activeLabel = String(payload.active_profile_label || payload.active_profile_id || 'showcase-core-v4');
+    const activeLabel = String(payload.active_profile_label || payload.active_profile_id || 'showcase-core-v5');
     const metrics = payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
 
     if (badge) {
@@ -448,7 +448,9 @@ export function renderDemoDataStatus(status = null) {
             const networks = Number(metrics.networks_total || 0);
             const wardrive = Number(metrics.wardrive_sessions || 0);
             const raw = Number(metrics.raw_files || 0);
-            const snapshotNote = payload.snapshot_available ? ' Snapshot available for restore.' : '';
+            const snapshotNote = payload.snapshot_available
+                ? ' Previous runtime data will be restored when demo mode is removed.'
+                : '';
             summary.textContent = `Synthetic showcase pack loaded with ${networks} networks, ${wardrive} Wardrive sessions and ${raw} RAW captures.${snapshotNote}`;
         } else {
             summary.textContent = 'Optional synthetic showcase data for onboarding, screenshots and feature walkthroughs. Real runtime data stays untouched until you install the pack.';

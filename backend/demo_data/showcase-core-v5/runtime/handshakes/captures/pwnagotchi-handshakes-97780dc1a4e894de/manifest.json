@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-97780dc1a4e894de",
+  "demo_profile": "showcase-core-v5",
+  "mac": "4A:E0:70:E7:F6:37",
+  "network_id": "centro_lapa_santa_teresa__wd_1135",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0106_CINELANDIA_STUDIO_1135_4ae070e7f637.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "CINELANDIA_STUDIO_1135",
+  "version": 1
+}

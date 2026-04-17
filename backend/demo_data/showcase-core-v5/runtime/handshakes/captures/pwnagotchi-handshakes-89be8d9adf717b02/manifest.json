@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-89be8d9adf717b02",
+  "demo_profile": "showcase-core-v5",
+  "mac": "E6:37:41:15:EE:EE",
+  "network_id": "lapa_gloria_praca_maua_motorcycle__wd_0068",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0184_PORTO_LINK_0068_e6374115eeee.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "PORTO_LINK_0068",
+  "version": 1
+}

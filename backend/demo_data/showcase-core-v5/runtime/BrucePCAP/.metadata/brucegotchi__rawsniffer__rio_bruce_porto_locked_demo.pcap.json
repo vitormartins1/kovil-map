@@ -1,0 +1,64 @@
+{
+  "demo_profile": "showcase-core-v5",
+  "device_label": "Bruce",
+  "networks": [
+    {
+      "beacon_count": 18,
+      "bssid": "0E:CC:11:22:33:4F",
+      "channel": 36,
+      "eapol_count": 4,
+      "frequency_mhz": 5180,
+      "last_seen_offset_s": 18.0,
+      "probe_client_count": 1,
+      "ssid": "MUSEU_AMANHA_SECURE",
+      "ssid_raw_hex": "4d555345555f414d414e48415f534543555245"
+    },
+    {
+      "beacon_count": 24,
+      "bssid": "02:DD:11:22:33:50",
+      "channel": 44,
+      "eapol_count": 4,
+      "frequency_mhz": 5220,
+      "last_seen_offset_s": 29.0,
+      "probe_client_count": 2,
+      "ssid": "PRACA_MAUA_PRESS_VAN",
+      "ssid_raw_hex": "50524143415f4d4155415f50524553535f56414e"
+    },
+    {
+      "beacon_count": 30,
+      "bssid": "06:F0:11:22:33:5D",
+      "channel": 36,
+      "eapol_count": 4,
+      "frequency_mhz": 5180,
+      "last_seen_offset_s": 40.0,
+      "probe_client_count": 3,
+      "ssid": "MAUA_ROOFTOP_PROBE",
+      "ssid_raw_hex": "4d4155415f524f4f46544f505f50524f4245"
+    },
+    {
+      "beacon_count": 36,
+      "bssid": "0E:EF:11:22:33:5B",
+      "channel": 1,
+      "eapol_count": 0,
+      "frequency_mhz": 2412,
+      "last_seen_offset_s": 51.0,
+      "probe_client_count": 4,
+      "ssid": "",
+      "ssid_raw_hex": null
+    }
+  ],
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::64ed86fcedf6a270",
+  "schema_version": 1,
+  "source": "brucegotchi",
+  "source_file": "rio_bruce_porto_locked_demo.pcap",
+  "source_mtime": 1776452483.011411,
+  "source_path_role": "rawsniffer",
+  "source_size": 2962,
+  "stats": {
+    "beacon_frames": 108,
+    "eapol_frames": 12,
+    "networks_count": 4
+  },
+  "warnings": []
+}

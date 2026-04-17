@@ -215,6 +215,22 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
   - how mixed datasets behave
   - whether a smarter automatic mode should exist
 
+### WarDrive session geographic roll-up and focus scope
+
+- Priority: `HIGH`
+- Status: `TODO`
+- Estimate: `6-10h`
+- Complexity: `Medium`
+- Goal: make WarDrive session selection and focus choose the smallest geographic scope that represents the full route, not just the deepest/highest-density region.
+- Current behavior:
+  - the frontend can roll session-focused hierarchy results up to the common visible ancestor
+  - the backend hierarchy is still based on observed network regions, not full route geometry
+- Future requirements:
+  - derive session coverage from track points, including segments with no observed networks
+  - return an explicit `recommended_region_id` / `session_scope` from the hierarchy or session-track API
+  - roll multi-neighborhood sessions to city, multi-city sessions to state, multi-state sessions to country, and preserve robust unmapped fallbacks
+  - add API and UI regression tests for multi-neighborhood, multi-city, multi-state, and unmapped sessions
+
 ## 6. Device Integrations
 
 ### Expand M5Evil auto-sync beyond Cardputer

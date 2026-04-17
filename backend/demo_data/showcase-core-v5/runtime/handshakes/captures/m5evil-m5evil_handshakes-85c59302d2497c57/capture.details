@@ -1,0 +1,28 @@
+{
+  "bssid": "0A:DD:11:22:33:52",
+  "classification": {
+    "confidence": 0.84,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "m5evil"
+  },
+  "radio": {
+    "band": "5GHz",
+    "channel": 149,
+    "frequency_mhz": 5745
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ENGENHAO_OPS_MESH",
+  "vendor": "NorthRail Mesh",
+  "wps": {
+    "present": false
+  }
+}

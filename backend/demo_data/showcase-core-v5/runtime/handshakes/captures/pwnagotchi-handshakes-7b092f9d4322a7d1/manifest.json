@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-7b092f9d4322a7d1",
+  "demo_profile": "showcase-core-v5",
+  "mac": "42:F9:F8:2E:E3:E2",
+  "network_id": "centro_lapa_santa_teresa__wd_1148",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0107_BONDE_LINK_1148_42f9f82ee3e2.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "BONDE_LINK_1148",
+  "version": 1
+}

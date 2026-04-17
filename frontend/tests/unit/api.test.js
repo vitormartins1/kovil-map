@@ -704,13 +704,13 @@ describe("API methods", () => {
       "http://127.0.0.1:8000/api/maintenance/demo"
     );
 
-    await API.installDemoData({ profile_id: "showcase-core-v4", frontend_state: { lists: { targets: [] } } });
+    await API.installDemoData({ profile_id: "showcase-core-v5", frontend_state: { lists: { targets: [] } } });
     expect(fetch).toHaveBeenLastCalledWith(
       "http://127.0.0.1:8000/api/maintenance/demo/install",
       expect.objectContaining({
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile_id: "showcase-core-v4", frontend_state: { lists: { targets: [] } } }),
+        body: JSON.stringify({ profile_id: "showcase-core-v5", frontend_state: { lists: { targets: [] } } }),
       })
     );
 

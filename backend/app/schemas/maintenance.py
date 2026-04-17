@@ -6,5 +6,5 @@ from pydantic import BaseModel
 
 
 class DemoInstallRequest(BaseModel):
-    profile_id: str = "showcase-core-v4"
+    profile_id: str = "showcase-core-v5"
     frontend_state: dict[str, Any] | None = None

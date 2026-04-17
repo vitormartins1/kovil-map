@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-5f840e14bf1d76a7",
+  "demo_profile": "showcase-core-v5",
+  "mac": "CE:F4:1A:ED:72:16",
+  "network_id": "centro_lapa_santa_teresa__wd_0644",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0087_ARCOS_PASS_0644_cef41aed7216.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "ARCOS_PASS_0644",
+  "version": 1
+}

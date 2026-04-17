@@ -1,0 +1,28 @@
+{
+  "bssid": "0E:74:08:0E:6F:9C",
+  "classification": {
+    "confidence": 0.84,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 6,
+    "frequency_mhz": 2437
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "GLORIA_KIOSK_1482",
+  "vendor": "Porto Retail Mesh",
+  "wps": {
+    "present": false
+  }
+}

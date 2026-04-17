@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-8acb0ce4a78466d8",
+  "demo_profile": "showcase-core-v5",
+  "mac": "AA:3F:38:99:1D:50",
+  "network_id": "centro_lapa_santa_teresa__wd_0756",
+  "scenario": "pcap_plus_22000_plus_cracked",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0090_LAPA_HUB_0756_aa3f38991d50.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "LAPA_HUB_0756",
+  "version": 1
+}

@@ -29,7 +29,7 @@ class MaintenanceService:
     def start_demo_install(
         self,
         *,
-        profile_id: str = "showcase-core-v4",
+        profile_id: str = "showcase-core-v5",
         frontend_state: dict | None = None
     ) -> dict:
         return demo_data_service.start_install(

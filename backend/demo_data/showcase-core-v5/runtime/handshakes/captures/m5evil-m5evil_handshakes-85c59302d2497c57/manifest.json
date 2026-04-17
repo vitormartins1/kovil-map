@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "m5evil-m5evil_handshakes-85c59302d2497c57",
+  "demo_profile": "showcase-core-v5",
+  "mac": "0A:DD:11:22:33:52",
+  "network_id": "engenhao_ops_mesh",
+  "scenario": "pcap_plus_22000",
+  "source": "m5evil",
+  "source_filename": "HS_0ADD11223352_engenhao_ops_mesh_m5evil.pcap",
+  "source_path_role": "m5evil_handshakes",
+  "ssid": "ENGENHAO_OPS_MESH",
+  "version": 1
+}

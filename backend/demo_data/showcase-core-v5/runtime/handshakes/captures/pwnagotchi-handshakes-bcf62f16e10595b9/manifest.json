@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-bcf62f16e10595b9",
+  "demo_profile": "showcase-core-v5",
+  "mac": "E6:B1:D5:F4:F4:07",
+  "network_id": "maracana_ring_cracked_02",
+  "scenario": "pcap_plus_22000_plus_cracked",
+  "source": "pwnagotchi",
+  "source_filename": "MARACANA_RING_CRACKED_02_e6b1d5f4f407.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "MARACANA_RING_CRACKED_02",
+  "version": 1
+}

@@ -1,0 +1,107 @@
+{
+  "capture": {
+    "clients_count": 4,
+    "duration_s": 95.0,
+    "frame_totals": {
+      "beacons": 108,
+      "eapol": 12,
+      "probe_requests": 16
+    },
+    "networks_count": 4,
+    "warnings": []
+  },
+  "demo_profile": "showcase-core-v5",
+  "device_label": "Bruce",
+  "highlights": {
+    "handshake_candidate_count": 4,
+    "handshake_candidates": [
+      {
+        "bssid": "0E:CC:11:22:33:4F",
+        "eapol_count": 4,
+        "ssid": "MUSEU_AMANHA_SECURE",
+        "tier": "ready"
+      },
+      {
+        "bssid": "02:DD:11:22:33:50",
+        "eapol_count": 4,
+        "ssid": "PRACA_MAUA_PRESS_VAN",
+        "tier": "ready"
+      },
+      {
+        "bssid": "06:F0:11:22:33:5D",
+        "eapol_count": 4,
+        "ssid": "MAUA_ROOFTOP_PROBE",
+        "tier": "ready"
+      },
+      {
+        "bssid": "0E:EF:11:22:33:5B",
+        "eapol_count": 0,
+        "ssid": "",
+        "tier": "watch"
+      }
+    ],
+    "hidden_network_count": 1,
+    "noisy_capture": false,
+    "revealed_hidden_count": 0,
+    "top_clients": [
+      {
+        "eapol_count": 4,
+        "mac": "6A:7B:8C:9D:AE:B0",
+        "network_count": 1,
+        "total_frames": 20
+      },
+      {
+        "eapol_count": 4,
+        "mac": "6A:7B:8C:9D:AE:B1",
+        "network_count": 1,
+        "total_frames": 27
+      },
+      {
+        "eapol_count": 4,
+        "mac": "6A:7B:8C:9D:AE:B2",
+        "network_count": 1,
+        "total_frames": 34
+      },
+      {
+        "eapol_count": 0,
+        "mac": "6A:7B:8C:9D:AE:B0",
+        "network_count": 1,
+        "total_frames": 41
+      }
+    ],
+    "top_networks": [
+      {
+        "beacon_count": 18,
+        "bssid": "0E:CC:11:22:33:4F",
+        "client_count": 1,
+        "ssid": "MUSEU_AMANHA_SECURE"
+      },
+      {
+        "beacon_count": 24,
+        "bssid": "02:DD:11:22:33:50",
+        "client_count": 2,
+        "ssid": "PRACA_MAUA_PRESS_VAN"
+      },
+      {
+        "beacon_count": 30,
+        "bssid": "06:F0:11:22:33:5D",
+        "client_count": 3,
+        "ssid": "MAUA_ROOFTOP_PROBE"
+      },
+      {
+        "beacon_count": 36,
+        "bssid": "0E:EF:11:22:33:5B",
+        "client_count": 4,
+        "ssid": ""
+      }
+    ]
+  },
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::64ed86fcedf6a270",
+  "schema_version": 1,
+  "source": "brucegotchi",
+  "source_file": "rio_bruce_porto_locked_demo.pcap",
+  "source_mtime": 1776452483.011411,
+  "source_path_role": "rawsniffer",
+  "source_size": 2962
+}

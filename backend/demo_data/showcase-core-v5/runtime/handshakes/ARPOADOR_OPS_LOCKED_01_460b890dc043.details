@@ -1,0 +1,28 @@
+{
+  "bssid": "46:0B:89:0D:C0:43",
+  "classification": {
+    "confidence": 0.86,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 11,
+    "frequency_mhz": 2462
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ARPOADOR_OPS_LOCKED_01",
+  "vendor": "Beachfront Ops",
+  "wps": {
+    "present": false
+  }
+}

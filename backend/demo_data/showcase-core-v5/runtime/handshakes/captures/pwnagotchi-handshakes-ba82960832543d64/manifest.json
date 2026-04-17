@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-ba82960832543d64",
+  "demo_profile": "showcase-core-v5",
+  "mac": "8E:12:E0:60:94:BC",
+  "network_id": "aterro_do_flamengo_botafogo_urca__wd_1095",
+  "scenario": "pcap_plus_22000_plus_cracked",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0045_ENSEADA_STUDIO_1095_8e12e06094bc.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "ENSEADA_STUDIO_1095",
+  "version": 1
+}

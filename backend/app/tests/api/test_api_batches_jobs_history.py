@@ -83,14 +83,14 @@ def test_maintenance_endpoints(client, monkeypatch):
         "get_demo_status",
         lambda: {
             "active": False,
-            "available_profiles": [{"profile_id": "showcase-core-v4"}],
+            "available_profiles": [{"profile_id": "showcase-core-v5"}],
             "snapshot_available": False,
         },
     )
     monkeypatch.setattr(
         maintenance_router.maintenance_service,
         "start_demo_install",
-        lambda profile_id="showcase-core-v4", frontend_state=None: {
+        lambda profile_id="showcase-core-v5", frontend_state=None: {
             "job_id": "demo-job-1",
             "profile_id": profile_id,
             "ui_seed": {},
@@ -121,7 +121,7 @@ def test_maintenance_endpoints(client, monkeypatch):
     resp = client.post(
         "/api/maintenance/demo/install",
         json={
-            "profile_id": "showcase-core-v4",
+            "profile_id": "showcase-core-v5",
             "frontend_state": {"lists": {"targets": []}},
         },
     )

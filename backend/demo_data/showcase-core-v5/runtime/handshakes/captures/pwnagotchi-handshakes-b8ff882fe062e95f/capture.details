@@ -1,0 +1,28 @@
+{
+  "bssid": "12:59:D7:D6:40:20",
+  "classification": {
+    "confidence": 0.9,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "LAPA_GUEST_0611",
+  "vendor": "Historic Mesh",
+  "wps": {
+    "present": false
+  }
+}

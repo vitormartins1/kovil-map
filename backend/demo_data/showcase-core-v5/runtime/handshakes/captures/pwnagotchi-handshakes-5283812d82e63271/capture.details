@@ -1,0 +1,28 @@
+{
+  "bssid": "7E:33:04:D4:C0:66",
+  "classification": {
+    "confidence": 0.72,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "PRAIA_PASS_0264",
+  "vendor": "Bayfront Services",
+  "wps": {
+    "present": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-f792fa2d1a142517",
+  "demo_profile": "showcase-core-v5",
+  "mac": "7A:86:A7:97:49:79",
+  "network_id": "lapa_gloria_praca_maua_motorcycle__wd_0784",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0208_MAUA_PASS_0784_7a86a7974979.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "MAUA_PASS_0784",
+  "version": 1
+}

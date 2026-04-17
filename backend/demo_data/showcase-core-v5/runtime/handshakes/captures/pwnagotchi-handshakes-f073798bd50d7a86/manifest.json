@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-f073798bd50d7a86",
+  "demo_profile": "showcase-core-v5",
+  "mac": "22:45:8F:8E:1B:93",
+  "network_id": "centro_lapa_santa_teresa__wd_1442",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0118_CARIOCA_KIOSK_1442_22458f8e1b93.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "CARIOCA_KIOSK_1442",
+  "version": 1
+}

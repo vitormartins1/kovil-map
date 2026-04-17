@@ -795,7 +795,7 @@ describe("ui_wardrive module", () => {
     expect(list.textContent).toContain("Niteroi");
   });
 
-  test("workspace explorer switches between regions and zones and auto-focuses zones on region selection", async () => {
+  test("workspace explorer keeps region browsing active until zones are opened explicitly", async () => {
     const wardrive = loadModule();
     wardrive.setupWardriveListeners();
 
@@ -820,11 +820,13 @@ describe("ui_wardrive module", () => {
     expect(document.getElementById("wardrive-explorer-pane-regions").style.display).toBe("flex");
 
     document.querySelector('#wardrive-regions-list [data-region-id="city:3304557"]').click();
-    expect(document.getElementById("btn-wardrive-pane-zones").classList.contains("active")).toBe(true);
+    expect(document.getElementById("btn-wardrive-pane-regions").classList.contains("active")).toBe(true);
+    expect(document.getElementById("btn-wardrive-pane-zones").classList.contains("active")).toBe(false);
     expect(document.getElementById("wardrive-zones-list").textContent).toContain("Loading zones");
     await flushAsync();
 
-    expect(document.getElementById("wardrive-explorer-pane-zones").style.display).toBe("flex");
+    expect(document.getElementById("wardrive-explorer-pane-regions").style.display).toBe("flex");
+    expect(document.getElementById("wardrive-explorer-pane-zones").style.display).toBe("none");
     expect(document.getElementById("wardrive-zones-summary").textContent).toContain("Rio de Janeiro");
     expect(document.getElementById("wardrive-zone-count").textContent).toBe("1");
   });
@@ -935,8 +937,17 @@ describe("ui_wardrive module", () => {
     await wardrive.activateWardriveMode();
     await flushAsync();
 
+    mockState.allPositions = {
+      full: { mac: "AA:BB:CC:DD:EE:01", lat: -22.9, lng: -43.2 },
+    };
+    wardrive.__testSetWardriveState({
+      selectedSessionIds: ["session-a"],
+      activeReplaySessionId: "session-a",
+      sessionTracks: [{ session_id: "session-a", points: [] }],
+    });
     mockSaveModes.mockClear();
     mockMap.clearWardriveLayers.mockClear();
+    mockMap.renderMarkers.mockClear();
 
     wardrive.deactivateWardriveMode();
 
@@ -958,7 +969,18 @@ describe("ui_wardrive module", () => {
     expect(document.getElementById("btn-process").disabled).toBe(false);
     expect(document.getElementById("btn-logs").disabled).toBe(false);
     expect(mockMap.clearWardriveLayers).toHaveBeenCalled();
+    expect(wardrive.__testWardriveHelpers.getWardriveFilters().session_ids).toEqual([]);
+    expect(mockMap.renderMarkers).toHaveBeenCalledWith(mockState.allPositions, false);
     expect(mockSaveModes).toHaveBeenCalledTimes(1);
+
+    mockAPI.getWardriveHierarchy.mockClear();
+    await wardrive.activateWardriveMode();
+    await flushAsync();
+    expect(mockAPI.getWardriveHierarchy).toHaveBeenCalledWith({
+      time_window: "all",
+      source: "all",
+      session_ids: [],
+    });
   });
 
   test("prewarmWardriveWorkspace caches a warm snapshot reused on activation", async () => {
@@ -1086,6 +1108,158 @@ describe("ui_wardrive module", () => {
         }),
       }),
       false
+    );
+  });
+
+  test("selecting a multi-neighborhood session loads zones for the city scope", async () => {
+    mockAPI.getWardriveHierarchy.mockResolvedValue({
+      maps_summary: {
+        loaded_files: 1,
+        loaded_datasets: 1,
+        regions_count: 4,
+        errors: [],
+        legacy_ignored: [],
+        incompatible_crs: [],
+      },
+      regions: [
+        {
+          id: "br:state:rj",
+          level_key: "state",
+          depth: 1,
+          parent_id: null,
+          name: "RJ",
+          display_path: "Brasil > RJ",
+          stats: { networks_count: 730, cracked: 0, open: 80, locked: 650 },
+        },
+        {
+          id: "br:city:rio",
+          level_key: "city",
+          depth: 2,
+          parent_id: "br:state:rj",
+          name: "Rio de Janeiro",
+          display_path: "Brasil > RJ > Rio de Janeiro",
+          stats: { networks_count: 730, cracked: 0, open: 80, locked: 650 },
+        },
+        {
+          id: "br:neighborhood:botafogo",
+          level_key: "neighborhood",
+          depth: 3,
+          parent_id: "br:city:rio",
+          name: "Botafogo",
+          display_path: "Brasil > RJ > Rio de Janeiro > Botafogo",
+          stats: { networks_count: 80, cracked: 0, open: 10, locked: 70 },
+        },
+        {
+          id: "br:neighborhood:flamengo",
+          level_key: "neighborhood",
+          depth: 3,
+          parent_id: "br:city:rio",
+          name: "Flamengo",
+          display_path: "Brasil > RJ > Rio de Janeiro > Flamengo",
+          stats: { networks_count: 650, cracked: 0, open: 70, locked: 580 },
+        },
+      ],
+      unmapped_summary: { networks_count: 0, cracked: 0, open: 0, locked: 0 },
+    });
+
+    const wardrive = loadModule();
+    wardrive.setupWardriveListeners();
+    document.getElementById("btn-wardrive").click();
+    await flushAsync();
+
+    mockAPI.getWardriveZones.mockClear();
+    mockMap.focusWardriveBBox.mockClear();
+    mockMap.focusWardriveTrack.mockClear();
+    document.querySelector(".wardrive-session-item").click();
+    await settleWardriveUi();
+
+    expect(mockAPI.getWardriveZones).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        region_id: "br:city:rio",
+        session_ids: ["session-a"],
+      }),
+    );
+    expect(document.getElementById("wardrive-region-summary").textContent).toContain("Rio de Janeiro");
+    expect(document.getElementById("wardrive-region-summary").textContent).not.toContain("Flamengo");
+    expect(mockMap.focusWardriveBBox).not.toHaveBeenCalled();
+    expect(mockMap.focusWardriveTrack).toHaveBeenCalledWith(
+      expect.objectContaining({ session_id: "session-a" }),
+    );
+  });
+
+  test("selecting a session loads unmapped zones when they dominate the session scope", async () => {
+    mockAPI.getWardriveHierarchy.mockResolvedValue({
+      maps_summary: {
+        loaded_files: 1,
+        loaded_datasets: 1,
+        regions_count: 3,
+        errors: [],
+        legacy_ignored: [],
+        incompatible_crs: [],
+      },
+      regions: [
+        {
+          id: "br:state:rj",
+          level_key: "state",
+          depth: 1,
+          parent_id: null,
+          name: "RJ",
+          display_path: "Brasil > RJ",
+          stats: { networks_count: 45, cracked: 0, open: 5, locked: 40 },
+        },
+        {
+          id: "br:city:rio",
+          level_key: "city",
+          depth: 2,
+          parent_id: "br:state:rj",
+          name: "Rio de Janeiro",
+          display_path: "Brasil > RJ > Rio de Janeiro",
+          stats: { networks_count: 45, cracked: 0, open: 5, locked: 40 },
+        },
+        {
+          id: "br:neighborhood:urca",
+          level_key: "neighborhood",
+          depth: 3,
+          parent_id: "br:city:rio",
+          name: "Urca",
+          display_path: "Brasil > RJ > Rio de Janeiro > Urca",
+          stats: { networks_count: 12, cracked: 0, open: 2, locked: 10 },
+        },
+      ],
+      unmapped_summary: { networks_count: 60, cracked: 0, open: 4, locked: 56 },
+    });
+    mockAPI.getWardriveZones.mockResolvedValue({
+      region: {
+        id: "unmapped",
+        level_key: "unmapped",
+        depth: 999,
+        name: "UNMAPPED",
+        display_path: "UNMAPPED",
+        bbox: { min_lat: -22.96, min_lng: -43.18, max_lat: -22.94, max_lng: -43.15 },
+        outline: [],
+      },
+      zones: [{ id: 1, count: 60, parts: [[{ lat: -22.95, lng: -43.17 }, { lat: -22.95, lng: -43.16 }, { lat: -22.94, lng: -43.16 }]] }],
+      stats: { networks_count: 60, cracked: 0, open: 4, locked: 56 },
+    });
+
+    const wardrive = loadModule();
+    wardrive.setupWardriveListeners();
+    document.getElementById("btn-wardrive").click();
+    await flushAsync();
+
+    mockAPI.getWardriveZones.mockClear();
+    document.querySelector(".wardrive-session-item").click();
+    await settleWardriveUi();
+
+    expect(mockAPI.getWardriveZones).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        region_id: "unmapped",
+        session_ids: ["session-a"],
+      }),
+    );
+    expect(mockMap.renderWardriveZones).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.objectContaining({ session_id: "session-a" })]),
+      expect.objectContaining({ sessionIds: ["session-a"] }),
     );
   });
 
@@ -1290,6 +1464,12 @@ describe("ui_wardrive module", () => {
     expect(document.querySelector('#wardrive-route-replay [data-session-id="session-a"] .fa-car')).not.toBeNull();
     expect(document.querySelector('#wardrive-route-replay [data-session-id="session-b"] .fa-bicycle')).not.toBeNull();
     expect(mockAPI.getWardriveSessionTracks).toHaveBeenLastCalledWith(["session-a", "session-b"]);
+    expect(mockMap.focusWardriveTrack).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        session_id: "__selected_wardrive_tracks__",
+        bbox: { min_lat: -22.93, min_lng: -43.23, max_lat: -22.9, max_lng: -43.19 },
+      }),
+    );
     expect(mockAPI.getWardriveZones).toHaveBeenLastCalledWith(
       expect.objectContaining({
         session_ids: ["session-a", "session-b"],

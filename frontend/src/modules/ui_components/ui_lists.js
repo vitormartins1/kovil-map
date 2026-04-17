@@ -20,6 +20,21 @@ function processDetailsToSearchText(details) {
     }
 }
 
+function normalizeNetworkState(pos = {}) {
+    const normalized = String(pos?.network_state || '').trim().toLowerCase();
+    if (normalized) return normalized;
+    if (pos?.pass) return 'cracked';
+    const enc = String(pos?.encryption || '').trim().toUpperCase();
+    if (enc === 'OPEN' || enc === 'WEP') return 'open';
+    const files = Array.isArray(pos?.handshake_files) ? pos.handshake_files : [];
+    const hasPcap = files.some((file) => String(file || '').toLowerCase().endsWith('.pcap'));
+    const has22000 = files.some((file) => String(file || '').toLowerCase().endsWith('.22000'));
+    const hasRawHash = Number(pos?.raw_pmkid_count || 0) > 0 || Number(pos?.raw_eapol_count || 0) > 0;
+    if (hasPcap || has22000) return pos?.type === 'no-gps' ? 'no_gps_locked' : 'locked';
+    if (hasRawHash) return 'not_ready';
+    return pos?.type === 'no-gps' ? 'no_gps_only' : 'gps_only';
+}
+
 export function updateTargetsList() {
     const list = document.getElementById('targets-list');
     document.getElementById('target-count').innerText = STATE.lists.targets.length;
@@ -383,9 +398,12 @@ export function updateNoGpsList() {
         const hasPcap = hasArtifact(files, '.pcap');
         const has22000 = hasArtifact(files, '.22000');
         const sourceTokens = getSourceTokensForPos(pos);
-        const isCracked = !!pos.pass;
+        const networkState = normalizeNetworkState(pos);
+        const isCracked = networkState === 'cracked';
         const isOpenLike = isOpenLikeEncryption(pos.encryption);
-        const status = isCracked ? 'cracked' : (isOpenLike ? 'open' : 'locked');
+        const status = isCracked
+            ? 'cracked'
+            : (isOpenLike ? 'open' : (networkState === 'no_gps_locked' || networkState === 'not_ready' ? 'locked' : 'locked'));
 
         if ((noGpsUi.status || 'all') !== 'all' && status !== noGpsUi.status) {
             return false;
@@ -427,6 +445,7 @@ export function updateNoGpsList() {
             String(pos.encryption || ''),
             sourceTokens.join(' '),
             status,
+            networkState,
             isHidden ? 'hidden' : 'named'
         ].join(' ').toLowerCase();
 
@@ -506,7 +525,7 @@ export function updateNoGpsList() {
             openCrackingPanel(pos.mac, pos.ssid);
         });
 
-        if (pos.pass) {
+        if (normalizeNetworkState(pos) === 'cracked') {
             listPwned.appendChild(item);
         } else {
             listLocked.appendChild(item);

@@ -1,0 +1,28 @@
+{
+  "bssid": "A2:79:9C:B9:9B:13",
+  "classification": {
+    "confidence": 0.76,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 5,
+    "frequency_mhz": 2432
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "COPA_GUEST_1341",
+  "vendor": "South Zone Guest",
+  "wps": {
+    "present": false
+  }
+}

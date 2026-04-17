@@ -66,6 +66,124 @@ describe("ui_wardrive helper coverage", () => {
     ).toBeGreaterThan(0);
   });
 
+  test("pickWardriveRegion keeps a single session-focused leaf region", () => {
+    const regions = [
+      {
+        id: "br:city:rio",
+        depth: 2,
+        name: "Rio de Janeiro",
+        stats: { networks_count: 80 },
+      },
+      {
+        id: "br:neighborhood:botafogo",
+        depth: 3,
+        parent_id: "br:city:rio",
+        name: "Botafogo",
+        stats: { networks_count: 80 },
+      },
+    ];
+
+    expect(
+      __testWardriveHelpers.pickWardriveRegion(regions, null, {
+        preferSessionFocus: true,
+      }).id,
+    ).toBe("br:neighborhood:botafogo");
+  });
+
+  test("pickWardriveRegion rolls multi-neighborhood sessions up to the city", () => {
+    const regions = [
+      {
+        id: "br:state:rj",
+        depth: 1,
+        name: "RJ",
+        stats: { networks_count: 900 },
+      },
+      {
+        id: "br:city:rio",
+        depth: 2,
+        parent_id: "br:state:rj",
+        name: "Rio de Janeiro",
+        stats: { networks_count: 900 },
+      },
+      {
+        id: "br:neighborhood:botafogo",
+        depth: 3,
+        parent_id: "br:city:rio",
+        name: "Botafogo",
+        stats: { networks_count: 80 },
+      },
+      {
+        id: "br:neighborhood:flamengo",
+        depth: 3,
+        parent_id: "br:city:rio",
+        name: "Flamengo",
+        stats: { networks_count: 650 },
+      },
+    ];
+
+    expect(
+      __testWardriveHelpers.pickWardriveRegion(regions, null, {
+        preferSessionFocus: true,
+      }).id,
+    ).toBe("br:city:rio");
+
+    expect(
+      __testWardriveHelpers.pickWardriveRegion(regions, "br:city:rio", {
+        preferSessionFocus: true,
+      }).id,
+    ).toBe("br:city:rio");
+  });
+
+  test("pickWardriveRegion rolls multi-city and multi-state sessions up the hierarchy", () => {
+    const multiCity = [
+      { id: "br:country", depth: 0, name: "Brasil", stats: { networks_count: 200 } },
+      { id: "br:state:rj", depth: 1, parent_id: "br:country", name: "RJ", stats: { networks_count: 200 } },
+      { id: "br:city:rio", depth: 2, parent_id: "br:state:rj", name: "Rio", stats: { networks_count: 120 } },
+      { id: "br:city:niteroi", depth: 2, parent_id: "br:state:rj", name: "Niteroi", stats: { networks_count: 80 } },
+    ];
+    const multiState = [
+      { id: "br:country", depth: 0, name: "Brasil", stats: { networks_count: 300 } },
+      { id: "br:state:rj", depth: 1, parent_id: "br:country", name: "RJ", stats: { networks_count: 160 } },
+      { id: "br:state:sp", depth: 1, parent_id: "br:country", name: "SP", stats: { networks_count: 140 } },
+      { id: "br:city:rio", depth: 2, parent_id: "br:state:rj", name: "Rio", stats: { networks_count: 160 } },
+      { id: "br:city:santos", depth: 2, parent_id: "br:state:sp", name: "Santos", stats: { networks_count: 140 } },
+    ];
+
+    expect(
+      __testWardriveHelpers.pickWardriveRegion(multiCity, null, {
+        preferSessionFocus: true,
+      }).id,
+    ).toBe("br:state:rj");
+    expect(
+      __testWardriveHelpers.pickWardriveRegion(multiState, null, {
+        preferSessionFocus: true,
+      }).id,
+    ).toBe("br:country");
+  });
+
+  test("pickWardriveRegion can select unmapped when it is the dominant session scope", () => {
+    const regions = [
+      {
+        id: "br:neighborhood:urca",
+        depth: 3,
+        name: "Urca",
+        stats: { networks_count: 113 },
+      },
+      {
+        id: "unmapped",
+        depth: 999,
+        name: "UNMAPPED",
+        stats: { networks_count: 656 },
+      },
+    ];
+
+    expect(
+      __testWardriveHelpers.pickWardriveRegion(regions, null, {
+        preferSessionFocus: true,
+      }).id,
+    ).toBe("unmapped");
+  });
+
   test("session sort helpers fall back to safe defaults", () => {
     expect(__testWardriveHelpers.normalizeWardriveSessionSortBy("DISTANCE")).toBe(
       "distance",

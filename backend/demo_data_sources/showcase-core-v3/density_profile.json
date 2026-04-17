@@ -97,7 +97,7 @@
     "min": -100,
     "p90": -72
   },
-  "source_file": "/Users/vitormartins/projects/pwn.map/backend/data/wardrive/wardriving-03.csv",
+  "source_file": "wardriving-03.csv (reference stats only; source path intentionally omitted)",
   "step_distance_m": {
     "max": 13.28,
     "mean": 3.55,

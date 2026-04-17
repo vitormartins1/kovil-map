@@ -550,6 +550,48 @@ function isWardriveOnlySource(sourceFlags) {
     );
 }
 
+function hasGpsFix(pos) {
+    const lat = Number(pos?.lat);
+    const lng = Number(pos?.lng);
+    return Number.isFinite(lat) && Number.isFinite(lng) && !(lat === 0 && lng === 0);
+}
+
+function getArtifactFlags(pos = {}) {
+    const handshakeFiles = Array.isArray(pos?.handshake_files) ? pos.handshake_files : [];
+    return {
+        handshakeFiles,
+        hasPcap: handshakeFiles.some((file) => typeof file === 'string' && file.toLowerCase().endsWith('.pcap')),
+        has22000: handshakeFiles.some((file) => typeof file === 'string' && file.toLowerCase().endsWith('.22000')),
+        hasRawHash: Number(pos?.raw_pmkid_count || 0) > 0 || Number(pos?.raw_eapol_count || 0) > 0,
+    };
+}
+
+function getNormalizedNetworkState(pos = {}) {
+    const normalized = String(pos?.network_state || '').trim().toLowerCase();
+    if (normalized) return normalized;
+
+    const { hasPcap, has22000, hasRawHash } = getArtifactFlags(pos);
+    const enc = String(pos?.encryption || '').trim().toUpperCase();
+    const openLike = enc === 'OPEN' || enc === 'WEP';
+    const gpsBacked = String(pos?.type || '').trim().toLowerCase() !== 'no-gps' && hasGpsFix(pos);
+    const wardriveOnly = isWardriveOnlySource(getSourceFlags(pos?.sources));
+
+    if (pos?.pass) return 'cracked';
+    if (openLike) return 'open';
+    if (hasPcap || has22000) return gpsBacked ? 'locked' : 'no_gps_locked';
+    if (hasRawHash) return 'not_ready';
+    if (wardriveOnly || gpsBacked) return 'gps_only';
+    return 'no_gps_only';
+}
+
+function isLockedState(state) {
+    return state === 'locked' || state === 'no_gps_locked';
+}
+
+function isGpsOnlyState(state) {
+    return state === 'gps_only';
+}
+
 function getNormalizedMacSearchValue(mac) {
     return String(mac || '').replace(/[:-]/g, '').toLowerCase();
 }
@@ -565,13 +607,12 @@ function getMarkerHtml(pos) {
 
     // Verifica se está sendo crackeada e obtém o status
     const { crackingStatus, crackingType } = getCrackingInfo(pos);
-    const sourceFlags = getSourceFlags(pos?.sources);
-    const isWardriveOnly = isWardriveOnlySource(sourceFlags);
-    const enc = (pos.encryption || '').toUpperCase();
-    const isOpen = enc === 'OPEN' || enc === 'WEP';
+    const state = getNormalizedNetworkState(pos);
+    const isWardriveOnly = isGpsOnlyState(state);
+    const isOpen = state === 'open';
     let badgeHtml = '';
 
-    if (pos.pass) {
+    if (state === 'cracked') {
         cssClass = 'm-cracked';
         iconClass = `${currentIconPwned} cyber-glitch-1`; // Use dynamic icon
     } else if (isOpen) {
@@ -643,24 +684,24 @@ function getMarkerIcon(pos) {
 }
 
 function getThemeClass(pos) {
-    const isWardriveOnly = isWardriveOnlySource(getSourceFlags(pos?.sources));
-    if (pos.pass) return 'theme-cracked';
+    const state = getNormalizedNetworkState(pos);
+    if (state === 'cracked') return 'theme-cracked';
     if (!pos.ssid) return 'theme-hidden';
-    if (pos.encryption === 'OPEN' || pos.encryption === 'WEP') return 'theme-open';
-    if (isWardriveOnly) return 'theme-wardrive';
+    if (state === 'open') return 'theme-open';
+    if (isGpsOnlyState(state)) return 'theme-wardrive';
     return 'theme-locked';
 }
 
 function getAccuracyColor(pos) {
     const { crackingStatus } = getCrackingInfo(pos);
-    const isWardriveOnly = isWardriveOnlySource(getSourceFlags(pos?.sources));
+    const state = getNormalizedNetworkState(pos);
 
-    if (pos.pass) return 'var(--theme-color)';
+    if (state === 'cracked') return 'var(--theme-color)';
     if (crackingStatus === 'QUEUED') return 'var(--neon-yellow)';
     if (crackingStatus) return 'var(--theme-color)';
     if (!pos.ssid) return 'var(--neon-purple)';
-    if (pos.encryption === 'OPEN' || pos.encryption === 'WEP') return 'var(--neon-yellow)';
-    if (isWardriveOnly) return 'var(--wardrive-color)';
+    if (state === 'open') return 'var(--neon-yellow)';
+    if (isGpsOnlyState(state)) return 'var(--wardrive-color)';
     return 'var(--neon-red)';
 }
 
@@ -736,37 +777,47 @@ function buildPopupSection(title, innerHtml, options = {}) {
 function getPopupStateChips(pos, flags = {}) {
     const chips = [];
     const enc = escapeHtml(pos.encryption || 'UNK');
-    const sourceFlags = getSourceFlags(pos?.sources);
+    const state = getNormalizedNetworkState(pos);
     const hasPcap = Boolean(flags.hasPcap);
     const has22000 = Boolean(flags.has22000);
+    const hasRawHash = Boolean(flags.hasRawHash);
 
-    if (pos.pass) {
+    if (state === 'cracked') {
         chips.push('<span class="popup-chip popup-chip-status popup-chip-cracked">CRACKED</span>');
-    } else if (!pos.ssid) {
-        chips.push('<span class="popup-chip popup-chip-status popup-chip-hidden">HIDDEN</span>');
-    } else if (pos.encryption === 'OPEN' || pos.encryption === 'WEP') {
+    } else if (state === 'open') {
         chips.push(`<span class="popup-chip popup-chip-status popup-chip-open">${escapeHtml(pos.encryption)}</span>`);
-    } else if (isWardriveOnlySource(sourceFlags)) {
+    } else if (state === 'not_ready') {
+        chips.push('<span class="popup-chip popup-chip-status popup-chip-hidden">NOT READY</span>');
+    } else if (isGpsOnlyState(state)) {
         chips.push('<span class="popup-chip popup-chip-status popup-chip-wardrive">GPS ONLY</span>');
     } else {
         chips.push('<span class="popup-chip popup-chip-status popup-chip-locked">LOCKED</span>');
     }
 
+    if (!pos.ssid) {
+        chips.push('<span class="popup-chip popup-chip-status popup-chip-hidden">HIDDEN</span>');
+    }
+
     chips.push(`<span class="popup-chip popup-chip-security">${enc}</span>`);
 
-    if (hasPcap && !pos.pass) {
+    if (hasPcap && state !== 'cracked') {
         chips.push('<span class="popup-chip popup-chip-capture">PCAP</span>');
     }
 
-    if (has22000 && !pos.pass) {
+    if (has22000 && state !== 'cracked') {
         chips.push('<span class="popup-chip popup-chip-handshake">HANDSHAKE</span>');
+    }
+    if (hasRawHash && state === 'not_ready') {
+        chips.push('<span class="popup-chip popup-chip-capture">RAW</span>');
     }
 
     return chips.join('');
 }
 
 function getAccessCtaLabel(flags = {}, pos = {}) {
-    if (pos.pass) return '';
+    const state = getNormalizedNetworkState(pos);
+    if (state === 'cracked') return 'OPEN ARTIFACTS';
+    if (state === 'not_ready') return 'INSPECT // PREP';
     return 'HASH // CRACK';
 }
 
@@ -896,7 +947,7 @@ export function renderMarkers(data, forceRender = false) {
     
     let stats = { 
         total: 0, cracked: 0, locked: 0, open: 0, hidden: 0, wardrive: 0,
-        noGpsTotal: 0, noGpsCracked: 0
+        noGpsTotal: 0, noGpsCracked: 0, noGpsLocked: 0
     };
     const bounds = L.latLngBounds();
     const now = Date.now() / 1000;
@@ -929,28 +980,26 @@ export function renderMarkers(data, forceRender = false) {
 
         // Contabiliza redes sem GPS
         if (pos.type === 'no-gps') {
+            const state = getNormalizedNetworkState(pos);
             stats.noGpsTotal++;
-            if (pos.pass) stats.noGpsCracked++;
+            if (state === 'cracked') stats.noGpsCracked++;
+            if (state === 'no_gps_locked') stats.noGpsLocked = (stats.noGpsLocked || 0) + 1;
             return; // Não renderiza no mapa
         }
 
         if (pos.lat && pos.lng && pos.lat !== 0 && pos.lng !== 0) {
             stats.total++;
-            const handshakeFiles = Array.isArray(pos.handshake_files) ? pos.handshake_files : [];
-            const hasPcap = handshakeFiles.some((file) => typeof file === 'string' && file.endsWith('.pcap'));
-            const has22000 = handshakeFiles.some((file) => typeof file === 'string' && file.endsWith('.22000'));
-            const isWardriveOnly = isWardriveOnlySource(getSourceFlags(pos?.sources));
-            const enc = (pos.encryption || '').toUpperCase();
-            const isOpen = enc === 'OPEN' || enc === 'WEP';
-            if (pos.pass) {
+            const { handshakeFiles, hasPcap, has22000, hasRawHash } = getArtifactFlags(pos);
+            const state = getNormalizedNetworkState(pos);
+            if (state === 'cracked') {
                 stats.cracked++;
             } else if (!pos.ssid) {
                 stats.hidden++;
-            } else if (isOpen) {
+            } else if (state === 'open') {
                 stats.open++;
-            } else if (isWardriveOnly) {
+            } else if (isGpsOnlyState(state)) {
                 stats.wardrive++;
-            } else if (hasPcap || has22000) {
+            } else if (state === 'locked') {
                 stats.locked++; 
             }
 
@@ -1010,15 +1059,15 @@ export function renderMarkers(data, forceRender = false) {
             const escapedMac = escapeAttribute(pos.mac);
             const escapedPass = escapeAttribute(pos.pass || '');
 
-            const canTarget = !isWardriveOnly && !(pos.pass || pos.encryption === 'OPEN' || pos.encryption === 'WEP');
-            const canAccess = !isWardriveOnly && (canTarget || Boolean(pos.pass));
+            const canTarget = state !== 'cracked' && state !== 'open' && !isGpsOnlyState(state);
+            const canAccess = !isGpsOnlyState(state) && (canTarget || state === 'cracked' || state === 'not_ready');
             const targetBtnHtml = canTarget 
                 ? `<i class="fa-solid fa-bullseye header-btn target ${targetClass}" data-action="toggle-target" data-mac="${escapedMac}" title="Toggle Target"></i>`
                 : '';
             const favBtnHtml = `<i class="fa-solid fa-star header-btn fav ${favClass}" data-action="toggle-fav" data-mac="${escapedMac}" title="Toggle Favorite"></i>`;
 
             const accessCtaLabel = getAccessCtaLabel({ hasPcap, has22000 }, pos);
-            const accessCtaHtml = !pos.pass && canAccess
+            const accessCtaHtml = canAccess
                 ? `
                     <div class="popup-access-stack popup-access-stack--cta">
                         <div class="popup-access-main">
@@ -1136,6 +1185,12 @@ export function renderMarkers(data, forceRender = false) {
                                             <i id="pass-eye-${macKey}" class="fa-solid ${isPassVisible(pos.mac) ? 'fa-eye' : 'fa-eye-slash'} popup-pass-eye" data-action="toggle-pass-visibility" data-mac="${escapedMac}"></i>
                                         </div>
                                     </div>
+                                    <div class="popup-access-main">
+                                        <div class="pass-box popup-crack-cta"
+                                             data-action="trigger-crack" data-mac="${escapedMac}" data-ssid="${escapeAttribute(encodedSsid)}">
+                                            ${accessCtaLabel}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         ` : accessCtaHtml,
@@ -1162,7 +1217,7 @@ export function renderMarkers(data, forceRender = false) {
                         </div>
                         <div class="popup-header-meta">
                             <div class="popup-chip-row">
-                                ${getPopupStateChips(pos, { hasPcap, has22000 })}
+                                ${getPopupStateChips(pos, { hasPcap, has22000, hasRawHash })}
                             </div>
                         </div>
                     </div>
@@ -2131,11 +2186,10 @@ export async function calculateToConquerZones(data) {
         if (STATE.filters.search && !searchable.includes(STATE.filters.search)) return;
 
         const point = { lat: pos.lat, lng: pos.lng, acc: pos.acc || 0 };
-        if (pos.pass) {
+        const state = getNormalizedNetworkState(pos);
+        if (state === 'cracked') {
             conqueredPoints.push(point);
-        } else if (pos.ssid && pos.encryption !== 'OPEN' && pos.encryption !== 'WEP') {
-            const sourceFlags = getSourceFlags(pos?.sources);
-            if (isWardriveOnlySource(sourceFlags)) return;
+        } else if (state === 'locked') {
             toConquerPoints.push(point);
         }
     });

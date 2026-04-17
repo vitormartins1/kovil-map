@@ -14,14 +14,14 @@ from typing import Any
 
 from app.utils.handshake_artifacts import create_combined_build_id
 
-PROFILE_ID = "showcase-core-v4"
-PROFILE_LABEL = "Showcase Core v4"
+PROFILE_ID = "showcase-core-v5"
+PROFILE_LABEL = "Showcase Core v5"
 PROFILE_DESCRIPTION = (
     "Synthetic Rio de Janeiro showcase dataset with expanded WarDrive "
-    "coverage, pre-tagged transport sessions, density calibrated from a real "
-    "Wardrive reference, and public-safe cross-surface demo data."
+    "coverage, transport-tagged sessions, artifact-consistent locked "
+    "networks, richer RAW crossover, and public-safe cross-surface demo data."
 )
-PROFILE_VERSION = 4
+PROFILE_VERSION = 5
 BUILD_STAMP = "2026-04-15T00:00:00Z"
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
@@ -96,6 +96,16 @@ DENSITY_DEVICE_TYPES = [
 ]
 WARDRIVE_MIN_VISIBLE_PER_POINT = 12
 WARDRIVE_MAX_VISIBLE_PER_POINT = 48
+PWNAGOTCHI_MASS_PROMOTION_ID = "pwnagotchi_mass_v5"
+PWNAGOTCHI_MASS_PROMOTION_TOTAL = 240
+PWNAGOTCHI_MASS_PROMOTION_CRACKED = 32
+PWNAGOTCHI_MASS_PROMOTION_CONVERTIBLE = 24
+PWNAGOTCHI_MASS_PROMOTION_CORRIDOR_QUOTAS = {
+    "Centro + Lapa + Santa Teresa": 60,
+    "Aterro do Flamengo + Botafogo + Urca": 60,
+    "Copacabana + Arpoador + Ipanema + Lagoa": 60,
+    "Lapa + Gloria + Praca Maua Motorcycle": 60,
+}
 
 NETWORKS = {
     "rio_cafe_loop": {
@@ -409,6 +419,306 @@ NETWORKS = {
             {"lat": -22.90410, "lng": -43.17440, "radius_m": 120.0, "peak_rssi": -55},
         ],
     },
+    "museu_amanha_secure": {
+        "ssid": "MUSEU_AMANHA_SECURE",
+        "bssid": "0E:CC:11:22:33:4F",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "amanha-secure-26",
+        "category": "locked_showcase",
+        "vendor": "Porto Maravilha Fiber",
+        "channel": 36,
+        "frequency": 5180,
+        "lat": -22.89385,
+        "lng": -43.18090,
+        "altitude": 6.5,
+        "accuracy": 5.4,
+        "device_type": "router_ap",
+        "device_confidence": 0.9,
+        "wardrive_anchors": [
+            {"lat": -22.89385, "lng": -43.18090, "radius_m": 165.0, "peak_rssi": -46},
+            {"lat": -22.90120, "lng": -43.17520, "radius_m": 185.0, "peak_rssi": -50},
+        ],
+    },
+    "praca_maua_press_van": {
+        "ssid": "PRACA_MAUA_PRESS_VAN",
+        "bssid": "02:DD:11:22:33:50",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "press-van-maua",
+        "category": "already_cracked",
+        "vendor": "PressFleet",
+        "channel": 44,
+        "frequency": 5220,
+        "lat": -22.89740,
+        "lng": -43.17910,
+        "altitude": 5.8,
+        "accuracy": 5.0,
+        "device_type": "mobile_router",
+        "device_confidence": 0.88,
+        "wardrive_anchors": [
+            {"lat": -22.89740, "lng": -43.17910, "radius_m": 175.0, "peak_rssi": -45},
+            {"lat": -22.90480, "lng": -43.17650, "radius_m": 145.0, "peak_rssi": -52},
+        ],
+    },
+    "maracana_media_bus": {
+        "ssid": "MARACANA_MEDIA_BUS",
+        "bssid": "06:DD:11:22:33:51",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "maracana-media-26",
+        "category": "locked_showcase",
+        "vendor": "Arena Transit",
+        "channel": 11,
+        "frequency": 2462,
+        "lat": -22.91210,
+        "lng": -43.23070,
+        "altitude": 17.5,
+        "accuracy": 5.8,
+        "device_type": "vehicular_hotspot",
+        "device_confidence": 0.86,
+        "wardrive_anchors": [
+            {"lat": -22.91210, "lng": -43.23070, "radius_m": 165.0, "peak_rssi": -48},
+            {"lat": -22.90520, "lng": -43.21050, "radius_m": 180.0, "peak_rssi": -51},
+        ],
+    },
+    "engenhao_ops_mesh": {
+        "ssid": "ENGENHAO_OPS_MESH",
+        "bssid": "0A:DD:11:22:33:52",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "engenhao-ops-26",
+        "category": "locked_showcase",
+        "vendor": "NorthRail Mesh",
+        "channel": 149,
+        "frequency": 5745,
+        "lat": -22.89490,
+        "lng": -43.29220,
+        "altitude": 22.0,
+        "accuracy": 6.2,
+        "device_type": "bridge",
+        "device_confidence": 0.84,
+        "wardrive_anchors": [
+            {"lat": -22.89490, "lng": -43.29220, "radius_m": 170.0, "peak_rssi": -47},
+            {"lat": -22.90010, "lng": -43.29840, "radius_m": 150.0, "peak_rssi": -53},
+        ],
+    },
+    "aterro_marina_ops": {
+        "ssid": "ATERRO_MARINA_OPS",
+        "bssid": "0E:DD:11:22:33:53",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "marina-ops-26",
+        "category": "locked_showcase",
+        "vendor": "Marina South Link",
+        "channel": 6,
+        "frequency": 2437,
+        "lat": -22.93120,
+        "lng": -43.17390,
+        "altitude": 5.4,
+        "accuracy": 5.0,
+        "device_type": "router_ap",
+        "device_confidence": 0.87,
+        "wardrive_anchors": [
+            {"lat": -22.93120, "lng": -43.17390, "radius_m": 195.0, "peak_rssi": -46},
+            {"lat": -22.93620, "lng": -43.18030, "radius_m": 165.0, "peak_rssi": -51},
+        ],
+    },
+    "praia_vermelha_research": {
+        "ssid": "PRAIA_VERMELHA_RESEARCH",
+        "bssid": "02:EE:11:22:33:54",
+        "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+        "encryption": "WPA3",
+        "password": "praiavermelha26",
+        "category": "locked_showcase",
+        "vendor": "Coastal Research Net",
+        "channel": 157,
+        "frequency": 5785,
+        "lat": -22.95560,
+        "lng": -43.16520,
+        "altitude": 14.3,
+        "accuracy": 5.7,
+        "device_type": "router_ap",
+        "device_confidence": 0.89,
+        "wardrive_anchors": [
+            {"lat": -22.95560, "lng": -43.16520, "radius_m": 160.0, "peak_rssi": -47},
+            {"lat": -22.95340, "lng": -43.16890, "radius_m": 145.0, "peak_rssi": -50},
+        ],
+    },
+    "jardim_botanico_cycle_lab": {
+        "ssid": "JARDIM_BOTANICO_CYCLE_LAB",
+        "bssid": "06:EE:11:22:33:55",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "cycle-lab-rio",
+        "category": "locked_showcase",
+        "vendor": "Botanical Research Guest",
+        "channel": 1,
+        "frequency": 2412,
+        "lat": -22.96690,
+        "lng": -43.21520,
+        "altitude": 10.8,
+        "accuracy": 5.8,
+        "device_type": "router_ap",
+        "device_confidence": 0.85,
+        "wardrive_anchors": [
+            {"lat": -22.96690, "lng": -43.21520, "radius_m": 185.0, "peak_rssi": -47},
+            {"lat": -22.97140, "lng": -43.21410, "radius_m": 175.0, "peak_rssi": -52},
+        ],
+    },
+    "arpoador_staff_mesh": {
+        "ssid": "ARPOADOR_STAFF_MESH",
+        "bssid": "0A:EE:11:22:33:56",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "staff-arpoador",
+        "category": "already_cracked",
+        "vendor": "Beach Ops Staff",
+        "channel": 36,
+        "frequency": 5180,
+        "lat": -22.98890,
+        "lng": -43.19180,
+        "altitude": 6.4,
+        "accuracy": 4.8,
+        "device_type": "router_ap",
+        "device_confidence": 0.91,
+        "wardrive_anchors": [
+            {"lat": -22.98890, "lng": -43.19180, "radius_m": 170.0, "peak_rssi": -45},
+            {"lat": -22.98590, "lng": -43.19320, "radius_m": 145.0, "peak_rssi": -50},
+        ],
+    },
+    "nogps_lab_02": {
+        "ssid": "NOGPS_LAB_02",
+        "bssid": "0E:EE:11:22:33:57",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "lab-3302",
+        "category": "no_gps_locked",
+        "vendor": "LabNet",
+        "channel": 149,
+        "frequency": 5745,
+        "lat": -23.00220,
+        "lng": -43.32720,
+        "altitude": 11.4,
+        "accuracy": 7.6,
+        "device_type": "router_ap",
+        "device_confidence": 0.84,
+        "wardrive_anchors": [],
+    },
+    "nogps_lab_03": {
+        "ssid": "NOGPS_LAB_03",
+        "bssid": "02:EF:11:22:33:58",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "lab-3303",
+        "category": "no_gps_locked",
+        "vendor": "LabNet",
+        "channel": 44,
+        "frequency": 5220,
+        "lat": -22.99940,
+        "lng": -43.31120,
+        "altitude": 12.0,
+        "accuracy": 7.4,
+        "device_type": "router_ap",
+        "device_confidence": 0.82,
+        "wardrive_anchors": [],
+    },
+    "nogps_lab_04": {
+        "ssid": "NOGPS_LAB_04",
+        "bssid": "06:EF:11:22:33:59",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "lab-3304",
+        "category": "no_gps_locked",
+        "vendor": "LabNet",
+        "channel": 6,
+        "frequency": 2437,
+        "lat": -22.99530,
+        "lng": -43.29880,
+        "altitude": 10.5,
+        "accuracy": 7.1,
+        "device_type": "router_ap",
+        "device_confidence": 0.83,
+        "wardrive_anchors": [],
+    },
+    "nogps_lab_05": {
+        "ssid": "NOGPS_LAB_05",
+        "bssid": "0A:EF:11:22:33:5A",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "lab-3305",
+        "category": "no_gps_locked",
+        "vendor": "LabNet",
+        "channel": 11,
+        "frequency": 2462,
+        "lat": -22.99210,
+        "lng": -43.30550,
+        "altitude": 11.8,
+        "accuracy": 7.5,
+        "device_type": "router_ap",
+        "device_confidence": 0.81,
+        "wardrive_anchors": [],
+    },
+    "hidden_lapa_mesh": {
+        "ssid": "",
+        "bssid": "0E:EF:11:22:33:5B",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "hidden-lapa-26",
+        "category": "not_ready",
+        "vendor": "Historic Mesh",
+        "channel": 1,
+        "frequency": 2412,
+        "lat": -22.91380,
+        "lng": -43.18210,
+        "altitude": 11.5,
+        "accuracy": 6.0,
+        "device_type": "bridge",
+        "device_confidence": 0.8,
+        "wardrive_anchors": [
+            {"lat": -22.91380, "lng": -43.18210, "radius_m": 135.0, "peak_rssi": -57},
+        ],
+    },
+    "hidden_engenhao_link": {
+        "ssid": "",
+        "bssid": "02:F0:11:22:33:5C",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "hidden-engenhao",
+        "category": "not_ready",
+        "vendor": "Trackside Mesh",
+        "channel": 149,
+        "frequency": 5745,
+        "lat": -22.89570,
+        "lng": -43.29030,
+        "altitude": 19.7,
+        "accuracy": 6.4,
+        "device_type": "bridge",
+        "device_confidence": 0.79,
+        "wardrive_anchors": [
+            {"lat": -22.89570, "lng": -43.29030, "radius_m": 125.0, "peak_rssi": -58},
+        ],
+    },
+    "maua_rooftop_probe": {
+        "ssid": "MAUA_ROOFTOP_PROBE",
+        "bssid": "06:F0:11:22:33:5D",
+        "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+        "encryption": "WPA2",
+        "password": "maua-rooftop-26",
+        "category": "raw_only_candidate",
+        "vendor": "Porto Sensor Mesh",
+        "channel": 36,
+        "frequency": 5180,
+        "lat": -22.89710,
+        "lng": -43.17680,
+        "altitude": 8.2,
+        "accuracy": 5.3,
+        "device_type": "bridge",
+        "device_confidence": 0.8,
+        "wardrive_anchors": [
+            {"lat": -22.89710, "lng": -43.17680, "radius_m": 150.0, "peak_rssi": -54},
+        ],
+    },
 }
 
 HANDSHAKE_CAPTURES = [
@@ -421,6 +731,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "RIO_CAFE_LOOP_021122334460.pcap",
         "gps": True,
         "legacy_sidecars": True,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "bruce_rio_cafe",
@@ -431,6 +743,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_021122334460_rio_cafe_loop_bruce.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "m5_rio_cafe",
@@ -441,6 +755,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_021122334460_rio_cafe_loop_m5evil.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "pwn_lapa_event",
@@ -452,6 +768,8 @@ HANDSHAKE_CAPTURES = [
         "gps": True,
         "legacy_sidecars": True,
         "cracked": True,
+        "scenario": "pcap_plus_22000_plus_cracked",
+        "pcap_profile": "full",
     },
     {
         "id": "bruce_santa_teresa",
@@ -462,6 +780,9 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_0A1122334462_santa_teresa_bonde_bruce.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "hash_ready": False,
+        "scenario": "pcap_only_convertible",
+        "pcap_profile": "full",
     },
     {
         "id": "bruce_gloria_press",
@@ -473,6 +794,8 @@ HANDSHAKE_CAPTURES = [
         "gps": False,
         "legacy_sidecars": False,
         "cracked": True,
+        "scenario": "pcap_plus_22000_plus_cracked",
+        "pcap_profile": "full",
     },
     {
         "id": "m5_ops_truck",
@@ -483,6 +806,9 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_02AA11223344_ops_truck_alpha_m5evil.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "hash_ready": False,
+        "scenario": "pcap_only_convertible",
+        "pcap_profile": "full",
     },
     {
         "id": "bruce_botafogo_kiosk",
@@ -493,6 +819,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_06AA11223345_botafogo_kiosk_net_bruce.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "pwn_urca_field",
@@ -503,6 +831,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "URCA_FIELD_UPLINK_0AAA11223346.pcap",
         "gps": True,
         "legacy_sidecars": True,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "pwn_copa_media",
@@ -513,6 +843,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "COPA_MEDIA_NODE_0EAA11223347.pcap",
         "gps": True,
         "legacy_sidecars": True,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "bruce_copa_media",
@@ -523,6 +855,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_0EAA11223347_copa_media_node_bruce.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "m5_copa_media",
@@ -533,6 +867,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_0EAA11223347_copa_media_node_m5evil.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "bruce_metro",
@@ -543,6 +879,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_02BB11223348_metro_line_4_bruce.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
     },
     {
         "id": "pwn_ipanema_boardwalk",
@@ -553,6 +891,9 @@ HANDSHAKE_CAPTURES = [
         "filename": "IPANEMA_BOARDWALK_06BB11223349.pcap",
         "gps": True,
         "legacy_sidecars": True,
+        "hash_ready": False,
+        "scenario": "pcap_only_convertible",
+        "pcap_profile": "full",
     },
     {
         "id": "m5_nogps_lab",
@@ -563,6 +904,8 @@ HANDSHAKE_CAPTURES = [
         "filename": "HS_0ABB1122334A_nogps_lab_01_m5evil.pcap",
         "gps": False,
         "legacy_sidecars": False,
+        "scenario": "no_gps_locked",
+        "pcap_profile": "full",
     },
     {
         "id": "pwn_hidden_relay",
@@ -574,6 +917,185 @@ HANDSHAKE_CAPTURES = [
         "gps": False,
         "legacy_sidecars": True,
         "hash_ready": False,
+        "scenario": "pcap_present_but_not_ready",
+        "pcap_profile": "minimal",
+    },
+    {
+        "id": "pwn_museu_amanha",
+        "network_id": "museu_amanha_secure",
+        "source": "pwnagotchi",
+        "role": "handshakes",
+        "root": "handshakes",
+        "filename": "MUSEU_AMANHA_SECURE_0ECC1122334F.pcap",
+        "gps": True,
+        "legacy_sidecars": True,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "bruce_praca_maua_press_van",
+        "network_id": "praca_maua_press_van",
+        "source": "brucegotchi",
+        "role": "bruce_handshakes",
+        "root": "BrucePCAP/handshakes",
+        "filename": "HS_02DD11223350_praca_maua_press_van_bruce.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "cracked": True,
+        "scenario": "pcap_plus_22000_plus_cracked",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "pwn_maracana_media_bus",
+        "network_id": "maracana_media_bus",
+        "source": "pwnagotchi",
+        "role": "handshakes",
+        "root": "handshakes",
+        "filename": "MARACANA_MEDIA_BUS_06DD11223351.pcap",
+        "gps": True,
+        "legacy_sidecars": True,
+        "hash_ready": False,
+        "scenario": "pcap_only_convertible",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "m5_engenhao_ops_mesh",
+        "network_id": "engenhao_ops_mesh",
+        "source": "m5evil",
+        "role": "m5evil_handshakes",
+        "root": "m5evil/handshakes",
+        "filename": "HS_0ADD11223352_engenhao_ops_mesh_m5evil.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "pwn_aterro_marina_ops",
+        "network_id": "aterro_marina_ops",
+        "source": "pwnagotchi",
+        "role": "handshakes",
+        "root": "handshakes",
+        "filename": "ATERRO_MARINA_OPS_0EDD11223353.pcap",
+        "gps": True,
+        "legacy_sidecars": True,
+        "hash_ready": False,
+        "scenario": "pcap_only_convertible",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "bruce_praia_vermelha_research",
+        "network_id": "praia_vermelha_research",
+        "source": "brucegotchi",
+        "role": "bruce_handshakes",
+        "root": "BrucePCAP/handshakes",
+        "filename": "HS_02EE11223354_praia_vermelha_research_bruce.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "scenario": "pcap_plus_22000",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "bruce_jardim_botanico_cycle_lab",
+        "network_id": "jardim_botanico_cycle_lab",
+        "source": "brucegotchi",
+        "role": "bruce_handshakes",
+        "root": "BrucePCAP/handshakes",
+        "filename": "HS_06EE11223355_jardim_botanico_cycle_lab_bruce.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "hash_ready": False,
+        "scenario": "pcap_only_convertible",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "pwn_arpoador_staff_mesh",
+        "network_id": "arpoador_staff_mesh",
+        "source": "pwnagotchi",
+        "role": "handshakes",
+        "root": "handshakes",
+        "filename": "ARPOADOR_STAFF_MESH_0AEE11223356.pcap",
+        "gps": True,
+        "legacy_sidecars": True,
+        "cracked": True,
+        "scenario": "pcap_plus_22000_plus_cracked",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "m5_nogps_lab_02",
+        "network_id": "nogps_lab_02",
+        "source": "m5evil",
+        "role": "m5evil_handshakes",
+        "root": "m5evil/handshakes",
+        "filename": "HS_0EEE11223357_nogps_lab_02_m5evil.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "scenario": "no_gps_locked",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "m5_nogps_lab_03",
+        "network_id": "nogps_lab_03",
+        "source": "m5evil",
+        "role": "m5evil_handshakes",
+        "root": "m5evil/handshakes",
+        "filename": "HS_02EF11223358_nogps_lab_03_m5evil.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "hash_ready": False,
+        "scenario": "no_gps_locked",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "bruce_nogps_lab_04",
+        "network_id": "nogps_lab_04",
+        "source": "brucegotchi",
+        "role": "bruce_handshakes",
+        "root": "BrucePCAP/handshakes",
+        "filename": "HS_06EF11223359_nogps_lab_04_bruce.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "scenario": "no_gps_locked",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "bruce_nogps_lab_05",
+        "network_id": "nogps_lab_05",
+        "source": "brucegotchi",
+        "role": "bruce_handshakes",
+        "root": "BrucePCAP/handshakes",
+        "filename": "HS_0AEF1122335A_nogps_lab_05_bruce.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "hash_ready": False,
+        "scenario": "no_gps_locked",
+        "pcap_profile": "full",
+    },
+    {
+        "id": "pwn_hidden_lapa_mesh",
+        "network_id": "hidden_lapa_mesh",
+        "source": "pwnagotchi",
+        "role": "handshakes",
+        "root": "handshakes",
+        "filename": "hidden_0EEF1122335B.pcap",
+        "gps": True,
+        "legacy_sidecars": True,
+        "hash_ready": False,
+        "scenario": "pcap_present_but_not_ready",
+        "pcap_profile": "minimal",
+    },
+    {
+        "id": "m5_hidden_engenhao_link",
+        "network_id": "hidden_engenhao_link",
+        "source": "m5evil",
+        "role": "m5evil_handshakes",
+        "root": "m5evil/handshakes",
+        "filename": "HS_02F01122335C_hidden_engenhao_link_m5evil.pcap",
+        "gps": False,
+        "legacy_sidecars": False,
+        "hash_ready": False,
+        "scenario": "pcap_present_but_not_ready",
+        "pcap_profile": "minimal",
     },
 ]
 
@@ -595,6 +1117,8 @@ RAW_CAPTURES = [
             "lapa_event_guest",
             "santa_teresa_bonde",
             "open_sensor_mesh",
+            "museu_amanha_secure",
+            "praca_maua_press_van",
         ],
         "clients": ["1A:2B:3C:4D:5E:60", "1A:2B:3C:4D:5E:61", "1A:2B:3C:4D:5E:62"],
     },
@@ -610,6 +1134,8 @@ RAW_CAPTURES = [
             "ops_truck_alpha",
             "botafogo_kiosk_net",
             "open_sensor_mesh",
+            "aterro_marina_ops",
+            "praia_vermelha_research",
         ],
         "clients": ["2A:3B:4C:5D:6E:70", "2A:3B:4C:5D:6E:71", "2A:3B:4C:5D:6E:72"],
     },
@@ -624,6 +1150,7 @@ RAW_CAPTURES = [
             "urca_field_uplink",
             "hidden_relay_07",
             "nogps_lab_01",
+            "praia_vermelha_research",
         ],
         "clients": ["3A:4B:5C:6D:7E:80", "3A:4B:5C:6D:7E:81", "3A:4B:5C:6D:7E:82"],
     },
@@ -638,6 +1165,8 @@ RAW_CAPTURES = [
             "copa_media_node",
             "metro_line_4",
             "ipanema_boardwalk",
+            "arpoador_staff_mesh",
+            "jardim_botanico_cycle_lab",
         ],
         "clients": ["4A:5B:6C:7D:8E:90", "4A:5B:6C:7D:8E:91", "4A:5B:6C:7D:8E:92"],
     },
@@ -652,8 +1181,38 @@ RAW_CAPTURES = [
             "rio_cafe_loop",
             "gloria_press_hub",
             "porto_link_backhaul",
+            "hidden_lapa_mesh",
         ],
         "clients": ["5A:6B:7C:8D:9E:A0", "5A:6B:7C:8D:9E:A1", "5A:6B:7C:8D:9E:A2"],
+    },
+    {
+        "id": "bruce_raw_porto_locked",
+        "source": "brucegotchi",
+        "device_label": "Bruce",
+        "source_path_role": "rawsniffer",
+        "root": "BrucePCAP/rawsniffer",
+        "filename": "rio_bruce_porto_locked_demo.pcap",
+        "networks": [
+            "museu_amanha_secure",
+            "praca_maua_press_van",
+            "maua_rooftop_probe",
+            "hidden_lapa_mesh",
+        ],
+        "clients": ["6A:7B:8C:9D:AE:B0", "6A:7B:8C:9D:AE:B1", "6A:7B:8C:9D:AE:B2"],
+    },
+    {
+        "id": "m5_raw_north_corridor",
+        "source": "m5evil",
+        "device_label": "M5Evil",
+        "source_path_role": "rawsniffer",
+        "root": "m5evil/rawsniffer",
+        "filename": "rio_m5_north_corridor_demo.pcap",
+        "networks": [
+            "maracana_media_bus",
+            "engenhao_ops_mesh",
+            "hidden_engenhao_link",
+        ],
+        "clients": ["7A:8B:9C:AD:BE:C0", "7A:8B:9C:AD:BE:C1", "7A:8B:9C:AD:BE:C2"],
     },
 ]
 
@@ -686,24 +1245,6 @@ WARDRIVE_SESSIONS = [
         "route_family": "road",
     },
     {
-        "filename": "20260411_030000_aterro_promenade_walk.csv",
-        "header": "WigleWifi-1.4,appRelease=1.0,brand=Bruce",
-        "route_asset": "aterro_promenade_walk.csv",
-        "corridor": "Aterro Promenade Walk",
-        "transport_mode": "walk",
-        "density_multiplier": 0.52,
-        "route_family": "pedestrian",
-    },
-    {
-        "filename": "20260411_033500_lagoa_jardim_botanico_bike.csv",
-        "header": "WigleWifi-1.4,appRelease=1.0,brand=Bruce",
-        "route_asset": "lagoa_jardim_botanico_bike.csv",
-        "corridor": "Lagoa + Jardim Botanico Bike",
-        "transport_mode": "bike",
-        "density_multiplier": 0.62,
-        "route_family": "bike",
-    },
-    {
         "filename": "20260411_041000_lapa_gloria_praca_maua_motorcycle.csv",
         "header": "WigleWifi-1.4,appRelease=1.0,device=Evil-Cardputer,model=cardputer",
         "route_asset": "lapa_gloria_praca_maua_motorcycle.csv",
@@ -711,53 +1252,6 @@ WARDRIVE_SESSIONS = [
         "transport_mode": "motorcycle",
         "density_multiplier": 0.82,
         "route_family": "road",
-    },
-    {
-        "filename": "20260411_044500_urca_botafogo_shore_boat.csv",
-        "header": "WigleWifi-1.4,appRelease=1.0,brand=Bruce",
-        "route_asset": "urca_botafogo_shore_boat.csv",
-        "corridor": "Urca + Botafogo Shore Boat",
-        "transport_mode": "boat",
-        "density_multiplier": 0.72,
-        "route_family": "water",
-        "anchor_bias_north_m": 28.0,
-        "anchor_bias_east_m": -92.0,
-    },
-    {
-        "filename": "20260411_052000_maracana_sao_cristovao_praca_maua_train.csv",
-        "header": "WigleWifi-1.4,appRelease=1.0,brand=Bruce",
-        "route_asset": "maracana_sao_cristovao_praca_maua_train.csv",
-        "corridor": "Maracana + Sao Cristovao + Praca Maua Train",
-        "transport_mode": "train",
-        "density_multiplier": 0.97,
-        "route_family": "rail",
-    },
-    {
-        "filename": "20260411_060500_engenhao_linha_trem_corridor.csv",
-        "header": "WigleWifi-1.4,appRelease=1.0,device=Evil-Cardputer,model=cardputer",
-        "route_asset": "engenhao_linha_trem_corridor.csv",
-        "corridor": "Engenhao + Linha do Trem Corridor",
-        "transport_mode": "train",
-        "density_multiplier": 0.96,
-        "route_family": "rail",
-    },
-    {
-        "filename": "20260411_064000_copacabana_arpoador_shoreline_walk.csv",
-        "header": "WigleWifi-1.4,appRelease=1.0,brand=Bruce",
-        "route_asset": "copacabana_arpoador_shoreline_walk.csv",
-        "corridor": "Copacabana + Arpoador Shoreline Walk",
-        "transport_mode": "walk",
-        "density_multiplier": 0.50,
-        "route_family": "pedestrian",
-    },
-    {
-        "filename": "20260411_071500_centro_historico_museu_amanha_metro.csv",
-        "header": "WigleWifi-1.4,appRelease=1.0,brand=Bruce",
-        "route_asset": "centro_historico_museu_amanha_metro.csv",
-        "corridor": "Centro Historico + Museu do Amanha Metro-Style Session",
-        "transport_mode": "metro",
-        "density_multiplier": 0.90,
-        "route_family": "rail",
     },
 ]
 
@@ -803,7 +1297,7 @@ UI_SEED = {
     "modes": {
         "zones": True,
         "conquered": True,
-        "toConquer": False,
+        "toConquer": True,
         "discovered": False,
         "intelligence": False,
         "targets": True,
@@ -847,28 +1341,6 @@ CORRIDOR_DENSITY_PLAN = {
             "Beachside Fiber",
         ],
     },
-    "Aterro Promenade Walk": {
-        "count": 22,
-        "scan_points_target": 80,
-        "themes": ["ATERRO", "PROMENADE", "MARINA", "FLAMENGO", "ORLA"],
-        "vendors": [
-            "Waterfront Guest",
-            "Aterro Park Link",
-            "Marina Walk Mesh",
-            "Flamengo Trail Wi-Fi",
-        ],
-    },
-    "Lagoa + Jardim Botanico Bike": {
-        "count": 24,
-        "scan_points_target": 92,
-        "themes": ["LAGOA", "JARDIM", "BOTANICO", "CICLO", "PARQUE"],
-        "vendors": [
-            "Lagoa Cycle Link",
-            "Botanico Garden Fiber",
-            "Parque Mesh",
-            "Lakeside Guest",
-        ],
-    },
     "Lapa + Gloria + Praca Maua Motorcycle": {
         "count": 26,
         "scan_points_target": 110,
@@ -878,61 +1350,6 @@ CORRIDOR_DENSITY_PLAN = {
             "Porto Retail Mesh",
             "Gloria Guest Fiber",
             "Boulevard Link",
-        ],
-    },
-    "Urca + Botafogo Shore Boat": {
-        "count": 24,
-        "scan_points_target": 88,
-        "themes": ["URCA", "BOTAFOGO", "SHORE", "ENSEADA", "BAY"],
-        "vendors": [
-            "Bayfront Guest",
-            "Urca Coast Fiber",
-            "Botafogo Shore Mesh",
-            "Harbor Link",
-        ],
-    },
-    "Maracana + Sao Cristovao + Praca Maua Train": {
-        "count": 30,
-        "scan_points_target": 130,
-        "themes": ["MARACANA", "CRISTOVAO", "CENTRAL", "MAUA", "TRILHO"],
-        "vendors": [
-            "Rail Corridor Wi-Fi",
-            "Station Guest Network",
-            "Port Rail Link",
-            "Urban Transit Mesh",
-        ],
-    },
-    "Engenhao + Linha do Trem Corridor": {
-        "count": 26,
-        "scan_points_target": 118,
-        "themes": ["ENGENHAO", "TREM", "LINHA", "MEIER", "ESTACAO"],
-        "vendors": [
-            "Suburban Rail Guest",
-            "Engenhao Corridor Fiber",
-            "Station Mesh",
-            "Trackside Link",
-        ],
-    },
-    "Copacabana + Arpoador Shoreline Walk": {
-        "count": 22,
-        "scan_points_target": 82,
-        "themes": ["COPA", "ARPOADOR", "CALCADAO", "ORLA", "POSTO"],
-        "vendors": [
-            "Boardwalk Guest",
-            "Shoreline Fiber",
-            "Beach Promenade Link",
-            "Posto Mesh",
-        ],
-    },
-    "Centro Historico + Museu do Amanha Metro-Style Session": {
-        "count": 24,
-        "scan_points_target": 90,
-        "themes": ["CENTRO", "MUSEU", "AMANHA", "BOULEVARD", "PORTO"],
-        "vendors": [
-            "Centro Transit Link",
-            "Historic Core Fiber",
-            "Boulevard Guest Mesh",
-            "Museum District Wi-Fi",
         ],
     },
 }
@@ -1177,6 +1594,34 @@ def _build_demo_frames(
     return frames
 
 
+def _build_minimal_demo_frames(
+    network_ids: list[str], clients: list[str]
+) -> list[tuple[int, int, bytes]]:
+    frames: list[tuple[int, int, bytes]] = []
+    ts_base = 1_744_328_400
+    seq = 1
+    for idx, network_id in enumerate(network_ids):
+        network = NETWORKS[network_id]
+        bssid = network["bssid"]
+        channel = int(network["channel"])
+        ssid = network["ssid"]
+        client = clients[idx % len(clients)]
+        step = idx * 11
+        frames.append((ts_base + step, 0, _beacon_frame(bssid, ssid, channel, seq)))
+        seq += 1
+        frames.append((ts_base + step + 1, 0, _probe_request_frame(client, ssid, seq)))
+        seq += 1
+    return frames
+
+
+def _capture_frames_for_spec(spec: dict[str, Any]) -> list[tuple[int, int, bytes]]:
+    network_id = str(spec["network_id"])
+    clients = list(spec.get("clients") or ["6A:7B:8C:9D:AE:10"])
+    if str(spec.get("pcap_profile") or "").strip().lower() == "minimal":
+        return _build_minimal_demo_frames([network_id], clients)
+    return _build_demo_frames([network_id], clients)
+
+
 def _details_payload(network_id: str, *, source: str) -> dict[str, Any]:
     network = NETWORKS[network_id]
     ssid = network["ssid"]
@@ -1287,6 +1732,166 @@ def _offset_lat_lng(
     lng_scale = max(0.25, math.cos(math.radians(float(lat))))
     lng_delta = float(east_m) / (111_320.0 * lng_scale)
     return _clamp_bbox(float(lat) + lat_delta, float(lng) + lng_delta)
+
+
+def _install_zone_showcase_expansion() -> None:
+    """Add dense locked/cracked demo clusters for zone-oriented UI examples."""
+
+    hotspots = [
+        {
+            "slug": "lapa_arcos",
+            "ssid_prefix": "LAPA_ARCOS",
+            "vendor": "Historic District Mesh",
+            "lat": -22.91405,
+            "lng": -43.18240,
+            "locked": 8,
+            "cracked": 3,
+            "channel_base": 1,
+        },
+        {
+            "slug": "porto_maua",
+            "ssid_prefix": "PORTO_MAUA",
+            "vendor": "Port District Fiber",
+            "lat": -22.89730,
+            "lng": -43.17880,
+            "locked": 8,
+            "cracked": 3,
+            "channel_base": 36,
+        },
+        {
+            "slug": "maracana_ring",
+            "ssid_prefix": "MARACANA_RING",
+            "vendor": "Arena Ops Network",
+            "lat": -22.91220,
+            "lng": -43.23060,
+            "locked": 7,
+            "cracked": 3,
+            "channel_base": 6,
+        },
+        {
+            "slug": "arpoador_ops",
+            "ssid_prefix": "ARPOADOR_OPS",
+            "vendor": "Beachfront Ops",
+            "lat": -22.98880,
+            "lng": -43.19160,
+            "locked": 8,
+            "cracked": 3,
+            "channel_base": 44,
+        },
+        {
+            "slug": "engenhao_track",
+            "ssid_prefix": "ENGENHAO_TRACK",
+            "vendor": "North Rail Services",
+            "lat": -22.89515,
+            "lng": -43.29235,
+            "locked": 7,
+            "cracked": 2,
+            "channel_base": 149,
+        },
+    ]
+    channels = [
+        {"channel": 1, "frequency": 2412},
+        {"channel": 6, "frequency": 2437},
+        {"channel": 11, "frequency": 2462},
+        {"channel": 36, "frequency": 5180},
+        {"channel": 44, "frequency": 5220},
+        {"channel": 149, "frequency": 5745},
+    ]
+    offsets_m = [
+        (0.0, 0.0),
+        (5.0, 4.0),
+        (-4.0, 6.0),
+        (7.0, -3.0),
+        (-6.0, -5.0),
+        (11.0, 2.0),
+        (-10.0, 3.0),
+        (3.0, -11.0),
+        (16.0, 9.0),
+        (-14.0, 10.0),
+        (12.0, -14.0),
+    ]
+    scenario_cycle = ("pcap_plus_22000", "pcap_only_convertible", "pcap_plus_22000")
+
+    for hotspot in hotspots:
+        slug = str(hotspot["slug"])
+        total = int(hotspot["locked"]) + int(hotspot["cracked"])
+        for index in range(total):
+            cracked = index >= int(hotspot["locked"])
+            local_index = index - int(hotspot["locked"]) if cracked else index
+            north_m, east_m = offsets_m[index % len(offsets_m)]
+            if cracked:
+                north_m += 72.0
+                east_m += 64.0
+            lat, lng = _offset_lat_lng(
+                float(hotspot["lat"]),
+                float(hotspot["lng"]),
+                north_m=north_m,
+                east_m=east_m,
+            )
+            channel_seed = int(hotspot["channel_base"])
+            channel_profile = channels[(index + channel_seed) % len(channels)]
+            suffix = "CRACKED" if cracked else "LOCKED"
+            network_id = f"{slug}_{suffix.lower()}_{local_index + 1:02d}"
+            ssid = f"{hotspot['ssid_prefix']}_{suffix}_{local_index + 1:02d}"
+            NETWORKS[network_id] = {
+                "ssid": ssid,
+                "bssid": _local_admin_mac(
+                    PROFILE_ID, "zone", slug, suffix, local_index
+                ),
+                "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+                "encryption": "WPA2",
+                "password": f"{_slug_token(ssid)}-demo",
+                "category": "already_cracked" if cracked else "locked_showcase",
+                "vendor": str(hotspot["vendor"]),
+                "channel": int(channel_profile["channel"]),
+                "frequency": int(channel_profile["frequency"]),
+                "lat": lat,
+                "lng": lng,
+                "altitude": 9.0 + (index % 5) * 1.7,
+                "accuracy": 13.0 if cracked else 14.5,
+                "device_type": "router_ap" if index % 3 else "mobile_router",
+                "device_confidence": 0.86 + (index % 5) * 0.02,
+                "wardrive_anchors": [
+                    {
+                        "lat": lat,
+                        "lng": lng,
+                        "radius_m": 135.0 if cracked else 155.0,
+                        "peak_rssi": -44 if cracked else -46,
+                    }
+                ],
+            }
+            safe_id = _slug_token(network_id)
+            scenario = (
+                "pcap_plus_22000_plus_cracked"
+                if cracked
+                else scenario_cycle[index % len(scenario_cycle)]
+            )
+            HANDSHAKE_CAPTURES.append(
+                {
+                    "id": f"pwn_zone_{safe_id}",
+                    "network_id": network_id,
+                    "source": "pwnagotchi",
+                    "role": "handshakes",
+                    "root": "handshakes",
+                    "filename": f"{_slug_token(ssid).upper()}_{_mac_clean(NETWORKS[network_id]['bssid'])}.pcap",
+                    "gps": True,
+                    "legacy_sidecars": True,
+                    "cracked": cracked,
+                    "hash_ready": scenario != "pcap_only_convertible",
+                    "scenario": scenario,
+                    "pcap_profile": "full",
+                }
+            )
+
+            if cracked:
+                WORDLISTS["demo_easy.txt"].append(str(NETWORKS[network_id]["password"]))
+            elif index % 2 == 0:
+                WORDLISTS["demo_association.txt"].append(
+                    str(NETWORKS[network_id]["password"])
+                )
+
+
+_install_zone_showcase_expansion()
 
 
 def _density_auth_profile(corridor: str, index: int) -> tuple[str, str, str, str]:
@@ -1660,17 +2265,19 @@ def _build_capture_assets(runtime_root: Path) -> dict[str, Any]:
         filename = str(spec["filename"])
         source = str(spec["source"])
         role = str(spec["role"])
+        scenario = str(spec.get("scenario") or "pcap_plus_22000")
         capture_id = _capture_id(source, role, filename)
         capture_id_index[str(spec["id"])] = capture_id
         capture_root = runtime_root / str(spec["root"])
         pcap_path = capture_root / filename
-        frames = _build_demo_frames([network_id], ["6A:7B:8C:9D:AE:10"])
+        frames = _capture_frames_for_spec(spec)
         _write_pcap(pcap_path, frames)
 
         line = _hash_line(network_id, suffix=filename)
         line_index[capture_id] = line
         captures_dir = runtime_root / "handshakes" / "captures" / capture_id
         captures_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(pcap_path, captures_dir / "capture.pcap")
         _json_dump(
             captures_dir / "manifest.json",
             {
@@ -1683,6 +2290,7 @@ def _build_capture_assets(runtime_root: Path) -> dict[str, Any]:
                 "source_filename": filename,
                 "source_path_role": role,
                 "ssid": network["ssid"],
+                "scenario": scenario,
                 "version": 1,
             },
         )
@@ -1729,9 +2337,13 @@ def _build_capture_assets(runtime_root: Path) -> dict[str, Any]:
             "source": source,
             "role": role,
             "filename": filename,
+            "scenario": scenario,
+            "pcap_profile": str(spec.get("pcap_profile") or "full"),
             "pcap_path": str(pcap_path.relative_to(runtime_root)),
+            "gps": bool(spec.get("gps", False)),
             "hash_ready": bool(spec.get("hash_ready", True)),
             "cracked": bool(spec.get("cracked", False)),
+            "promotion": str(spec.get("demo_promotion") or ""),
         }
         captures.append(capture_record)
 
@@ -1791,7 +2403,7 @@ def _build_capture_assets(runtime_root: Path) -> dict[str, Any]:
             }
         )
 
-    batch_name = "batch_showcase_core_v4.22000"
+    batch_name = "batch_showcase_core_v5.22000"
     batch_network_ids = [
         "lapa_event_guest",
         "rio_cafe_loop",
@@ -1910,7 +2522,7 @@ def _build_raw_assets(runtime_root: Path) -> dict[str, Any]:
                 }
             )
 
-            if network["category"] not in {"not_ready", "open"}:
+            if network["category"] not in {"not_ready", "open", "raw_only_candidate"}:
                 hash_name = f"raw_{raw_hash_index}.22000"
                 raw_hash_index += 1
                 (runtime_root / "handshakes" / hash_name).write_text(
@@ -2214,7 +2826,7 @@ def _build_density_network(
     network_id = f"{corridor_slug}__wd_{network_index + 1:04d}"
     return network_id, {
         "ssid": f"{theme}_{suffix}_{network_index + 1:04d}",
-        "bssid": _local_admin_mac(PROFILE_ID, corridor_slug, "v4", network_index),
+        "bssid": _local_admin_mac(PROFILE_ID, corridor_slug, "v5", network_index),
         "auth_mode": auth_mode,
         "encryption": encryption,
         "password": password,
@@ -2532,6 +3144,228 @@ def _build_wardrive_assets(runtime_root: Path, *, source_root: Path) -> dict[str
     }
 
 
+def _append_wordlist_once(filename: str, value: str) -> None:
+    entries = WORDLISTS.setdefault(filename, [])
+    text = str(value or "").strip()
+    if text and text not in entries:
+        entries.append(text)
+
+
+def _balanced_slot(index: int, total: int, count: int) -> bool:
+    if count <= 0 or total <= 0:
+        return False
+    return ((index + 1) * count) // total > (index * count) // total
+
+
+def _spread_select(
+    candidates: list[tuple[str, dict[str, Any]]],
+    limit: int,
+) -> list[tuple[str, dict[str, Any]]]:
+    if len(candidates) <= limit:
+        return list(candidates)
+
+    ordered = sorted(
+        candidates,
+        key=lambda item: (
+            int(item[1].get("_peak_index") or 0),
+            _deterministic_unit(PWNAGOTCHI_MASS_PROMOTION_ID, item[0]),
+            item[0],
+        ),
+    )
+    selected: list[tuple[str, dict[str, Any]]] = []
+    used: set[str] = set()
+    step = len(ordered) / float(limit)
+    for idx in range(limit):
+        pick_index = min(len(ordered) - 1, int(round((idx + 0.5) * step - 0.5)))
+        network_id, network = ordered[pick_index]
+        if network_id in used:
+            continue
+        selected.append((network_id, network))
+        used.add(network_id)
+
+    if len(selected) < limit:
+        for network_id, network in ordered:
+            if network_id in used:
+                continue
+            selected.append((network_id, network))
+            used.add(network_id)
+            if len(selected) >= limit:
+                break
+    return selected
+
+
+def _reset_pwnagotchi_mass_promotions() -> None:
+    HANDSHAKE_CAPTURES[:] = [
+        spec
+        for spec in HANDSHAKE_CAPTURES
+        if spec.get("demo_promotion") != PWNAGOTCHI_MASS_PROMOTION_ID
+    ]
+    for network_id in list(NETWORKS):
+        if (
+            NETWORKS[network_id].get("_demo_promoted_by")
+            == PWNAGOTCHI_MASS_PROMOTION_ID
+        ):
+            del NETWORKS[network_id]
+
+
+def _install_pwnagotchi_mass_promotions(
+    wardrive_meta: dict[str, Any],
+) -> dict[str, Any]:
+    _reset_pwnagotchi_mass_promotions()
+
+    existing_handshake_network_ids = {
+        str(spec["network_id"])
+        for spec in HANDSHAKE_CAPTURES
+        if spec.get("demo_promotion") != PWNAGOTCHI_MASS_PROMOTION_ID
+    }
+    observed_network_ids = set(wardrive_meta["observed_network_ids"])
+    network_catalog = wardrive_meta["network_catalog"]
+    encrypted_candidates_by_corridor: dict[str, list[tuple[str, dict[str, Any]]]] = {
+        corridor: [] for corridor in PWNAGOTCHI_MASS_PROMOTION_CORRIDOR_QUOTAS
+    }
+
+    for network_id in sorted(observed_network_ids):
+        if network_id in existing_handshake_network_ids:
+            continue
+        network = network_catalog.get(network_id)
+        if not network:
+            continue
+        if str(network.get("category") or "") != "wardrive_density":
+            continue
+        if str(network.get("encryption") or "").upper() in {"OPEN", "WEP"}:
+            continue
+        corridor = str(network.get("_corridor") or "")
+        if corridor not in encrypted_candidates_by_corridor:
+            continue
+        encrypted_candidates_by_corridor[corridor].append((network_id, network))
+
+    selected: list[tuple[str, dict[str, Any]]] = []
+    for corridor, quota in PWNAGOTCHI_MASS_PROMOTION_CORRIDOR_QUOTAS.items():
+        selected.extend(
+            _spread_select(encrypted_candidates_by_corridor.get(corridor, []), quota)
+        )
+
+    selected_by_id: dict[str, dict[str, Any]] = {}
+    for network_id, network in selected:
+        selected_by_id.setdefault(network_id, network)
+    if len(selected_by_id) < PWNAGOTCHI_MASS_PROMOTION_TOTAL:
+        selected_ids = set(selected_by_id)
+        fallback_candidates = [
+            (network_id, network)
+            for items in encrypted_candidates_by_corridor.values()
+            for network_id, network in items
+            if network_id not in selected_ids
+        ]
+        for network_id, network in _spread_select(
+            fallback_candidates,
+            PWNAGOTCHI_MASS_PROMOTION_TOTAL - len(selected_by_id),
+        ):
+            selected_by_id.setdefault(network_id, network)
+
+    selected = sorted(
+        selected_by_id.items(),
+        key=lambda item: (
+            str(item[1].get("_corridor") or ""),
+            int(item[1].get("_peak_index") or 0),
+            _deterministic_unit(PWNAGOTCHI_MASS_PROMOTION_ID, item[0]),
+            item[0],
+        ),
+    )[:PWNAGOTCHI_MASS_PROMOTION_TOTAL]
+    if len(selected) != PWNAGOTCHI_MASS_PROMOTION_TOTAL:
+        raise AssertionError(
+            f"Expected {PWNAGOTCHI_MASS_PROMOTION_TOTAL} Pwnagotchi promotions, got {len(selected)}."
+        )
+
+    cracked_indexes = {
+        index
+        for index in range(len(selected))
+        if _balanced_slot(index, len(selected), PWNAGOTCHI_MASS_PROMOTION_CRACKED)
+    }
+    remaining_indexes = [
+        index for index in range(len(selected)) if index not in cracked_indexes
+    ]
+    convertible_indexes = {
+        remaining_indexes[index]
+        for index in range(len(remaining_indexes))
+        if _balanced_slot(
+            index, len(remaining_indexes), PWNAGOTCHI_MASS_PROMOTION_CONVERTIBLE
+        )
+    }
+
+    summary = {
+        "total": 0,
+        "locked": 0,
+        "cracked": 0,
+        "convertible": 0,
+        "by_corridor": {},
+    }
+    for index, (network_id, network) in enumerate(selected):
+        cracked = index in cracked_indexes
+        convertible = index in convertible_indexes
+        scenario = (
+            "pcap_plus_22000_plus_cracked"
+            if cracked
+            else ("pcap_only_convertible" if convertible else "pcap_plus_22000")
+        )
+        promoted_network = dict(network)
+        promoted_network["category"] = (
+            "already_cracked" if cracked else "locked_showcase"
+        )
+        promoted_network["_demo_promoted_by"] = PWNAGOTCHI_MASS_PROMOTION_ID
+        network_catalog[network_id] = promoted_network
+        NETWORKS[network_id] = promoted_network
+
+        safe_id = _slug_token(network_id)
+        safe_ssid = _slug_token(str(promoted_network["ssid"])).upper()
+        HANDSHAKE_CAPTURES.append(
+            {
+                "id": f"pwn_mass_{safe_id}",
+                "network_id": network_id,
+                "source": "pwnagotchi",
+                "role": "handshakes",
+                "root": "handshakes",
+                "filename": f"PWN_MASS_{index + 1:04d}_{safe_ssid}_{_mac_clean(promoted_network['bssid'])}.pcap",
+                "gps": False,
+                "legacy_sidecars": False,
+                "cracked": cracked,
+                "hash_ready": not convertible,
+                "scenario": scenario,
+                "pcap_profile": "full",
+                "demo_promotion": PWNAGOTCHI_MASS_PROMOTION_ID,
+                "clients": [
+                    _local_admin_mac(
+                        PROFILE_ID, PWNAGOTCHI_MASS_PROMOTION_ID, network_id, "client"
+                    )
+                ],
+            }
+        )
+
+        if cracked:
+            _append_wordlist_once("demo_easy.txt", str(promoted_network["password"]))
+            summary["cracked"] += 1
+        elif convertible:
+            _append_wordlist_once(
+                "demo_association.txt", str(promoted_network["password"])
+            )
+            summary["convertible"] += 1
+            summary["locked"] += 1
+        else:
+            if index % 11 == 0:
+                _append_wordlist_once(
+                    "demo_association.txt", str(promoted_network["password"])
+                )
+            summary["locked"] += 1
+
+        corridor = str(promoted_network.get("_corridor") or "unknown")
+        summary["by_corridor"][corridor] = (
+            int(summary["by_corridor"].get(corridor, 0)) + 1
+        )
+        summary["total"] += 1
+
+    wardrive_meta["pwnagotchi_promotions"] = summary
+    return summary
+
+
 def _build_wordlists(runtime_root: Path) -> dict[str, Any]:
     wordlists_dir = runtime_root / "demo_wordlists"
     wordlists_dir.mkdir(parents=True, exist_ok=True)
@@ -2540,6 +3374,32 @@ def _build_wordlists(runtime_root: Path) -> dict[str, Any]:
             "\n".join(str(line) for line in lines) + "\n", encoding="utf-8"
         )
     return {"files": sorted(WORDLISTS)}
+
+
+def _manifest_network_state(
+    *,
+    network: dict[str, Any],
+    gps_backed: bool,
+    capture_scenarios: set[str],
+    raw_present: bool,
+) -> str:
+    encryption = str(network.get("encryption") or "").strip().upper()
+    if encryption in {"OPEN", "WEP"}:
+        return "open"
+    if "pcap_plus_22000_plus_cracked" in capture_scenarios:
+        return "cracked"
+    if capture_scenarios & {
+        "pcap_only_convertible",
+        "pcap_plus_22000",
+        "pcap_plus_22000_plus_cracked",
+        "no_gps_locked",
+    }:
+        return "locked" if gps_backed else "no_gps_locked"
+    if capture_scenarios & {"pcap_present_but_not_ready"}:
+        return "not_ready"
+    if raw_present:
+        return "not_ready"
+    return "gps_only" if gps_backed else "no_gps_only"
 
 
 def _build_manifest(
@@ -2563,30 +3423,83 @@ def _build_manifest(
     handshake_network_ids = {
         str(capture["network_id"]) for capture in capture_meta["captures"]
     }
+    handshake_scenarios: dict[str, set[str]] = {}
+    for capture in capture_meta["captures"]:
+        network_id = str(capture["network_id"])
+        handshake_scenarios.setdefault(network_id, set()).add(
+            str(capture.get("scenario") or "pcap_plus_22000")
+        )
     raw_network_ids = {
         str(network_id)
         for record in raw_meta["raw_records"]
         for network_id in record["networks"]
     }
     wardrive_network_ids = set(wardrive_meta["observed_network_ids"])
+    gps_capture_network_ids = {
+        str(capture["network_id"])
+        for capture in capture_meta["captures"]
+        if bool(capture.get("gps", False))
+    }
     network_surfaces = {}
     all_networks = dict(wardrive_meta["network_catalog"])
     for network_id, data in sorted(all_networks.items()):
         surfaces = []
+        gps_backed = (
+            network_id in wardrive_network_ids or network_id in gps_capture_network_ids
+        )
         if network_id in wardrive_network_ids:
             surfaces.append("wardrive")
         if network_id in handshake_network_ids:
             surfaces.append("handshake")
         if network_id in raw_network_ids:
             surfaces.append("raw")
+        network_state = _manifest_network_state(
+            network=data,
+            gps_backed=gps_backed,
+            capture_scenarios=handshake_scenarios.get(network_id, set()),
+            raw_present=network_id in raw_network_ids,
+        )
         network_surfaces[network_id] = {
             "ssid": data["ssid"],
             "bssid": data["bssid"],
             "category": data["category"],
             "encryption": data["encryption"],
             "surfaces": surfaces,
+            "network_state": network_state,
         }
 
+    gps_backed_locked = sum(
+        1 for item in network_surfaces.values() if item["network_state"] == "locked"
+    )
+    no_gps_locked = sum(
+        1
+        for item in network_surfaces.values()
+        if item["network_state"] == "no_gps_locked"
+    )
+    cracked_networks = sum(
+        1 for item in network_surfaces.values() if item["network_state"] == "cracked"
+    )
+    not_ready_networks = sum(
+        1 for item in network_surfaces.values() if item["network_state"] == "not_ready"
+    )
+    pwnagotchi_promoted_captures = [
+        capture
+        for capture in capture_meta["captures"]
+        if capture.get("promotion") == PWNAGOTCHI_MASS_PROMOTION_ID
+    ]
+    pwnagotchi_promoted_network_ids = {
+        str(capture["network_id"]) for capture in pwnagotchi_promoted_captures
+    }
+    pwnagotchi_promoted_cracked = {
+        str(capture["network_id"])
+        for capture in pwnagotchi_promoted_captures
+        if str(capture.get("scenario") or "") == "pcap_plus_22000_plus_cracked"
+    }
+    pwnagotchi_promoted_convertible = {
+        str(capture["network_id"])
+        for capture in pwnagotchi_promoted_captures
+        if str(capture.get("scenario") or "") == "pcap_only_convertible"
+    }
     summary = {
         "networks_total": len(all_networks),
         "wardrive_sessions": len(wardrive_meta["session_ids"]),
@@ -2605,8 +3518,25 @@ def _build_manifest(
         "wardrive_handshake_raw_networks": len(
             wardrive_network_ids & handshake_network_ids & raw_network_ids
         ),
+        "gps_backed_locked_networks": gps_backed_locked,
+        "no_gps_locked_networks": no_gps_locked,
+        "cracked_networks": cracked_networks,
+        "not_ready_networks": not_ready_networks,
+        "pwnagotchi_promoted_wardrive_networks": len(
+            pwnagotchi_promoted_network_ids & wardrive_network_ids
+        ),
+        "pwnagotchi_promoted_locked_networks": len(
+            pwnagotchi_promoted_network_ids - pwnagotchi_promoted_cracked
+        ),
+        "pwnagotchi_promoted_cracked_networks": len(pwnagotchi_promoted_cracked),
+        "pwnagotchi_promoted_convertible_networks": len(
+            pwnagotchi_promoted_convertible
+        ),
         "regions": list(wardrive_meta["corridors"]),
         "density_profile": dict(wardrive_meta.get("density_profile") or {}),
+        "pwnagotchi_promotion_profile": dict(
+            wardrive_meta.get("pwnagotchi_promotions") or {}
+        ),
         "session_count_by_transport_mode": {
             mode: sum(
                 1
@@ -2679,29 +3609,27 @@ def _validate_build(
 ) -> None:
     assert (pack_root / "manifest.json").exists()
     assert manifest["summary"]["networks_total"] >= 2000
-    assert manifest["summary"]["wardrive_sessions"] == 11
-    assert manifest["summary"]["wardrive_networks_observed"] >= 3500
+    assert manifest["summary"]["wardrive_sessions"] == 4
+    assert manifest["summary"]["wardrive_networks_observed"] >= 2500
     assert manifest["summary"]["cross_source_capture_networks"] >= 2
     assert manifest["summary"]["combined_candidate_networks"] >= 2
-    assert manifest["summary"]["wardrive_handshake_networks"] >= 6
-    assert manifest["summary"]["wardrive_handshake_raw_networks"] >= 3
+    assert manifest["summary"]["wardrive_handshake_networks"] >= 260
+    assert manifest["summary"]["wardrive_handshake_raw_networks"] >= 8
+    assert manifest["summary"]["handshake_captures"] >= 320
+    assert manifest["summary"]["gps_backed_locked_networks"] >= 250
+    assert manifest["summary"]["cracked_networks"] >= 50
+    assert manifest["summary"]["pwnagotchi_promoted_wardrive_networks"] == 240
+    assert manifest["summary"]["pwnagotchi_promoted_locked_networks"] == 208
+    assert manifest["summary"]["pwnagotchi_promoted_cracked_networks"] == 32
+    assert manifest["summary"]["pwnagotchi_promoted_convertible_networks"] == 24
     session_tags = dict(manifest.get("wardrive_session_tags") or {})
-    assert len(session_tags) == 11
+    assert len(session_tags) == 4
     assert session_tags["20260411_001500_wardriving"] == "car"
     assert session_tags["m5evil__20260411_011000_wardriving"] == "car"
     assert session_tags["20260411_020500_wardriving"] == "car"
-    assert session_tags["20260411_044500_urca_botafogo_shore_boat"] == "boat"
-    assert (
-        session_tags["20260411_071500_centro_historico_museu_amanha_metro"] == "metro"
-    )
     counts = manifest["summary"]["session_count_by_transport_mode"]
     assert counts["car"] == 3
-    assert counts["walk"] == 2
-    assert counts["train"] == 2
-    assert counts["bike"] == 1
     assert counts["motorcycle"] == 1
-    assert counts["boat"] == 1
-    assert counts["metro"] == 1
     for asset_name in manifest["route_sources"]:
         assert (_route_asset_path(source_root, asset_name)).exists()
     for session in manifest["wardrive_sessions"]:
@@ -2787,9 +3715,10 @@ def build_pack(
         shutil.rmtree(pack_root)
     runtime_root.mkdir(parents=True, exist_ok=True)
 
+    wardrive_meta = _build_wardrive_assets(runtime_root, source_root=source_root)
+    _install_pwnagotchi_mass_promotions(wardrive_meta)
     capture_meta = _build_capture_assets(runtime_root)
     raw_meta = _build_raw_assets(runtime_root)
-    wardrive_meta = _build_wardrive_assets(runtime_root, source_root=source_root)
     wordlist_meta = _build_wordlists(runtime_root)
 
     manifest = _build_manifest(
@@ -2801,8 +3730,8 @@ def build_pack(
     )
     _json_dump(pack_root / "manifest.json", manifest)
     (pack_root / "README.md").write_text(
-        "# Showcase Core v4\n\n"
-        "Synthetic, public-safe demo dataset for KOVIL MAP with expanded WarDrive coverage, pre-tagged transport sessions, and density calibrated from a real Wardrive reference.\n",
+        "# Showcase Core v5\n\n"
+        "Synthetic, public-safe demo dataset for KOVIL MAP with expanded WarDrive coverage, transport-tagged sessions, artifact-consistent locked networks, and richer RAW crossover.\n",
         encoding="utf-8",
     )
 

@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-ee1b9bd7c8d84336",
+  "demo_profile": "showcase-core-v5",
+  "mac": "46:6D:5A:10:61:55",
+  "network_id": "arpoador_ops_locked_03",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "ARPOADOR_OPS_LOCKED_03_466d5a106155.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "ARPOADOR_OPS_LOCKED_03",
+  "version": 1
+}

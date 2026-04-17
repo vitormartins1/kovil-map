@@ -1,0 +1,28 @@
+{
+  "bssid": "56:41:0B:B7:23:1C",
+  "classification": {
+    "confidence": 0.9,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 4,
+    "frequency_mhz": 2427
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "IPANEMA_TERRACE_0433",
+  "vendor": "South Zone Guest",
+  "wps": {
+    "present": false
+  }
+}

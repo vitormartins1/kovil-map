@@ -404,11 +404,7 @@ class AnalyticsService:
         return mapped if mapped in self._ALLOWED_DEVICE_TYPES else "unknown"
 
     def _is_locked(self, item: Dict) -> bool:
-        return (
-            not bool(item.get("pass"))
-            and not self._is_open_encryption(item.get("encryption"))
-            and bool(item.get("handshake"))
-        )
+        return bool(item.get("locked"))
 
     @staticmethod
     def _normalize_sources(sources: List[str] | None) -> List[str]:
@@ -550,7 +546,7 @@ class AnalyticsService:
 
             sources = self._normalize_sources(item.get("sources"))
             source_flags = self._source_flags(sources)
-            cracked = bool(item.get("pass"))
+            cracked = bool(item.get("cracked") or item.get("pass"))
             is_open = self._is_open_encryption(item.get("encryption"))
             locked = self._is_locked(item)
 
@@ -570,6 +566,7 @@ class AnalyticsService:
                 "cracked": cracked,
                 "is_open": is_open,
                 "locked": locked,
+                "network_state": str(item.get("network_state") or ""),
                 "raw_beacon_count": int(item.get("raw_beacon_count") or 0),
                 "raw_eapol_count": int(item.get("raw_eapol_count") or 0),
                 "raw_probe_peak_count": int(item.get("raw_probe_peak_count") or 0),

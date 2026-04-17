@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-7aa7ed527507ccb3",
+  "demo_profile": "showcase-core-v5",
+  "mac": "76:24:DA:BD:5D:5E",
+  "network_id": "lapa_arcos_cracked_02",
+  "scenario": "pcap_plus_22000_plus_cracked",
+  "source": "pwnagotchi",
+  "source_filename": "LAPA_ARCOS_CRACKED_02_7624dabd5d5e.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "LAPA_ARCOS_CRACKED_02",
+  "version": 1
+}

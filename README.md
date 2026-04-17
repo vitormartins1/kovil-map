@@ -22,6 +22,10 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 
 ## No-GPS
 
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/no-gps-interface-close.png" alt="KOVIL MAP NO-GPS workspace" />
+</p>
+
 - dedicated workspace for networks that do not yet have usable coordinates on the tactical map
 - filters for SSID or MAC search, source device, status, name visibility, and artifact presence
 - split review between cracked and locked items so non-geolocated evidence can still be triaged fast
@@ -29,12 +33,20 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 
 ## Batch
 
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/batch-interface-close.png" alt="KOVIL MAP BATCH workspace" />
+</p>
+
 - high-throughput workspace for building a single crack job from many networks and handshake artifacts
 - operator filters for search, location, source, and artifact presence before creating the batch
 - generated-batch inventory plus batch-contents review so work packages stay inspectable after creation
 - optimized for wardrive and large pentest datasets where launching the cracking engine per target is too expensive
 
 ## Recon Center
+
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/recon-intel-interface-close.png" alt="KOVIL MAP NO-GPS workspace" />
+</p>
 
 - unified intelligence workspace across SURFACE, INTEL, OPS, GEO, SIGINT, REPORT, and COMMS
 - cache-first tab hydration so dense analysis views reopen faster without eager full-workspace loading
@@ -54,6 +66,10 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 - local-first route review that lets operators move from wardrive sessions back into the tactical map and the wider target workflow
 
 ## Raw Sniffer
+
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/sniffer-interface-close.png" alt="KOVIL MAP NO-GPS workspace" />
+</p>
 
 - source-aware RAW capture workspace for Bruce and M5Evil ingest, metadata, and cleanup flows
 - review of cache state, capture metadata, generated hashes, and capture-scoped RAW analysis reports

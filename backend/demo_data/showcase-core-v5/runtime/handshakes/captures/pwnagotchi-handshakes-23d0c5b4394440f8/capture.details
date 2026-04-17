@@ -1,0 +1,28 @@
+{
+  "bssid": "0E:EF:11:22:33:5B",
+  "classification": {
+    "confidence": 0.8,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "not_ready",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": false,
+    "pmkid_available": false,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "",
+  "vendor": "Historic Mesh",
+  "wps": {
+    "present": false
+  }
+}

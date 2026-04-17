@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-eef844d9cba07a16",
+  "demo_profile": "showcase-core-v5",
+  "mac": "2A:89:5B:53:5B:CD",
+  "network_id": "aterro_do_flamengo_botafogo_urca__wd_1019",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0043_PRAIA_VIEW_1019_2a895b535bcd.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "PRAIA_VIEW_1019",
+  "version": 1
+}

@@ -1,0 +1,28 @@
+{
+  "bssid": "7E:76:67:3F:41:16",
+  "classification": {
+    "confidence": 0.82,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "already_cracked",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 10,
+    "frequency_mhz": 2457
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "LAGOA_VIEW_1299",
+  "vendor": "Lagoa Wi-Fi",
+  "wps": {
+    "present": false
+  }
+}

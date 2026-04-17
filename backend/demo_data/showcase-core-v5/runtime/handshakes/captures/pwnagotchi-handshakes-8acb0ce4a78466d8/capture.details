@@ -1,0 +1,28 @@
+{
+  "bssid": "AA:3F:38:99:1D:50",
+  "classification": {
+    "confidence": 0.81,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "already_cracked",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 9,
+    "frequency_mhz": 2452
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "LAPA_HUB_0756",
+  "vendor": "Rua do Lavradio Net",
+  "wps": {
+    "present": false
+  }
+}

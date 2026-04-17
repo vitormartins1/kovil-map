@@ -1,0 +1,50 @@
+{
+  "demo_profile": "showcase-core-v5",
+  "items": [
+    {
+      "capture_id": "pwnagotchi-handshakes-6e92f59657bfb83e",
+      "filename": "LAPA_EVENT_GUEST_061122334461.pcap",
+      "mac": "06:11:22:33:44:61",
+      "network_id": "lapa_event_guest",
+      "original_filename": "LAPA_EVENT_GUEST_061122334461.pcap",
+      "source": "pwnagotchi",
+      "ssid": "LAPA_EVENT_GUEST"
+    },
+    {
+      "capture_id": "pwnagotchi-handshakes-4d7541cec6029bfe",
+      "filename": "RIO_CAFE_LOOP_021122334460.pcap",
+      "mac": "02:11:22:33:44:60",
+      "network_id": "rio_cafe_loop",
+      "original_filename": "RIO_CAFE_LOOP_021122334460.pcap",
+      "source": "pwnagotchi",
+      "ssid": "RIO_CAFE_LOOP"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-91f3dd91051e0a8f",
+      "filename": "HS_06AA11223345_botafogo_kiosk_net_bruce.pcap",
+      "mac": "06:AA:11:22:33:45",
+      "network_id": "botafogo_kiosk_net",
+      "original_filename": "HS_06AA11223345_botafogo_kiosk_net_bruce.pcap",
+      "source": "brucegotchi",
+      "ssid": "BOTAFOGO_KIOSK_NET"
+    },
+    {
+      "capture_id": "pwnagotchi-handshakes-fd486ca7a322c396",
+      "filename": "COPA_MEDIA_NODE_0EAA11223347.pcap",
+      "mac": "0E:AA:11:22:33:47",
+      "network_id": "copa_media_node",
+      "original_filename": "COPA_MEDIA_NODE_0EAA11223347.pcap",
+      "source": "pwnagotchi",
+      "ssid": "COPA_MEDIA_NODE"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-852a92e8ba17e09f",
+      "filename": "HS_02BB11223348_metro_line_4_bruce.pcap",
+      "mac": "02:BB:11:22:33:48",
+      "network_id": "metro_line_4",
+      "original_filename": "HS_02BB11223348_metro_line_4_bruce.pcap",
+      "source": "brucegotchi",
+      "ssid": "METRO_LINE_4"
+    }
+  ]
+}

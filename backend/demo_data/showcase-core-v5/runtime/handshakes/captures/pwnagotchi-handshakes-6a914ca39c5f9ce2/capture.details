@@ -1,0 +1,28 @@
+{
+  "bssid": "3E:A9:73:1E:1D:10",
+  "classification": {
+    "confidence": 0.73,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 10,
+    "frequency_mhz": 2457
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "CARIOCA_KIOSK_0052",
+  "vendor": "Rua do Lavradio Net",
+  "wps": {
+    "present": false
+  }
+}

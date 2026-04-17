@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-6cf63fab6bc713fa",
+  "demo_profile": "showcase-core-v5",
+  "mac": "0A:AA:11:22:33:46",
+  "network_id": "urca_field_uplink",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "URCA_FIELD_UPLINK_0AAA11223346.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "URCA_FIELD_UPLINK",
+  "version": 1
+}

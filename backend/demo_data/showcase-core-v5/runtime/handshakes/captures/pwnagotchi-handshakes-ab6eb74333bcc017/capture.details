@@ -1,0 +1,28 @@
+{
+  "bssid": "E2:DA:B0:7E:61:9E",
+  "classification": {
+    "confidence": 0.73,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "already_cracked",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 2,
+    "frequency_mhz": 2417
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "LAPA_HUB_1306",
+  "vendor": "Centro Fiber",
+  "wps": {
+    "present": false
+  }
+}

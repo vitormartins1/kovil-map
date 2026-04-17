@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-f861f2c52a84957a",
+  "demo_profile": "showcase-core-v5",
+  "mac": "22:A6:E7:B2:A2:B8",
+  "network_id": "copacabana_arpoador_ipanema_lagoa__wd_0501",
+  "scenario": "pcap_only_convertible",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0140_COPA_GUEST_0501_22a6e7b2a2b8.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "COPA_GUEST_0501",
+  "version": 1
+}

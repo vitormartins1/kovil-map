@@ -36,7 +36,7 @@ _TARGET_ROOTS = {
     "m5evil": Path(M5EVIL_DIR),
     "wardrive": Path(WARDRIVE_DIR),
 }
-_PROFILE_DEFAULT = "showcase-core-v4"
+_PROFILE_DEFAULT = "showcase-core-v5"
 _TERMINAL_JOB_STATUSES = set(job_manager.TERMINAL_STATUSES)
 
 
@@ -111,6 +111,22 @@ def _prune_empty_directories(path: Path) -> None:
         return
 
 
+def _active_snapshot_root() -> Path:
+    return DEMO_BACKUPS_ROOT / "active_snapshot"
+
+
+def _legacy_snapshots_root() -> Path:
+    return DEMO_BACKUPS_ROOT / "snapshots"
+
+
+def _is_inside_demo_backups(path: Path) -> bool:
+    try:
+        path.resolve().relative_to(DEMO_BACKUPS_ROOT.resolve())
+    except ValueError:
+        return False
+    return True
+
+
 class DemoDataService:
     def _profile_root(self, profile_id: str) -> Path:
         return DEMO_DATA_ROOT / str(profile_id or "").strip()
@@ -164,7 +180,9 @@ class DemoDataService:
         DEMO_ACTIVE_STATE_PATH.unlink(missing_ok=True)
 
     def _snapshot_runtime_roots(self, session_id: str) -> dict[str, Any]:
-        snapshot_root = DEMO_BACKUPS_ROOT / "snapshots" / session_id
+        snapshot_root = _active_snapshot_root()
+        if snapshot_root.exists():
+            shutil.rmtree(snapshot_root, ignore_errors=True)
         runtime_snapshot_root = snapshot_root / "runtime"
         copied_roots: list[str] = []
         snapshot_files: dict[str, list[str]] = {}
@@ -181,6 +199,52 @@ class DemoDataService:
             "roots": copied_roots,
             "files": snapshot_files,
         }
+
+    def _remove_snapshot(self, snapshot_state: dict[str, Any] | None) -> bool:
+        raw_path = str((snapshot_state or {}).get("path") or "").strip()
+        if not raw_path:
+            return False
+        snapshot_path = Path(raw_path).expanduser()
+        if not _is_inside_demo_backups(snapshot_path):
+            logger.warning(
+                "Refusing to remove snapshot outside demo backups: %s", raw_path
+            )
+            return False
+        if not snapshot_path.exists():
+            return False
+        try:
+            if snapshot_path.is_dir() and not snapshot_path.is_symlink():
+                shutil.rmtree(snapshot_path, ignore_errors=True)
+            else:
+                snapshot_path.unlink(missing_ok=True)
+            return True
+        except Exception:
+            logger.exception("Failed to remove demo snapshot: %s", snapshot_path)
+            return False
+
+    def _cleanup_stale_snapshots(self, *, keep: dict[str, Any] | None = None) -> int:
+        keep_path = None
+        raw_keep = str((keep or {}).get("path") or "").strip()
+        if raw_keep:
+            keep_path = Path(raw_keep).expanduser().resolve()
+
+        removed = 0
+        for root in (_legacy_snapshots_root(), _active_snapshot_root()):
+            if not root.exists():
+                continue
+            if keep_path and root.resolve() == keep_path:
+                continue
+            if not _is_inside_demo_backups(root):
+                continue
+            try:
+                if root.is_dir() and not root.is_symlink():
+                    shutil.rmtree(root, ignore_errors=True)
+                else:
+                    root.unlink(missing_ok=True)
+                removed += 1
+            except Exception:
+                logger.exception("Failed to remove stale demo snapshot root: %s", root)
+        return removed
 
     def _restore_snapshot(self, snapshot_state: dict[str, Any] | None) -> None:
         snapshot_path = Path(str((snapshot_state or {}).get("path") or "")).expanduser()
@@ -334,6 +398,9 @@ class DemoDataService:
                 active_manifest = self._load_profile_manifest(active_profile_id)
             except Exception:
                 logger.exception("Failed to load active demo manifest")
+        snapshot = dict(active_state.get("snapshot") or {})
+        snapshot_path = Path(str(snapshot.get("path") or "")).expanduser()
+        snapshot_available = bool(snapshot.get("available") and snapshot_path.exists())
         return {
             "active": bool(active_state.get("active")),
             "active_profile_id": active_profile_id,
@@ -342,9 +409,7 @@ class DemoDataService:
                 if isinstance(active_manifest, dict)
                 else None
             ),
-            "snapshot_available": bool(
-                ((active_state.get("snapshot") or {}).get("available"))
-            ),
+            "snapshot_available": snapshot_available,
             "available_profiles": available_profiles,
             "summary": (
                 dict(active_manifest.get("summary") or {})
@@ -396,6 +461,7 @@ class DemoDataService:
             raise DemoDataError(
                 "Demo data is already active. Remove it before reinstalling."
             )
+        self._cleanup_stale_snapshots()
 
         manifest = self._load_profile_manifest(profile_id)
         total_steps = 5
@@ -489,6 +555,8 @@ class DemoDataService:
                     emit("data_update", "map_data")
                 except Exception:
                     logger.exception("Demo install rollback failed")
+                self._remove_snapshot(snapshot)
+                self._cleanup_stale_snapshots()
                 self._clear_active_state()
                 raise
 
@@ -569,6 +637,8 @@ class DemoDataService:
                 )
                 self._reload_runtime_state()
                 self._clear_active_state()
+                self._remove_snapshot(snapshot)
+                self._cleanup_stale_snapshots()
                 self._emit_progress(
                     job,
                     emit,

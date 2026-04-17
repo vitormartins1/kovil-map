@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-8d419aa3806daf8a",
+  "demo_profile": "showcase-core-v5",
+  "mac": "B6:51:AE:C2:FB:3D",
+  "network_id": "copacabana_arpoador_ipanema_lagoa__wd_0674",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0148_LAGOA_PASS_0674_b651aec2fb3d.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "LAGOA_PASS_0674",
+  "version": 1
+}

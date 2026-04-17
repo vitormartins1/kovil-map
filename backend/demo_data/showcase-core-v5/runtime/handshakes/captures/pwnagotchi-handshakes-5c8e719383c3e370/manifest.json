@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-5c8e719383c3e370",
+  "demo_profile": "showcase-core-v5",
+  "mac": "3A:AB:22:7E:0A:08",
+  "network_id": "aterro_do_flamengo_botafogo_urca__wd_0033",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0001_URCA_TERRACE_0033_3aab227e0a08.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "URCA_TERRACE_0033",
+  "version": 1
+}

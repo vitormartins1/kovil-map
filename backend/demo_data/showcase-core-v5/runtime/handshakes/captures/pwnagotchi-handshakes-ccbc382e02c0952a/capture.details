@@ -1,0 +1,28 @@
+{
+  "bssid": "7E:0F:3B:66:CF:17",
+  "classification": {
+    "confidence": 0.88,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "ATERRO_GUEST_1061",
+  "vendor": "Flamengo Promenade",
+  "wps": {
+    "present": false
+  }
+}

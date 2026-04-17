@@ -1,0 +1,125 @@
+{
+  "capture": {
+    "clients_count": 5,
+    "duration_s": 95.0,
+    "frame_totals": {
+      "beacons": 150,
+      "eapol": 20,
+      "probe_requests": 20
+    },
+    "networks_count": 5,
+    "warnings": []
+  },
+  "demo_profile": "showcase-core-v5",
+  "device_label": "Bruce",
+  "highlights": {
+    "handshake_candidate_count": 5,
+    "handshake_candidates": [
+      {
+        "bssid": "0E:AA:11:22:33:47",
+        "eapol_count": 4,
+        "ssid": "COPA_MEDIA_NODE",
+        "tier": "ready"
+      },
+      {
+        "bssid": "02:BB:11:22:33:48",
+        "eapol_count": 4,
+        "ssid": "METRO_LINE_4",
+        "tier": "ready"
+      },
+      {
+        "bssid": "06:BB:11:22:33:49",
+        "eapol_count": 4,
+        "ssid": "IPANEMA_BOARDWALK",
+        "tier": "ready"
+      },
+      {
+        "bssid": "0A:EE:11:22:33:56",
+        "eapol_count": 4,
+        "ssid": "ARPOADOR_STAFF_MESH",
+        "tier": "ready"
+      },
+      {
+        "bssid": "06:EE:11:22:33:55",
+        "eapol_count": 4,
+        "ssid": "JARDIM_BOTANICO_CYCLE_LAB",
+        "tier": "ready"
+      }
+    ],
+    "hidden_network_count": 0,
+    "noisy_capture": false,
+    "revealed_hidden_count": 0,
+    "top_clients": [
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:90",
+        "network_count": 1,
+        "total_frames": 20
+      },
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:91",
+        "network_count": 1,
+        "total_frames": 27
+      },
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:92",
+        "network_count": 1,
+        "total_frames": 34
+      },
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:90",
+        "network_count": 1,
+        "total_frames": 41
+      },
+      {
+        "eapol_count": 4,
+        "mac": "4A:5B:6C:7D:8E:91",
+        "network_count": 1,
+        "total_frames": 48
+      }
+    ],
+    "top_networks": [
+      {
+        "beacon_count": 18,
+        "bssid": "0E:AA:11:22:33:47",
+        "client_count": 1,
+        "ssid": "COPA_MEDIA_NODE"
+      },
+      {
+        "beacon_count": 24,
+        "bssid": "02:BB:11:22:33:48",
+        "client_count": 2,
+        "ssid": "METRO_LINE_4"
+      },
+      {
+        "beacon_count": 30,
+        "bssid": "06:BB:11:22:33:49",
+        "client_count": 3,
+        "ssid": "IPANEMA_BOARDWALK"
+      },
+      {
+        "beacon_count": 36,
+        "bssid": "0A:EE:11:22:33:56",
+        "client_count": 4,
+        "ssid": "ARPOADOR_STAFF_MESH"
+      },
+      {
+        "beacon_count": 42,
+        "bssid": "06:EE:11:22:33:55",
+        "client_count": 5,
+        "ssid": "JARDIM_BOTANICO_CYCLE_LAB"
+      }
+    ]
+  },
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::4e1a4617f2c046cc",
+  "schema_version": 1,
+  "source": "brucegotchi",
+  "source_file": "rio_bruce_south_patrol.pcap",
+  "source_mtime": 1776452483.00979,
+  "source_path_role": "rawsniffer",
+  "source_size": 4465
+}

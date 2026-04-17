@@ -185,6 +185,22 @@ Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e
   - como datasets mistos se comportam
   - se vale criar um modo automático mais inteligente
 
+### Roll-up geográfico e escopo de foco para sessões WarDrive
+
+- Prioridade: `ALTA`
+- Status: `TODO`
+- Estimativa: `6-10h`
+- Complexidade: `Média`
+- Objetivo: fazer a seleção e o foco de sessões WarDrive escolherem o menor escopo geográfico que representa a rota completa, não só a região mais profunda/com maior densidade.
+- Comportamento atual:
+  - o frontend já pode subir resultados de hierarchy focados em sessão para o ancestral visível comum
+  - o hierarchy do backend ainda é baseado nas regiões das redes observadas, não na geometria completa da rota
+- Requisitos futuros:
+  - derivar cobertura da sessão a partir dos pontos da track, incluindo trechos sem redes observadas
+  - retornar um `recommended_region_id` / `session_scope` explícito pela API de hierarchy ou de session track
+  - subir sessões multi-bairro para cidade, multi-cidade para estado, multi-estado para país, preservando fallbacks robustos para regiões não mapeadas
+  - adicionar testes de regressão de API e UI para sessões multi-bairro, multi-cidade, multi-estado e não mapeadas
+
 ## 6. Integrações de Dispositivos
 
 ### Expandir o auto-sync do M5Evil além do Cardputer

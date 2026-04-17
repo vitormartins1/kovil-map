@@ -1,0 +1,28 @@
+{
+  "bssid": "3A:B9:FE:0A:37:85",
+  "classification": {
+    "confidence": 0.85,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 4,
+    "frequency_mhz": 2427
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ARPOADOR_LOUNGE_0657",
+  "vendor": "South Zone Guest",
+  "wps": {
+    "present": false
+  }
+}

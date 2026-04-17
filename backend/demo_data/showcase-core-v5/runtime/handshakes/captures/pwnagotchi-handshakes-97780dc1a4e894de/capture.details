@@ -1,0 +1,28 @@
+{
+  "bssid": "4A:E0:70:E7:F6:37",
+  "classification": {
+    "confidence": 0.9,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 8,
+    "frequency_mhz": 2447
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "CINELANDIA_STUDIO_1135",
+  "vendor": "Historic Mesh",
+  "wps": {
+    "present": false
+  }
+}

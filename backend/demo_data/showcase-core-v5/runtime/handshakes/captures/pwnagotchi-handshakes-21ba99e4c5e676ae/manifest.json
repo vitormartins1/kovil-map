@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-21ba99e4c5e676ae",
+  "demo_profile": "showcase-core-v5",
+  "mac": "72:1F:89:7F:13:40",
+  "network_id": "aterro_do_flamengo_botafogo_urca__wd_0016",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0002_ATERRO_HUB_0016_721f897f1340.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "ATERRO_HUB_0016",
+  "version": 1
+}

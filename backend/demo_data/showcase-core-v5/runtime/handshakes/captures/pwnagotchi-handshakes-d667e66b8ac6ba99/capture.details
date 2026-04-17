@@ -1,0 +1,28 @@
+{
+  "bssid": "4E:E3:AB:14:8B:59",
+  "classification": {
+    "confidence": 0.77,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 3,
+    "frequency_mhz": 2422
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ARCOS_PASS_0404",
+  "vendor": "Rua do Lavradio Net",
+  "wps": {
+    "present": false
+  }
+}

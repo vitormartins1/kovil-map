@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-d4980abe9d5e34aa",
+  "demo_profile": "showcase-core-v5",
+  "mac": "AA:2C:59:24:54:A0",
+  "network_id": "engenhao_track_locked_02",
+  "scenario": "pcap_only_convertible",
+  "source": "pwnagotchi",
+  "source_filename": "ENGENHAO_TRACK_LOCKED_02_aa2c592454a0.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "ENGENHAO_TRACK_LOCKED_02",
+  "version": 1
+}

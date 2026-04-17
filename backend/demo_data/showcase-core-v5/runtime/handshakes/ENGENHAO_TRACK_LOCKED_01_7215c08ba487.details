@@ -1,0 +1,28 @@
+{
+  "bssid": "72:15:C0:8B:A4:87",
+  "classification": {
+    "confidence": 0.86,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "5GHz",
+    "channel": 149,
+    "frequency_mhz": 5745
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ENGENHAO_TRACK_LOCKED_01",
+  "vendor": "North Rail Services",
+  "wps": {
+    "present": false
+  }
+}

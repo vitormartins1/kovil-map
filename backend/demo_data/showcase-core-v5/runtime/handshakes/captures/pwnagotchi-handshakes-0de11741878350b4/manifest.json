@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-0de11741878350b4",
+  "demo_profile": "showcase-core-v5",
+  "mac": "3E:01:51:C9:FC:29",
+  "network_id": "lapa_gloria_praca_maua_motorcycle__wd_1516",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0234_LAPA_HUB_1516_3e0151c9fc29.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "LAPA_HUB_1516",
+  "version": 1
+}

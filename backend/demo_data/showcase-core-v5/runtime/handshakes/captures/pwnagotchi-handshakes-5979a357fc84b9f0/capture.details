@@ -1,0 +1,28 @@
+{
+  "bssid": "02:BC:43:49:A4:2B",
+  "classification": {
+    "confidence": 0.88,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 2,
+    "frequency_mhz": 2417
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "MAUA_VIEW_0489",
+  "vendor": "Centro Mobility",
+  "wps": {
+    "present": false
+  }
+}

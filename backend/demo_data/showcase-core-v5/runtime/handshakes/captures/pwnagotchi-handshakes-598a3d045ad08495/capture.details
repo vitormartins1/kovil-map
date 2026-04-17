@@ -1,0 +1,28 @@
+{
+  "bssid": "0E:DD:11:22:33:53",
+  "classification": {
+    "confidence": 0.87,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 6,
+    "frequency_mhz": 2437
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ATERRO_MARINA_OPS",
+  "vendor": "Marina South Link",
+  "wps": {
+    "present": false
+  }
+}

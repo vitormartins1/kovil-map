@@ -1,0 +1,28 @@
+{
+  "bssid": "92:51:3E:C0:82:3C",
+  "classification": {
+    "confidence": 0.88,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 6,
+    "frequency_mhz": 2437
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "LAPA_ARCOS_LOCKED_07",
+  "vendor": "Historic District Mesh",
+  "wps": {
+    "present": false
+  }
+}

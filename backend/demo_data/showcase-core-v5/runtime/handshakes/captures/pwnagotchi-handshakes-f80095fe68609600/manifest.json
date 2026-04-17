@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-f80095fe68609600",
+  "demo_profile": "showcase-core-v5",
+  "mac": "FE:E5:D0:67:84:51",
+  "network_id": "centro_lapa_santa_teresa__wd_0473",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0081_BONDE_TERRACE_0473_fee5d0678451.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "BONDE_TERRACE_0473",
+  "version": 1
+}

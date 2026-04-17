@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "pwnagotchi-handshakes-8a13c9789d84a413",
+  "demo_profile": "showcase-core-v5",
+  "mac": "1E:13:AD:7B:17:AA",
+  "network_id": "lapa_gloria_praca_maua_motorcycle__wd_0205",
+  "scenario": "pcap_plus_22000",
+  "source": "pwnagotchi",
+  "source_filename": "PWN_MASS_0187_CENTRO_STUDIO_0205_1e13ad7b17aa.pcap",
+  "source_path_role": "handshakes",
+  "ssid": "CENTRO_STUDIO_0205",
+  "version": 1
+}

@@ -1,0 +1,13 @@
+{
+  "artifact_scope": "capture",
+  "capture_id": "brucegotchi-bruce_handshakes-9a65045ba2f38ae5",
+  "demo_profile": "showcase-core-v5",
+  "mac": "0A:EF:11:22:33:5A",
+  "network_id": "nogps_lab_05",
+  "scenario": "no_gps_locked",
+  "source": "brucegotchi",
+  "source_filename": "HS_0AEF1122335A_nogps_lab_05_bruce.pcap",
+  "source_path_role": "bruce_handshakes",
+  "ssid": "NOGPS_LAB_05",
+  "version": 1
+}
