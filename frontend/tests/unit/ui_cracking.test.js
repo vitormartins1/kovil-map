@@ -195,7 +195,9 @@ function mountCrackingDom() {
     <div id="crack-mini-bar"></div>
     <div class="crack-status-container"></div>
 
+    <div id="crack-file-feedback-pre-attack-anchor"></div>
     <div id="crack-config-preview"></div>
+    <div id="crack-file-feedback-pre-conversions-anchor"></div>
     <div id="crack-aircrack-options" class="attack-panel-body attack-panel-body--aircrack" data-attack-panel-body="aircrack">
       <div class="attack-panel-intro"></div>
       <div class="attack-panel-fields"></div>
@@ -1412,6 +1414,7 @@ describe("ui_cracking actions", () => {
     const names = Array.from(document.querySelectorAll("#crack-file-list .file-item .file-name-text"))
       .map((el) => el.textContent.trim());
     expect(names).toEqual(["raw_1.22000", "raw_1.details", "raw_1.try"]);
+    expect(document.getElementById("crack-file-list").classList.contains("crack-file-list-flat")).toBe(true);
     expect(document.querySelectorAll("#crack-file-list .capture-group").length).toBe(0);
     expect(document.getElementById("selected-file-info").textContent).toContain("RAW HASH");
     expect(document.getElementById("selected-file-info").textContent).not.toContain("M5Evil");
@@ -1572,6 +1575,12 @@ describe("ui_cracking actions", () => {
     expect(rawPcapRow.querySelector(".file-meta")?.getAttribute("title")).not.toContain("RAWSNIFFER");
     rawPcapRow.click();
     await flushAsync();
+    expect(document.getElementById("crack-file-feedback-pre-conversions-anchor").nextElementSibling).toBe(
+      document.getElementById("crack-file-feedback")
+    );
+    expect(
+      Boolean(document.getElementById("crack-file-feedback").compareDocumentPosition(document.getElementById("crack-pcap-conversions")) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
     expect(document.getElementById("btn-convert-hash").innerHTML).toContain("BUILD CANONICAL");
     expect(document.getElementById("raw-canonical-conversion-slot").contains(document.getElementById("btn-convert-hash"))).toBe(true);
     expect(
@@ -1590,6 +1599,12 @@ describe("ui_cracking actions", () => {
     expect(rawHashRow.querySelector(".file-meta")?.getAttribute("title")).not.toContain("RAWSNIFFER");
     rawHashRow.click();
     await flushAsync();
+    expect(document.getElementById("crack-file-feedback-pre-attack-anchor").nextElementSibling).toBe(
+      document.getElementById("crack-file-feedback")
+    );
+    expect(
+      Boolean(document.getElementById("crack-file-feedback").compareDocumentPosition(document.getElementById("crack-config-preview")) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
     expect(document.getElementById("btn-convert-hash").innerHTML).toContain("START CRACKING");
     expect(document.getElementById("btn-convert-hash-anchor").nextElementSibling).toBe(document.getElementById("btn-convert-hash"));
     expect(document.getElementById("selected-file-info").textContent).toContain("RAW HASH");
@@ -2105,6 +2120,7 @@ describe("ui_cracking actions", () => {
     expect(mockAPI.getMultiFileContent).toHaveBeenCalledWith("batch_alpha.22000");
     expect(document.getElementById("crack-ssid").innerText).toBe("BATCH");
     expect(document.getElementById("crack-mac").innerText).toBe("batch_alpha.22000");
+    expect(document.getElementById("crack-file-list").classList.contains("crack-file-list-flat")).toBe(true);
 
     await uiCracking.clearHistory();
     expect(mockAPI.clearHistory).toHaveBeenCalledTimes(1);

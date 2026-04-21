@@ -1369,19 +1369,20 @@
                             <div id="crack-actions" class="crack-actions" style="display: none;">
                                 <div class="cyber-razor-top bg-cyan" style="margin: 10px 0;"></div>
                                 
-                                <div class="action-header" style="position: relative;">
+                            <div class="action-header" style="position: relative;">
                                     <div id="selected-file-info" class="selected-file-name"></div>
                                 <div style="display: flex; gap: 5px; align-items: center;">
                                     <div class="file-type-badge" id="file-type-badge">PCAP</div>
                                     <i class="fa-solid fa-gear config-edit-btn" id="btn-quick-settings" title="Edit Global Config" style="cursor: pointer; color: var(--neon-cyan);"></i>
                                 </div>
                             </div>
+                            <div id="crack-file-feedback-pre-attack-anchor" style="display:none;"></div>
                             
                             <!-- Config Preview (Only for .22000) -->
-                            <div id="crack-config-preview" class="crack-config-preview" style="display: flex; flex-direction: row; gap: 10px; align-items: stretch;">
+                            <div id="crack-config-preview" class="crack-config-preview" style="display: flex; flex-direction: column; gap: 8px; align-items: stretch;">
                                 
-                                <!-- Left Column: Inputs -->
-                                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding-right: 10px;">
+                                <!-- Attack mode inputs -->
+                                <div class="crack-attack-fields" style="display: flex; flex-direction: column; gap: 8px;">
                                     <!-- MODE ROW -->
                                     <div class="config-row" style="width: 100%; align-items: center;">
                                         <span class="config-label">MODE:</span>
@@ -1490,6 +1491,22 @@
                                         </div>
                                     </div>
 
+                                    <!-- Dynamic attack flags -->
+                                    <div id="custom-flags-container">
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="flag-optimized">
+                                            <label for="flag-optimized">OPTIMIZED (-O)</label>
+                                        </div>
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="flag-slow">
+                                            <label for="flag-slow">SLOW CANDIDATES (-S)</label>
+                                        </div>
+                                        <div class="form-group-checkbox" style="display: none;" id="flag-increment-container">
+                                            <input type="checkbox" id="flag-increment">
+                                            <label for="flag-increment">INCREMENT</label>
+                                        </div>
+                                    </div>
+
                                     <!-- INCREMENT ROW (Substituído por Slider) -->
                                     <div class="config-row" id="crack-increment-row" style="width: 100%; align-items: center; display: none;">
                                         <span class="config-label">INC:</span>
@@ -1502,30 +1519,11 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Right Column: Checkboxes -->
-                                <div style="width: 150px; display: flex; flex-direction: column; gap: 8px; border-left: 1px solid rgba(0, 243, 255, 0.2); padding-left: 10px; justify-content: center;">
-                                    
-                                    <!-- Custom Flags Container -->
-                                    <div id="custom-flags-container" style="display: flex; flex-direction: column; gap: 8px;">
-                                        <div class="form-group-checkbox" style="margin: 0;">
-                                            <input type="checkbox" id="flag-optimized">
-                                            <label for="flag-optimized" style="font-size: 0.7em; color: #888;">OPTIMIZED (-O)</label>
-                                        </div>
-                                        <div class="form-group-checkbox" style="margin: 0;">
-                                            <input type="checkbox" id="flag-slow">
-                                            <label for="flag-slow" style="font-size: 0.7em; color: #888;">SLOW CANDIDATES (-S)</label>
-                                        </div>
-                                        <div class="form-group-checkbox" style="margin: 0; display: none;" id="flag-increment-container">
-                                            <input type="checkbox" id="flag-increment">
-                                            <label for="flag-increment" style="font-size: 0.7em; color: #888;">INCREMENT</label>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Aircrack Options (Only for .pcap) -->
                             <!-- File Conversions (Always visible for PCAP selection) -->
+                            <div id="crack-file-feedback-pre-conversions-anchor" style="display:none;"></div>
                             <div id="crack-pcap-conversions" style="display:none; flex-direction: column; gap: 10px;">
                                 <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
                                     <span class="config-label" style="font-size: 0.7em; color: var(--neon-cyan); letter-spacing: 1px; font-weight: bold;">FILE CONVERSIONS</span>
@@ -1680,12 +1678,7 @@
                                 <div id="wps-status-text" class="crack-progress-text attack-panel-status" style="display:none; font-size: 0.7em; color: #c28cb7;"></div>
                             </div>
                             
-                            <div class="crack-status-container">
-                                <div id="crack-progress-text" class="crack-progress-text">READY</div>
-                                <div class="mini-progress-bar">
-                                    <div id="crack-mini-bar" class="mini-bar-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
+                            <div id="crack-file-feedback-default-anchor" style="display:none;"></div>
 
                             <!-- File Feedback (For other files) -->
                             <div id="crack-file-feedback" class="crack-file-feedback" style="display:none;">

@@ -908,6 +908,13 @@ body {
     background: #0a0a0a;
 }
 
+#crack-file-list.file-list {
+    border: 0;
+    margin: 0 8px;
+    padding: 0 0 6px;
+    background: transparent;
+}
+
 .crack-handshake-set-summary {
     margin: 0 10px 8px;
     padding: 8px 10px;
@@ -959,20 +966,16 @@ body {
 }
 
 .capture-group {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    position: relative;
 }
 
 .capture-group-card {
-    margin: 6px 8px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 8px;
-    overflow: hidden;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.032),
-        rgba(255, 255, 255, 0.012)
-    );
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    margin: 6px 0;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
 }
 
 .capture-group-card + .capture-group-card {
@@ -981,25 +984,32 @@ body {
 
 .capture-group-card > .capture-group-header {
     min-height: 54px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
 }
 
 .capture-group-header {
     width: 100%;
-    border: none;
-    background: rgba(255, 255, 255, 0.02);
+    box-sizing: border-box;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
+        rgba(0, 0, 0, 0.12);
     color: inherit;
-    padding: 8px 10px;
+    padding: 9px 10px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 10px;
     text-align: left;
     cursor: pointer;
+    box-shadow: inset 3px 0 0 rgba(148, 163, 184, 0.14);
 }
 
 .capture-group-header:hover {
-    background: rgba(0, 243, 255, 0.08);
+    border-color: rgba(0, 243, 255, 0.18);
+    background:
+        linear-gradient(135deg, rgba(0, 243, 255, 0.055), rgba(255, 255, 255, 0.014)),
+        rgba(0, 0, 0, 0.14);
 }
 
 .capture-group-active {
@@ -1007,34 +1017,55 @@ body {
 }
 
 .capture-group-header-active {
-    background: color-mix(in srgb, var(--theme-color) 10%, rgba(255, 255, 255, 0.025));
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-color) 55%, transparent);
+    border-color: color-mix(in srgb, var(--theme-color) 34%, rgba(255, 255, 255, 0.12));
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-color) 10%, transparent), rgba(255, 255, 255, 0.015)),
+        rgba(0, 0, 0, 0.16);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-color) 65%, transparent);
 }
 
 .capture-group-header-active:hover {
-    background: color-mix(in srgb, var(--theme-color) 14%, rgba(255, 255, 255, 0.03));
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-color) 14%, transparent), rgba(255, 255, 255, 0.018)),
+        rgba(0, 0, 0, 0.18);
 }
 
 .capture-group-header-preferred {
-    box-shadow: none;
-    background: rgba(255, 255, 255, 0.02);
+    box-shadow: inset 3px 0 0 rgba(148, 163, 184, 0.14);
 }
 
 .capture-group-header-preferred.capture-group-header-active {
-    background: color-mix(in srgb, var(--theme-color) 10%, rgba(255, 255, 255, 0.025));
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-color) 55%, transparent);
+    border-color: color-mix(in srgb, var(--theme-color) 34%, rgba(255, 255, 255, 0.12));
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-color) 10%, transparent), rgba(255, 255, 255, 0.015)),
+        rgba(0, 0, 0, 0.16);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-color) 65%, transparent);
 }
 
 .capture-group-header-preferred.capture-group-header-active:hover {
-    background: color-mix(in srgb, var(--theme-color) 14%, rgba(255, 255, 255, 0.03));
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-color) 14%, transparent), rgba(255, 255, 255, 0.018)),
+        rgba(0, 0, 0, 0.18);
 }
 
 .capture-group-header-legacy {
-    background: rgba(255, 184, 107, 0.06);
+    border-color: rgba(255, 184, 107, 0.16);
+    background:
+        linear-gradient(135deg, rgba(255, 184, 107, 0.07), rgba(255, 255, 255, 0.012)),
+        rgba(0, 0, 0, 0.12);
 }
 
 .capture-group-header-legacy:hover {
-    background: rgba(255, 184, 107, 0.11);
+    background:
+        linear-gradient(135deg, rgba(255, 184, 107, 0.12), rgba(255, 255, 255, 0.014)),
+        rgba(0, 0, 0, 0.14);
+}
+
+.capture-group-header-legacy.capture-group-header-active {
+    border-color: color-mix(in srgb, var(--theme-color) 34%, rgba(255, 184, 107, 0.2));
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-color) 12%, rgba(255, 184, 107, 0.07)), rgba(255, 255, 255, 0.014)),
+        rgba(0, 0, 0, 0.16);
 }
 
 .capture-group-main {
@@ -1042,14 +1073,27 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1 1 auto;
 }
 
-.capture-group-title-row,
+.capture-group-title-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.capture-group-badges,
 .capture-group-meta {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 6px;
+}
+
+.capture-group-badges {
+    justify-content: flex-end;
 }
 
 .capture-group-name {
@@ -1077,12 +1121,24 @@ body {
 }
 
 .capture-group-body {
-    padding: 4px 0 6px;
-    background: rgba(255, 255, 255, 0.015);
+    display: grid;
+    gap: 5px;
+    padding: 6px 0 8px;
+    background: transparent;
 }
 
-.capture-group-body .file-item {
-    margin: 4px 8px;
+#crack-file-list.crack-file-list-flat {
+    display: grid;
+    gap: 5px;
+}
+
+.capture-group-body[hidden] {
+    display: none !important;
+}
+
+.capture-group-body .file-item,
+#crack-file-list.crack-file-list-flat > .file-item {
+    margin: 0;
     padding: 7px 10px 7px 16px;
     border: 1px solid rgba(255, 255, 255, 0.045);
     border-radius: 6px;
@@ -1090,12 +1146,14 @@ body {
     box-shadow: inset 2px 0 0 rgba(255, 255, 255, 0.035);
 }
 
-.capture-group-body .file-item:hover {
+.capture-group-body .file-item:hover,
+#crack-file-list.crack-file-list-flat > .file-item:hover {
     background: rgba(0, 243, 255, 0.075);
     border-color: rgba(0, 243, 255, 0.16);
 }
 
-.capture-group-body .file-item.selected {
+.capture-group-body .file-item.selected,
+#crack-file-list.crack-file-list-flat > .file-item.selected {
     background: color-mix(in srgb, var(--theme-color) 18%, rgba(0, 0, 0, 0.12));
     border-color: color-mix(in srgb, var(--theme-color) 34%, rgba(255, 255, 255, 0.08));
     box-shadow: inset 3px 0 0 var(--theme-color);
@@ -1377,22 +1435,48 @@ body {
 }
 
 .capture-group-header-raw {
-    background: rgba(51, 180, 255, 0.05);
+    border-color: rgba(51, 180, 255, 0.18);
+    background:
+        linear-gradient(135deg, rgba(51, 180, 255, 0.07), rgba(255, 255, 255, 0.012)),
+        rgba(0, 0, 0, 0.12);
 }
 
 .capture-group-header-raw:hover {
-    background: rgba(51, 180, 255, 0.1);
+    background:
+        linear-gradient(135deg, rgba(51, 180, 255, 0.12), rgba(255, 255, 255, 0.014)),
+        rgba(0, 0, 0, 0.14);
+}
+
+.capture-group-header-raw.capture-group-header-active {
+    border-color: color-mix(in srgb, var(--theme-color) 34%, rgba(51, 180, 255, 0.2));
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-color) 12%, rgba(51, 180, 255, 0.07)), rgba(255, 255, 255, 0.014)),
+        rgba(0, 0, 0, 0.16);
 }
 
 .capture-group-header-raw-device {
-    background: rgba(255, 255, 255, 0.018);
+    border-radius: 6px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.01)),
+        rgba(0, 0, 0, 0.12);
     padding: 7px 10px;
+    border: 0;
     border-left: 1px solid rgba(51, 180, 255, 0.18);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    box-shadow: inset 2px 0 0 rgba(51, 180, 255, 0.12);
 }
 
 .capture-group-header-raw-device:hover {
-    background: rgba(51, 180, 255, 0.07);
+    background:
+        linear-gradient(135deg, rgba(51, 180, 255, 0.065), rgba(255, 255, 255, 0.012)),
+        rgba(0, 0, 0, 0.14);
+}
+
+.capture-group-header-raw-device.capture-group-header-active {
+    border: 1px solid color-mix(in srgb, var(--theme-color) 28%, rgba(51, 180, 255, 0.18));
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-color) 12%, rgba(51, 180, 255, 0.065)), rgba(255, 255, 255, 0.012)),
+        rgba(0, 0, 0, 0.16);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--theme-color) 62%, transparent);
 }
 
 .capture-group-raw-root {
@@ -1404,7 +1488,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 8px 10px 2px;
+    padding: 2px 2px 4px;
 }
 
 .crack-raw-context-summary {
@@ -1442,7 +1526,7 @@ body {
 
 .capture-group-raw-child {
     position: relative;
-    margin: 5px 8px 5px 14px;
+    margin: 0 0 0 14px;
     border: 1px solid rgba(255, 255, 255, 0.045);
     border-radius: 6px;
     overflow: hidden;
@@ -2647,23 +2731,63 @@ body {
 }
 
 #crack-config-preview .config-row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     padding: 5px 6px;
     border: 1px solid rgba(255, 255, 255, 0.055);
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.025);
 }
 
-#crack-config-preview .settings-select,
-#crack-config-preview .settings-input {
+#crack-config-preview .config-row > :not(.config-label) {
     min-width: 0;
+}
+
+#crack-config-preview .config-label {
+    flex: 0 0 78px;
+    white-space: nowrap;
+}
+
+#crack-config-preview .settings-select,
+#crack-config-preview .settings-input,
+#crack-config-preview input[type="range"],
+#crack-config-preview textarea {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#custom-flags-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
 }
 
 #custom-flags-container .form-group-checkbox {
+    margin: 0;
     padding: 6px 7px;
     border: 1px solid rgba(255, 255, 255, 0.055);
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.025);
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+#custom-flags-container .form-group-checkbox label {
+    color: #888;
+    font-size: 0.68rem;
+    line-height: 1.2;
+}
+
+@media (max-width: 1280px) {
+    #custom-flags-container {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 .config-info-group {
@@ -2689,32 +2813,10 @@ body {
 
 .config-edit-btn:hover { color: var(--theme-color); }
 
-/* Mini Progress Bar */
-.crack-status-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 .crack-progress-text {
     font-size: 0.75rem;
     color: #888;
     text-align: right;
-}
-
-.mini-progress-bar {
-    width: 100%;
-    height: 4px;
-    background: #222;
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.mini-bar-fill {
-    height: 100%;
-    background: var(--theme-color);
-    width: 0%;
-    transition: width 0.3s ease;
 }
 
 /* Cyber Button Small (Styled like action buttons) */
@@ -2972,7 +3074,7 @@ body {
     100% { background-position: 0 0; }
 }
 
-.progress-bar.indeterminate, .mini-bar-fill.indeterminate {
+.progress-bar.indeterminate {
     width: 100% !important;
     background-color: var(--theme-color); /* Fundo Ciano */
     background-image: linear-gradient(

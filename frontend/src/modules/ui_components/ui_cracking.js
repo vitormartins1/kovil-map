@@ -921,6 +921,10 @@ function getFileVisuals(file) {
         icon = 'fa-hashtag';
         typeTag = '22000';
         badgeClass = 'badge-hash';
+    } else if (type === 'batch') {
+        icon = 'fa-layer-group';
+        typeTag = 'BATCH';
+        badgeClass = 'badge-hash';
     } else if (type === 'cracked' || name.endsWith('.cracked')) {
         icon = 'fa-key';
         typeTag = 'CRACKED';
@@ -1127,6 +1131,7 @@ function renderRawHashScopedList(list, files, fileToSelectName = null) {
     });
 
     list.innerHTML = '';
+    list.classList.add('crack-file-list-flat');
     let selectedKey = null;
     scopedFiles.forEach((file) => {
         const normalizedName = String(file?.name || '').trim();
@@ -1179,6 +1184,7 @@ function renderHandshakeSetList(list, handshakeSet, files, fileToSelectName = nu
     let preferredKey = null;
 
     list.innerHTML = '';
+    list.classList.remove('crack-file-list-flat');
 
     (Array.isArray(handshakeSet?.captures) ? handshakeSet.captures : []).forEach((capture) => {
         const captureFiles = getCaptureFiles(capture.capture_id, files);
@@ -1203,16 +1209,17 @@ function renderHandshakeSetList(list, handshakeSet, files, fileToSelectName = nu
         header.innerHTML = `
             <div class="capture-group-main">
                 <div class="capture-group-title-row">
-                    <span class="${getSourceBadgeClass(capture.source)}">${escapeHtml(capture.device_label || capture.source || 'Capture')}</span>
-                    <span class="capture-quality-badge ${getCaptureTierClass(quality.tier)}">${getCaptureTierLabel(quality.tier)}</span>
+                    <div class="capture-group-name">${escapeHtml(capture.source_filename || capture.resolved_ssid || capture.ssid || 'capture')}</div>
+                    <div class="capture-group-badges">
+                        <span class="${getSourceBadgeClass(capture.source)}">${escapeHtml(capture.device_label || capture.source || 'Capture')}</span>
+                        <span class="capture-quality-badge ${getCaptureTierClass(quality.tier)}">${getCaptureTierLabel(quality.tier)}</span>
+                    </div>
                 </div>
-                <div class="capture-group-name">${escapeHtml(capture.source_filename || capture.resolved_ssid || capture.ssid || 'capture')}</div>
                 <div class="capture-group-meta">
                     <span>Score ${escapeHtml(String(quality.score ?? 0))}</span>
                     <span>${captureFiles.length} file(s)</span>
                     ${summaryBits.length ? `<span>${escapeHtml(summaryBits.join(' · '))}</span>` : ''}
                 </div>
-                ${Array.isArray(quality.reasons) && quality.reasons.length ? `<div class="capture-group-reason">${escapeHtml(String(quality.reasons[0]))}</div>` : ''}
             </div>
             <i class="fa-solid fa-chevron-down capture-group-arrow ${expanded ? 'capture-group-arrow-open' : ''}"></i>
         `;
@@ -1311,10 +1318,12 @@ function renderHandshakeSetList(list, handshakeSet, files, fileToSelectName = nu
         header.innerHTML = `
             <div class="capture-group-main">
                 <div class="capture-group-title-row">
-                    ${renderSemanticBadge('LEGACY', 'legacy-badge crack-legacy-badge-inline badge-role-state-legacy')}
-                    ${renderSemanticBadge('SHARED', 'capture-quality-badge badge-role-state-shared')}
+                    <div class="capture-group-name">LEGACY / SHARED ARTIFACTS</div>
+                    <div class="capture-group-badges">
+                        ${renderSemanticBadge('LEGACY', 'legacy-badge crack-legacy-badge-inline badge-role-state-legacy')}
+                        ${renderSemanticBadge('SHARED', 'capture-quality-badge badge-role-state-shared')}
+                    </div>
                 </div>
-                <div class="capture-group-name">LEGACY / SHARED ARTIFACTS</div>
                 <div class="capture-group-meta">
                     <span>${standaloneFiles.length} file(s)</span>
                     <span>Compatibility view</span>
@@ -1458,9 +1467,11 @@ function appendRawContextAccordion(
     header.innerHTML = `
             <div class="capture-group-main">
                 <div class="capture-group-title-row">
-                ${renderSemanticBadge('RAWSNIFFER', 'capture-quality-badge badge-role-state-raw')}
+                    <div class="capture-group-name">RAW Sniffer</div>
+                    <div class="capture-group-badges">
+                        ${renderSemanticBadge('RAWSNIFFER', 'capture-quality-badge badge-role-state-raw')}
+                    </div>
                 </div>
-                <div class="capture-group-name">RAW Sniffer</div>
             <div class="capture-group-meta">
                 <span>${Number(context.files_count || 0)} PCAP(s)</span>
                 <span>${Number(context.hash_files_count || 0)} hash file(s)</span>
@@ -1517,9 +1528,11 @@ function appendRawContextAccordion(
         nestedHeader.innerHTML = `
             <div class="capture-group-main">
                 <div class="capture-group-title-row">
-                    <span class="${getSourceBadgeClass(group.source)}">${escapeHtml(group.label)}</span>
+                    <div class="capture-group-name">${escapeHtml(group.label)}</div>
+                    <div class="capture-group-badges">
+                        <span class="${getSourceBadgeClass(group.source)}">${escapeHtml(group.label)}</span>
+                    </div>
                 </div>
-                <div class="capture-group-name">${escapeHtml(group.label)}</div>
                 <div class="capture-group-meta">
                     <span>${group.items.length} item(s)</span>
                 </div>
@@ -1602,9 +1615,11 @@ function appendRawContextAccordion(
         canonicalHeader.innerHTML = `
             <div class="capture-group-main">
                 <div class="capture-group-title-row">
-                    ${renderSemanticBadge('WDRS', 'capture-quality-badge badge-role-state-wdrs')}
+                    <div class="capture-group-name">Canonical (WDRS)</div>
+                    <div class="capture-group-badges">
+                        ${renderSemanticBadge('WDRS', 'capture-quality-badge badge-role-state-wdrs')}
+                    </div>
                 </div>
-                <div class="capture-group-name">Canonical (WDRS)</div>
                 <div class="capture-group-meta">
                     <span>${canonicalFiles.length} file(s)</span>
                 </div>
@@ -1748,9 +1763,11 @@ function appendCombinedCandidatesAccordion(list, handshakeSet, itemByKey, fileTo
     header.innerHTML = `
         <div class="capture-group-main">
             <div class="capture-group-title-row">
-                ${renderSemanticBadge('COMBINED', 'capture-quality-badge badge-role-state-combined')}
+                <div class="capture-group-name">COMBINED CANDIDATES</div>
+                <div class="capture-group-badges">
+                    ${renderSemanticBadge('COMBINED', 'capture-quality-badge badge-role-state-combined')}
+                </div>
             </div>
-            <div class="capture-group-name">COMBINED CANDIDATES</div>
             <div class="capture-group-meta">
                 <span>${combinedCandidates.length} build(s)</span>
                 <span>${captures.length} capture(s) eligible</span>
@@ -2368,6 +2385,7 @@ export async function openCrackingPanel(mac, ssid, fileToSelectName = null, cont
     currentHandshakeSet = null;
     
     const list = document.getElementById('crack-file-list');
+    list.classList.remove('crack-file-list-flat');
     list.innerHTML = '<div style="padding:10px; color:#666;">Loading files...</div>';
     renderHandshakeSetSummary(null);
     renderRawContextSection({ present: false });
@@ -2678,6 +2696,7 @@ export async function openMultiCrackingPanel(filename) {
     document.getElementById('crack-mac').innerText = filename;
 
     const list = document.getElementById('crack-file-list');
+    list.classList.remove('crack-file-list-flat');
     list.innerHTML = '<div style="padding:10px; color:#666;">Loading files...</div>';
     renderHandshakeSetSummary(null);
 
@@ -2705,51 +2724,33 @@ export async function openMultiCrackingPanel(filename) {
         });
 
         list.innerHTML = '';
+        list.classList.add('crack-file-list-flat');
         const itemByName = new Map();
-        sortedFiles.forEach(file => {
-            let icon = 'fa-file';
-            let typeTag = file.type?.toUpperCase() || 'FILE';
-            let badgeClass = 'badge-default';
+        const normalizedFiles = sortedFiles.map((file) => {
+            const name = String(file?.name || '').trim();
+            let type = String(file?.type || '').trim().toLowerCase() || 'file';
+            if (name.endsWith('.22000') || type === 'batch') {
+                type = 'batch';
+            } else if (type === 'try' || name.endsWith('.try')) {
+                type = 'try';
+            } else if (type === 'cracked' || name.endsWith('.cracked')) {
+                type = 'cracked';
+            }
+            return normalizeHandshakeFileRecord({
+                ...file,
+                name,
+                type,
+            });
+        });
+        normalizedFiles.forEach((file) => {
+            const item = renderFileRow(file, itemByName, { showSourceBadge: false });
+            list.appendChild(item);
+            itemByName.set(file.name, item);
+        });
 
-        if (file.name.endsWith('.22000') || file.type === 'batch') {
-            icon = 'fa-layer-group';
-            typeTag = 'BATCH';
-            badgeClass = 'badge-hash';
-            file.type = 'batch';
-        } else if (file.type === 'try' || file.name.endsWith('.try')) {
-            icon = 'fa-clock-rotate-left';
-            typeTag = 'HISTORY';
-            badgeClass = 'badge-history';
-            file.type = 'try';
-        } else if (file.type === 'cracked' || file.name.endsWith('.cracked')) {
-            icon = 'fa-key';
-            typeTag = 'CRACKED';
-            badgeClass = 'badge-cracked';
-        }
-
-        const size = ((file.size || 0) / 1024).toFixed(1) + ' KB';
-        const date = file.modified ? new Date(file.modified * 1000).toLocaleDateString() : '';
-
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        item.innerHTML = `
-            <div class="file-name-wrapper">
-                <i class="fa-solid ${icon}"></i>
-                <span class="file-name-text" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
-            </div>
-            <div class="file-meta-wrapper">
-                <span class="file-meta">${size} ${date ? `| ${date}` : ''}</span>
-                <span class="file-type-tag ${badgeClass}">${typeTag}</span>
-            </div>
-        `;
-        item.onclick = () => selectFile(file, item);
-        list.appendChild(item);
-        itemByName.set(file.name, item);
-    });
-
-    const preferredFile = sortedFiles.find(f => f.name === filename)
-        || files.find(f => f.type === 'batch')
-        || files[0];
+    const preferredFile = normalizedFiles.find(f => f.name === filename)
+        || normalizedFiles.find(f => f.type === 'batch')
+        || normalizedFiles[0];
     if (preferredFile) {
         const targetItem = itemByName.get(preferredFile.name) || list.querySelector('.file-item');
         if (targetItem) {
@@ -3106,6 +3107,56 @@ function placeConvertHashButton(location = 'default') {
     }
 }
 
+function placeFileFeedback(location = 'default') {
+    const feedback = document.getElementById('crack-file-feedback');
+    if (!feedback) return;
+
+    if (location === 'pre-attack') {
+        const anchor = document.getElementById('crack-file-feedback-pre-attack-anchor');
+        if (anchor && anchor.parentElement && anchor.nextElementSibling !== feedback) {
+            anchor.after(feedback);
+        }
+        return;
+    }
+
+    if (location === 'pre-conversions') {
+        const anchor = document.getElementById('crack-file-feedback-pre-conversions-anchor');
+        if (anchor && anchor.parentElement && anchor.nextElementSibling !== feedback) {
+            anchor.after(feedback);
+        }
+        return;
+    }
+
+    const statusContainer = document.querySelector('.crack-status-container');
+    if (statusContainer && statusContainer.parentElement && statusContainer.nextElementSibling !== feedback) {
+        statusContainer.after(feedback);
+        return;
+    }
+
+    const defaultAnchor = document.getElementById('crack-file-feedback-default-anchor');
+    if (defaultAnchor && defaultAnchor.parentElement && defaultAnchor.nextElementSibling !== feedback) {
+        defaultAnchor.after(feedback);
+    }
+}
+
+function setLegacyCrackingProgress(text, color = null, width = null, indeterminate = null) {
+    const progressText = document.getElementById('crack-progress-text');
+    const miniBar = document.getElementById('crack-mini-bar');
+
+    if (progressText && text !== null && text !== undefined) {
+        progressText.innerText = text;
+    }
+    if (progressText && color) {
+        progressText.style.color = color;
+    }
+    if (miniBar && width !== null && width !== undefined) {
+        miniBar.style.width = width;
+    }
+    if (miniBar && indeterminate !== null && indeterminate !== undefined) {
+        miniBar.classList.toggle('indeterminate', Boolean(indeterminate));
+    }
+}
+
 function setAttackPanelExpanded(toggle, section, expanded) {
     if (!toggle || !section) return;
     toggle.setAttribute('data-expanded', expanded ? 'true' : 'false');
@@ -3145,8 +3196,6 @@ async function selectFile(file, element) {
     const btnAircrack = document.getElementById('btn-quick-attack');
     const btnExtractDetails = document.getElementById('btn-extract-details');
     const typeBadge = document.getElementById('file-type-badge');
-    const progressText = document.getElementById('crack-progress-text');
-    const miniBar = document.getElementById('crack-mini-bar');
     const statusContainer = document.querySelector('.crack-status-container');
     const configPreview = document.getElementById('crack-config-preview');
     const aircrackOptions = document.getElementById('crack-aircrack-options');
@@ -3185,11 +3234,9 @@ async function selectFile(file, element) {
     if (activeJob) {
         updateCrackingPanelStatus(activeJob);
     } else {
-        miniBar.classList.remove('indeterminate');
-        miniBar.style.width = '0%';
-        miniBar.style.backgroundColor = 'var(--neon-cyan)';
-        progressText.innerText = 'READY';
-        progressText.style.color = '#888';
+        setLegacyCrackingProgress('READY', '#888', '0%', false);
+        const miniBar = document.getElementById('crack-mini-bar');
+        if (miniBar) miniBar.style.backgroundColor = 'var(--neon-cyan)';
     }
     
     const isRunning = activeJob && runningStatuses.includes(activeJob.status);
@@ -3200,6 +3247,7 @@ async function selectFile(file, element) {
     if (aircrackToggle) aircrackToggle.style.display = 'none';
     fileFeedback.style.display = 'none';
     placeConvertHashButton('default');
+    placeFileFeedback('default');
     btnConvert.style.display = 'none';
     if (statusContainer) statusContainer.style.display = 'none';
     const pmkToggle = document.getElementById('pmk-section-toggle');
@@ -3281,6 +3329,7 @@ async function selectFile(file, element) {
             }
             break;
         case 'raw_pcap':
+            placeFileFeedback('pre-conversions');
             placeConvertHashButton('raw-conversions');
             btnConvert.style.display = 'flex';
             btnConvert.innerHTML = '<i class="fa-solid fa-layer-group"></i> BUILD CANONICAL';
@@ -3368,6 +3417,7 @@ async function selectFile(file, element) {
             }
             break;
         case 'raw_22000':
+            placeFileFeedback('pre-attack');
             btnConvert.style.display = 'flex';
             configPreview.style.display = 'flex';
             if (statusContainer) statusContainer.style.display = 'flex';
@@ -3542,17 +3592,21 @@ async function selectFile(file, element) {
 export function updateCrackingPanelStatus(proc) {
     const progressText = document.getElementById('crack-progress-text');
     const miniBar = document.getElementById('crack-mini-bar');
-    
-    if (!progressText || !miniBar) return;
-    
+
     if (proc.indeterminate) {
-        miniBar.classList.add('indeterminate');
-        miniBar.style.width = '100%';
-        progressText.innerText = `${proc.status} ${proc.extraInfo ? `| ${proc.extraInfo}` : ''}`;
+        setLegacyCrackingProgress(
+            `${proc.status} ${proc.extraInfo ? `| ${proc.extraInfo}` : ''}`,
+            null,
+            '100%',
+            true
+        );
     } else {
-        miniBar.classList.remove('indeterminate');
-        miniBar.style.width = `${proc.percentage}%`;
-        progressText.innerText = `${proc.status} (${proc.percentage}%) ${proc.extraInfo ? `| ${proc.extraInfo}` : ''}`;
+        setLegacyCrackingProgress(
+            `${proc.status} (${proc.percentage}%) ${proc.extraInfo ? `| ${proc.extraInfo}` : ''}`,
+            null,
+            `${proc.percentage}%`,
+            false
+        );
     }
     
     let color = 'var(--neon-cyan)';
@@ -3560,8 +3614,8 @@ export function updateCrackingPanelStatus(proc) {
     if (proc.status === 'FAILED' || proc.status === 'ERROR' || proc.status === 'EXHAUSTED' || proc.status === 'CANCELED') color = 'var(--neon-red)';
     if (proc.status === 'QUEUED') color = 'var(--neon-yellow)';
     
-    progressText.style.color = color;
-    miniBar.style.backgroundColor = color;
+    if (progressText) progressText.style.color = color;
+    if (miniBar) miniBar.style.backgroundColor = color;
     
     // Update buttons state
     const isRunning = ['RUNNING', 'QUEUED', 'STARTING', 'AUTOTUNING', 'BUILDING CACHE', 'INIT KERNELS'].includes(proc.status);
@@ -4346,8 +4400,6 @@ function renderDetailsView(d, recommendation = null) {
 async function startConversion() {
     const btn = document.getElementById('btn-convert-hash');
     const btnPcap = document.getElementById('btn-pcap-generate-hash');
-    const progressText = document.getElementById('crack-progress-text');
-    const miniBar = document.getElementById('crack-mini-bar');
     const ssid = document.getElementById('crack-ssid').innerText;
     
     const targetName = selectedFile.name.replace(/\.pcap$/i, '.22000');
@@ -4370,10 +4422,7 @@ async function startConversion() {
         btnPcap.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
     }
 
-    progressText.innerText = 'Starting conversion job...';
-    progressText.style.color = 'var(--text-main)';
-    miniBar.style.width = '10%';
-    miniBar.classList.remove('indeterminate');
+    setLegacyCrackingProgress('Starting conversion job...', 'var(--text-main)', '10%', false);
     
     try {
         const res = await API.convertPcap(
@@ -4398,9 +4447,7 @@ async function startConversion() {
                 btnPcap.disabled = false;
                 btnPcap.innerHTML = '<i class="fa-solid fa-hashtag"></i> GENERATE HASH (22000)';
             }
-            progressText.innerText = 'FAILED TO START';
-            progressText.style.color = 'var(--neon-red)';
-            miniBar.style.width = '0%';
+            setLegacyCrackingProgress('FAILED TO START', 'var(--neon-red)', '0%', false);
         }
     } catch (e) {
         log(`API Error: ${e.message}`, 'error');
@@ -4414,25 +4461,19 @@ async function startConversion() {
             btnPcap.disabled = false;
             btnPcap.innerHTML = '<i class="fa-solid fa-hashtag"></i> GENERATE HASH (22000)';
         }
-        progressText.innerText = 'API ERROR';
-        progressText.style.color = 'var(--neon-red)';
+        setLegacyCrackingProgress('API ERROR', 'var(--neon-red)', null, false);
     }
 }
 
 
 async function startCracking() {
     const btn = document.getElementById('btn-convert-hash');
-    const progressText = document.getElementById('crack-progress-text');
-    const miniBar = document.getElementById('crack-mini-bar');
     const ssid = document.getElementById('crack-ssid').innerText;
     const mac = document.getElementById('crack-mac').innerText;
     
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> CRACKING...';
-    progressText.innerText = 'Starting Hashcat job...';
-    progressText.style.color = 'var(--text-main)';
-    miniBar.style.width = '5%';
-    miniBar.classList.remove('indeterminate');
+    setLegacyCrackingProgress('Starting Hashcat job...', 'var(--text-main)', '5%', false);
     
     try {
         let attackMode, workloadProfile, wordlist, ruleFile, customMask, isOptimized, isSlow, deviceId, enablePotfile, wordlist2;
@@ -4503,9 +4544,7 @@ async function startCracking() {
             log("Select a custom wordlist before starting this attack mode.", "error");
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-cat"></i> START CRACKING (HASHCAT)';
-            progressText.innerText = 'WORDLIST REQUIRED';
-            progressText.style.color = 'var(--neon-red)';
-            miniBar.style.width = '0%';
+            setLegacyCrackingProgress('WORDLIST REQUIRED', 'var(--neon-red)', '0%', false);
             return;
         }
 
@@ -4513,9 +4552,7 @@ async function startCracking() {
             log("Select a second wordlist before starting Combinator Passphrase mode.", "error");
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-cat"></i> START CRACKING (HASHCAT)';
-            progressText.innerText = 'SECOND WORDLIST REQUIRED';
-            progressText.style.color = 'var(--neon-red)';
-            miniBar.style.width = '0%';
+            setLegacyCrackingProgress('SECOND WORDLIST REQUIRED', 'var(--neon-red)', '0%', false);
             return;
         }
 
@@ -4523,9 +4560,7 @@ async function startCracking() {
             log("Select a .hcmask profile before starting this attack mode.", "error");
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-cat"></i> START CRACKING (HASHCAT)';
-            progressText.innerText = 'MASK PROFILE REQUIRED';
-            progressText.style.color = 'var(--neon-red)';
-            miniBar.style.width = '0%';
+            setLegacyCrackingProgress('MASK PROFILE REQUIRED', 'var(--neon-red)', '0%', false);
             return;
         }
 
@@ -4535,9 +4570,7 @@ async function startCracking() {
                 log("Add at least one association hint before starting Multi-Hints mode.", "error");
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-cat"></i> START CRACKING (HASHCAT)';
-                progressText.innerText = 'HINT REQUIRED';
-                progressText.style.color = 'var(--neon-red)';
-                miniBar.style.width = '0%';
+                setLegacyCrackingProgress('HINT REQUIRED', 'var(--neon-red)', '0%', false);
                 return;
             }
         }
@@ -4591,39 +4624,30 @@ async function startCracking() {
             log(`Cracking failed to start: ${res.message}`, 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-cat"></i> START CRACKING (HASHCAT)';
-            progressText.innerText = 'FAILED TO START';
-            progressText.style.color = 'var(--neon-red)';
-            miniBar.style.width = '0%';
+            setLegacyCrackingProgress('FAILED TO START', 'var(--neon-red)', '0%', false);
         }
     } catch (e) {
         log(`API Error: ${e.message}`, 'error');
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-cat"></i> START CRACKING (HASHCAT)';
-        progressText.innerText = 'API ERROR';
-        progressText.style.color = 'var(--neon-red)';
+        setLegacyCrackingProgress('API ERROR', 'var(--neon-red)', null, false);
     }
 }
 
 async function startAircrack() {
     const btn = document.getElementById('btn-quick-attack');
-    const progressText = document.getElementById('crack-progress-text');
-    const miniBar = document.getElementById('crack-mini-bar');
     const ssid = document.getElementById('crack-ssid').innerText;
     const mac = document.getElementById('crack-mac').innerText;
     const wordlist = document.getElementById('wordlist-select').value;
     if (!wordlist) {
         log("Select a custom wordlist before starting Aircrack-ng.", "error");
-        progressText.innerText = 'WORDLIST REQUIRED';
-        progressText.style.color = 'var(--neon-red)';
+        setLegacyCrackingProgress('WORDLIST REQUIRED', 'var(--neon-red)', null, false);
         return;
     }
     
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
-    progressText.innerText = 'Starting Aircrack-ng job...';
-    progressText.style.color = 'var(--text-main)';
-    miniBar.style.width = '5%';
-    miniBar.classList.remove('indeterminate');
+    setLegacyCrackingProgress('Starting Aircrack-ng job...', 'var(--text-main)', '5%', false);
     
     try {
         const res = await API.startAircrack(
@@ -4641,16 +4665,13 @@ async function startAircrack() {
             log(`Aircrack failed to start: ${res.message}`, 'error');
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-wind"></i> QUICK ATTACK (AIRCRACK-NG)';
-            progressText.innerText = 'FAILED TO START';
-            progressText.style.color = 'var(--neon-red)';
-            miniBar.style.width = '0%';
+            setLegacyCrackingProgress('FAILED TO START', 'var(--neon-red)', '0%', false);
         }
     } catch (e) {
         log(`API Error: ${e.message}`, 'error');
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-wind"></i> QUICK ATTACK (AIRCRACK-NG)';
-        progressText.innerText = 'API ERROR';
-        progressText.style.color = 'var(--neon-red)';
+        setLegacyCrackingProgress('API ERROR', 'var(--neon-red)', null, false);
     }
 }
 

@@ -82,4 +82,4 @@ cd backend
 .venv313/bin/python -m app.tools.build_demo_data --validate
 ```
 
-`showcase-core-v1`, `showcase-core-v2`, `showcase-core-v3`, and `showcase-core-v4` are still kept in the repository as fallback regression/demo profiles, but `showcase-core-v5` is now the default pack installed by the UI.
+Only `showcase-core-v5` is tracked as the public demo profile. Older experimental packs were removed to keep the repository smaller and avoid maintaining obsolete demo assets.
