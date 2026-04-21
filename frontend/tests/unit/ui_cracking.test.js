@@ -589,8 +589,13 @@ describe("ui_cracking actions", () => {
       .find((el) => el.textContent.includes("RAW Sniffer"));
     const rawDeviceHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
       .find((el) => el.textContent.includes("Bruce"));
+    const rawRoot = rawRootHeader?.closest(".capture-group-raw-root");
+    const rawBody = rawRoot?.querySelector(":scope > .crack-raw-context-body");
+    const rawChild = rawBody?.querySelector(":scope > .capture-group-raw-child");
     expect(rawRootHeader?.classList.contains("capture-group-header-active")).toBe(true);
     expect(rawDeviceHeader?.classList.contains("capture-group-header-active")).toBe(true);
+    expect(rawBody?.classList.contains("crack-raw-context-body-tree")).toBe(true);
+    expect(rawChild?.querySelector(":scope > .capture-group-header")?.textContent).toContain("Bruce");
   });
 
   test("combined and legacy selections activate their own accordions", async () => {
@@ -748,6 +753,12 @@ describe("ui_cracking actions", () => {
     await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe");
     await flushAsync();
 
+    const rawRoot = document.querySelector("#crack-file-list .capture-group-raw-root");
+    const rawChildren = Array.from(rawRoot.querySelectorAll(":scope > .crack-raw-context-body > .capture-group-raw-child"));
+    expect(rawChildren).toHaveLength(2);
+    expect(rawChildren[0].textContent).toContain("Bruce");
+    expect(rawChildren[1].textContent).toContain("M5Evil");
+
     const initialSelected = document.getElementById("selected-file-info").textContent;
     const rawRootHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
       .find((el) => el.textContent.includes("RAW Sniffer"));
@@ -760,6 +771,32 @@ describe("ui_cracking actions", () => {
     bruceRawHeader.click();
     await flushAsync();
     expect(document.getElementById("selected-file-info").textContent).toContain("raw_city_center.pcap");
+  });
+
+  test("RAW canonical WDRS accordion renders as a RAW child branch", async () => {
+    mockAPI.getHandshakeFiles.mockResolvedValueOnce([
+      { name: "hidden_aabbccddeeff__wdrs__.22000", type: "22000", size: 90, modified: 1700000003, source: "legacy", device_label: "Legacy", source_path_role: "handshakes" },
+    ]);
+    mockAPI.getHandshakeRawContext.mockResolvedValueOnce({
+      present: true,
+      bssid: "AA:BB:CC:DD:EE:FF",
+      files: [{ raw_item_id: "raw::pcap::bruce-1", source: "brucegotchi", device_label: "Bruce", source_file: "raw_city_center.pcap", filename: "raw_city_center.pcap", eapol_count: 2, beacon_count: 9 }],
+      hash_files: [],
+    });
+
+    const uiCracking = loadUiCrackingModule();
+    uiCracking.setupCrackingListeners();
+    await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe");
+    await flushAsync();
+
+    const rawRoot = document.querySelector("#crack-file-list .capture-group-raw-root");
+    const rawChildren = Array.from(rawRoot.querySelectorAll(":scope > .crack-raw-context-body > .capture-group-raw-child"));
+    expect(rawChildren.map((node) => node.querySelector(":scope > .capture-group-header")?.textContent)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("Bruce"),
+        expect.stringContaining("Canonical (WDRS)"),
+      ])
+    );
   });
 
   test("single accordion mode closes sibling top-level groups when opening another branch", async () => {

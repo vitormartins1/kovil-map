@@ -1466,6 +1466,9 @@ function appendRawContextAccordion(
 
     const body = document.createElement('div');
     body.className = 'capture-group-body crack-raw-context-body';
+    if (grouped.length || canonicalFiles.length) {
+        body.classList.add('crack-raw-context-body-tree');
+    }
     body.hidden = !expanded;
 
     const toolbar = document.createElement('div');
@@ -1487,7 +1490,7 @@ function appendRawContextAccordion(
 
     grouped.forEach((group) => {
         const nested = document.createElement('div');
-        nested.className = 'capture-group capture-group-raw-device';
+        nested.className = 'capture-group capture-group-raw-device capture-group-raw-child';
         const nestedExpanded = expanded && group.items.some((item) => {
             const targetName = String(fileToSelectName || '').trim();
             const targetRawId = String(contextOptions?.rawItemId || '').trim();
@@ -1573,7 +1576,7 @@ function appendRawContextAccordion(
 
     if (canonicalFiles.length) {
         const canonical = document.createElement('div');
-        canonical.className = 'capture-group capture-group-raw-device';
+        canonical.className = 'capture-group capture-group-raw-device capture-group-raw-child';
         const canonicalExpanded = expanded && canonicalFiles.some(
             (file) => String(file?.name || '').trim() === String(fileToSelectName || '').trim()
         );
