@@ -44,7 +44,7 @@ O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Rec
 ## WarDrive Workspace
 
 <p align="center">
-  <img src="docs/assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png" alt="Workspace de WarDrive do KOVIL MAP reproduzindo uma sessao no Rio de Janeiro" />
+  <img src="docs/assets/screenshots/wardrive-sessions.gif" alt="Workspace de WarDrive do KOVIL MAP reproduzindo uma sessao no Rio de Janeiro" />
 </p>
 
 - hierarquia de sessoes e exploracao regional para conjuntos grandes de rotas em CSV

@@ -78,3 +78,4 @@ docs/.DS_Store
 .github/.DS_Store
 frontend/.DS_Store
 backend/config.local.json
+/backend/data/airolib

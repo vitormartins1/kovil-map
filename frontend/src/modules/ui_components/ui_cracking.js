@@ -24,12 +24,18 @@ let currentBatchManifestItems = [];
 let currentRawContext = null;
 let rawPrepareAllRunningMac = null;
 let crackingAccordionMode = 'multi';
+let crackingAttackPanelMode = 'multi';
 
 function notifyRightPanelsModeChanged() {
     document.dispatchEvent(new CustomEvent('rightPanelsModeChanged'));
 }
 
 function normalizeCrackingAccordionMode(value) {
+    const normalized = String(value || 'multi').trim().toLowerCase();
+    return normalized === 'single' ? 'single' : 'multi';
+}
+
+function normalizeCrackingAttackPanelMode(value) {
     const normalized = String(value || 'multi').trim().toLowerCase();
     return normalized === 'single' ? 'single' : 'multi';
 }
@@ -900,11 +906,11 @@ function getFileVisuals(file) {
         typeTag = 'PCAP';
         badgeClass = 'badge-pcap';
     } else if (type === 'raw_pcap') {
-        icon = 'fa-wave-square';
+        icon = 'fa-handshake';
         typeTag = 'RAW PCAP';
         badgeClass = 'badge-pcap';
     } else if (type === 'raw_22000') {
-        icon = 'fa-file-half-dashed';
+        icon = 'fa-hashtag';
         typeTag = 'RAW 22000';
         badgeClass = 'badge-hash';
     } else if (type === 'details' || name.endsWith('.details')) {
@@ -1080,8 +1086,11 @@ function renderFileRow(file, itemByKey, options = {}) {
     const legacyBadge = file.legacy_shared && !isCanonical
         ? renderSemanticBadge('SHARED', 'legacy-badge crack-legacy-badge-inline badge-role-state-shared')
         : '';
+    const combinedMetaText = file.combined_build_id
+        ? `captures ${Number(file.included_capture_count || 0)} | deduped ${Number(file.deduped_hash_count || 0)}`
+        : '';
     const combinedMeta = file.combined_build_id
-        ? `<span class="file-meta">captures ${Number(file.included_capture_count || 0)} | deduped ${Number(file.deduped_hash_count || 0)}</span>`
+        ? `<span class="file-meta file-meta-combined" title="${escapeHtml(combinedMetaText)}">${escapeHtml(combinedMetaText)}</span>`
         : '';
 
     item.innerHTML = `
@@ -1090,7 +1099,7 @@ function renderFileRow(file, itemByKey, options = {}) {
             <span class="file-name-text" title="${escapeHtml(actualName || displayName)}">${escapeHtml(displayName || actualName)}</span>
         </div>
         <div class="file-meta-wrapper">
-            <span class="file-meta">${escapeHtml(metaText)}</span>
+            <span class="file-meta" title="${escapeHtml(metaText)}">${escapeHtml(metaText)}</span>
             ${combinedMeta}
             ${sourceBadge}
             ${legacyBadge}
@@ -1360,9 +1369,7 @@ function renderRawContextRow(item, itemByKey) {
     fileRow.dataset.fileKey = selectable.ui_key;
     fileRow.dataset.rawItemId = selectable.raw_item_id || '';
 
-    const icon = selectable.type === 'raw_pcap' ? 'fa-wave-square' : 'fa-file-half-dashed';
-    const badgeClass = selectable.type === 'raw_pcap' ? 'badge-pcap' : 'badge-hash';
-    const typeTag = selectable.type === 'raw_pcap' ? 'RAW PCAP' : 'RAW 22000';
+    const { icon, typeTag, badgeClass } = getFileVisuals(selectable);
     const metaBits = [];
     if (selectable.type === 'raw_pcap') {
         if (Number(item.eapol_count || 0) > 0) metaBits.push(`EAPOL ${Number(item.eapol_count || 0)}`);
@@ -1372,8 +1379,7 @@ function renderRawContextRow(item, itemByKey) {
         if (Number(item.valid_hash_lines || 0) > 0) metaBits.push(`${Number(item.valid_hash_lines || 0)} valid line(s)`);
         if (item.source_raw_file) metaBits.push(`from ${String(item.source_raw_file)}`);
     }
-    const subtypeLabel = getRawSubtypeLabel(item?.source_path_role);
-    if (subtypeLabel) metaBits.unshift(subtypeLabel);
+    const metaText = metaBits.join(' | ');
 
     fileRow.innerHTML = `
         <div class="file-name-wrapper">
@@ -1381,7 +1387,7 @@ function renderRawContextRow(item, itemByKey) {
             <span class="file-name-text" title="${escapeHtml(selectable.name)}">${escapeHtml(selectable.name)}</span>
         </div>
         <div class="file-meta-wrapper">
-            ${metaBits.length ? `<span class="file-meta">${escapeHtml(metaBits.join(' | '))}</span>` : ''}
+            ${metaText ? `<span class="file-meta" title="${escapeHtml(metaText)}">${escapeHtml(metaText)}</span>` : ''}
             <span class="file-type-tag ${badgeClass}">${typeTag}</span>
         </div>
     `;
@@ -1488,6 +1494,10 @@ function appendRawContextAccordion(
     toolbar.appendChild(prepareAll);
     body.appendChild(toolbar);
 
+    let firstChildBody = null;
+    let firstChildHeader = null;
+    let firstChildDefaultFile = null;
+
     grouped.forEach((group) => {
         const nested = document.createElement('div');
         nested.className = 'capture-group capture-group-raw-device capture-group-raw-child';
@@ -1556,6 +1566,12 @@ function appendRawContextAccordion(
             }
         });
 
+        if (!firstChildBody && nestedDefaultFile) {
+            firstChildBody = nestedBody;
+            firstChildHeader = nestedHeader;
+            firstChildDefaultFile = nestedDefaultFile;
+        }
+
         nestedHeader.addEventListener('click', () => {
             const nextHidden = !nestedBody.hidden;
             if (!nextHidden) {
@@ -1606,6 +1622,12 @@ function appendRawContextAccordion(
                 canonicalBody.appendChild(renderFileRow(file, itemByKey));
             });
 
+        if (!firstChildBody && canonicalFiles[0]) {
+            firstChildBody = canonicalBody;
+            firstChildHeader = canonicalHeader;
+            firstChildDefaultFile = canonicalFiles[0];
+        }
+
         canonicalHeader.addEventListener('click', () => {
             const nextHidden = !canonicalBody.hidden;
             if (!nextHidden) {
@@ -1639,6 +1661,12 @@ function appendRawContextAccordion(
         body.hidden = nextHidden;
         const arrow = header.querySelector('.capture-group-arrow');
         if (arrow) arrow.classList.toggle('capture-group-arrow-open', !nextHidden);
+        if (!nextHidden && firstChildBody && firstChildBody.hidden) {
+            firstChildBody.hidden = false;
+            const childArrow = firstChildHeader?.querySelector('.capture-group-arrow');
+            if (childArrow) childArrow.classList.add('capture-group-arrow-open');
+            autoSelectGroupFile(firstChildDefaultFile, itemByKey);
+        }
     });
 
     topLevel.appendChild(header);
@@ -2929,44 +2957,74 @@ async function loadCrackingDefaults() {
     }
 }
 
+function renderCompactChip(label, value, className = 'crack-summary-chip') {
+    if (value === null || value === undefined || value === '') return '';
+    return `<span class="${className}"><span>${escapeHtml(label)}</span><b>${escapeHtml(String(value))}</b></span>`;
+}
+
+function renderCompactChipRow(chips, className = 'crack-summary-chip-row') {
+    const html = chips.filter(Boolean).join('');
+    return html ? `<div class="${className}">${html}</div>` : '';
+}
+
+function renderWarningBlock(warnings, className = 'crack-summary-warnings') {
+    const items = (Array.isArray(warnings) ? warnings : []).filter((warning) => String(warning || '').trim());
+    if (!items.length) return '';
+    return `<div class="${className}">${items.map((warning) => `<div>${escapeHtml(String(warning))}</div>`).join('')}</div>`;
+}
+
+function renderArtifactSummary({ kicker, title, badges = '', chips = [], warnings = [], body = '' }) {
+    return `
+        <div class="crack-artifact-summary">
+            <div class="crack-artifact-summary-head">
+                <div>
+                    <div class="crack-artifact-summary-kicker">${escapeHtml(kicker || 'Artifact')}</div>
+                    <div class="crack-artifact-summary-title">${escapeHtml(title || 'Unknown artifact')}</div>
+                </div>
+                <div class="crack-artifact-summary-badges">${badges}</div>
+            </div>
+            ${renderCompactChipRow(chips)}
+            ${renderWarningBlock(warnings)}
+            ${body}
+        </div>
+    `;
+}
+
 function renderRawContextItemView(item, details = null) {
     const rawItem = item && typeof item === 'object' ? item : {};
     const artifactType = String(rawItem.artifact_type || '').trim().toLowerCase();
-    const metaBits = [];
+    const metaChips = [];
     if (artifactType === 'pcap') {
-        if (rawItem.ssid) metaBits.push(`SSID ${String(rawItem.ssid)}`);
-        if (Number.isFinite(Number(rawItem.channel))) metaBits.push(`Channel ${Number(rawItem.channel)}`);
-        if (Number.isFinite(Number(rawItem.frequency_mhz))) metaBits.push(`${Number(rawItem.frequency_mhz)} MHz`);
-        if (Number(rawItem.beacon_count || 0) > 0) metaBits.push(`Beacons ${Number(rawItem.beacon_count || 0)}`);
-        if (Number(rawItem.eapol_count || 0) > 0) metaBits.push(`EAPOL ${Number(rawItem.eapol_count || 0)}`);
-        if (rawItem.processed_at) metaBits.push(formatRawProcessedAt(rawItem.processed_at));
+        if (rawItem.ssid) metaChips.push(renderCompactChip('SSID', rawItem.ssid));
+        if (Number.isFinite(Number(rawItem.channel))) metaChips.push(renderCompactChip('CH', Number(rawItem.channel)));
+        if (Number.isFinite(Number(rawItem.frequency_mhz))) metaChips.push(renderCompactChip('FREQ', `${Number(rawItem.frequency_mhz)} MHz`));
+        if (Number(rawItem.beacon_count || 0) > 0) metaChips.push(renderCompactChip('BEACONS', Number(rawItem.beacon_count || 0)));
+        if (Number(rawItem.eapol_count || 0) > 0) metaChips.push(renderCompactChip('EAPOL', Number(rawItem.eapol_count || 0)));
+        if (rawItem.processed_at) metaChips.push(renderCompactChip('PROCESSED', formatRawProcessedAt(rawItem.processed_at)));
     } else {
-        if (Number(rawItem.valid_hash_lines || 0) > 0) metaBits.push(`${Number(rawItem.valid_hash_lines || 0)} valid line(s)`);
-        if (Number(rawItem.matched_lines || 0) > 0) metaBits.push(`${Number(rawItem.matched_lines || 0)} matched line(s)`);
-        if (rawItem.source_raw_file) metaBits.push(`Source ${String(rawItem.source_raw_file)}`);
-        if (rawItem.matched_ssid) metaBits.push(`Matched SSID ${String(rawItem.matched_ssid)}`);
-        if (rawItem.primary_ssid) metaBits.push(`Primary SSID ${String(rawItem.primary_ssid)}`);
+        if (Number(rawItem.valid_hash_lines || 0) > 0) metaChips.push(renderCompactChip('VALID', `${Number(rawItem.valid_hash_lines || 0)} line(s)`));
+        if (Number(rawItem.matched_lines || 0) > 0) metaChips.push(renderCompactChip('MATCHED', `${Number(rawItem.matched_lines || 0)} line(s)`));
+        if (rawItem.source_raw_file) metaChips.push(renderCompactChip('SOURCE', rawItem.source_raw_file));
+        if (rawItem.matched_ssid) metaChips.push(renderCompactChip('MATCHED SSID', rawItem.matched_ssid));
+        if (rawItem.primary_ssid) metaChips.push(renderCompactChip('PRIMARY SSID', rawItem.primary_ssid));
     }
 
     const warnings = Array.isArray(rawItem.warnings) ? rawItem.warnings : [];
-    const warningsHtml = warnings.length
-        ? `<div class="crack-raw-view-warnings">${warnings.map((warning) => `<div>${escapeHtml(String(warning))}</div>`).join('')}</div>`
-        : '';
     const analysisSummary = rawItem.analysis_summary && typeof rawItem.analysis_summary === 'object'
         ? rawItem.analysis_summary
         : null;
-    const analysisBits = [];
+    const analysisChips = [];
     if (analysisSummary) {
-        if (analysisSummary.duration_s != null) analysisBits.push(`Duration ${Number(analysisSummary.duration_s).toFixed(Number(analysisSummary.duration_s) >= 10 ? 0 : 1)}s`);
-        if (analysisSummary.networks_count != null) analysisBits.push(`Networks ${Number(analysisSummary.networks_count)}`);
-        if (analysisSummary.clients_count != null) analysisBits.push(`Clients ${Number(analysisSummary.clients_count)}`);
-        if (analysisSummary.handshake_candidate_count != null) analysisBits.push(`Handshake cands ${Number(analysisSummary.handshake_candidate_count)}`);
-        if (analysisSummary.noisy_capture) analysisBits.push('Noisy capture');
+        if (analysisSummary.duration_s != null) analysisChips.push(renderCompactChip('DURATION', `${Number(analysisSummary.duration_s).toFixed(Number(analysisSummary.duration_s) >= 10 ? 0 : 1)}s`));
+        if (analysisSummary.networks_count != null) analysisChips.push(renderCompactChip('NETWORKS', Number(analysisSummary.networks_count)));
+        if (analysisSummary.clients_count != null) analysisChips.push(renderCompactChip('CLIENTS', Number(analysisSummary.clients_count)));
+        if (analysisSummary.handshake_candidate_count != null) analysisChips.push(renderCompactChip('CANDIDATES', Number(analysisSummary.handshake_candidate_count)));
+        if (analysisSummary.noisy_capture) analysisChips.push(renderCompactChip('CAPTURE', 'Noisy'));
     }
     const analysisBlock = artifactType === 'pcap' && rawItem.analysis_present
         ? `
-            <div class="crack-raw-view-meta">RAW Analysis available.</div>
-            ${analysisBits.length ? `<div class="crack-raw-view-meta">${escapeHtml(analysisBits.join(' | '))}</div>` : ''}
+            <div class="crack-summary-note">RAW Analysis available.</div>
+            ${renderCompactChipRow(analysisChips)}
             <button
                 type="button"
                 class="cyber-button-small bg-cyan fg-black"
@@ -2978,60 +3036,100 @@ function renderRawContextItemView(item, details = null) {
             </button>
         `
         : '';
-    const detailsBadge = rawItem.details_present && rawItem.details_filename
-        ? `<div class="crack-raw-view-meta">Details: ${escapeHtml(String(rawItem.details_filename))}</div>`
-        : '';
+    if (rawItem.details_present && rawItem.details_filename) {
+        metaChips.push(renderCompactChip('DETAILS', rawItem.details_filename));
+    }
     const subtypeLabel = getRawSubtypeLabel(rawItem.source_path_role);
     const subtypeBadge = subtypeLabel
         ? `<span class="file-type-tag badge-details">${escapeHtml(subtypeLabel)}</span>`
         : '';
+    const badges = `
+        ${artifactType === '22000'
+            ? renderSemanticBadge('RAW HASH', 'source-badge badge-role-state-raw')
+            : `<span class="${getSourceBadgeClass(rawItem.source)}">${escapeHtml(rawItem.device_label || rawItem.source || 'RAW')}</span>`}
+        ${subtypeBadge}
+        <span class="file-type-tag ${artifactType === 'pcap' ? 'badge-pcap' : 'badge-hash'}">${artifactType === 'pcap' ? 'RAW PCAP' : 'RAW 22000'}</span>
+    `;
+    const title = rawItem.filename || rawItem.source_file || 'RAW item';
 
     if (details && artifactType === 'pcap') {
-        const summaryBits = metaBits.length
-            ? `<div class="crack-raw-view-meta">${escapeHtml(metaBits.join(' | '))}</div>`
-            : '';
         return `
             <div class="crack-raw-details-shell">
-                <div class="crack-raw-details-head">
-                    <i class="fa-solid fa-magnifying-glass-chart crack-raw-details-icon"></i>
-                    <span class="crack-raw-details-label">DETAILS</span>
-                    <span class="${getSourceBadgeClass(rawItem.source)}">${escapeHtml(rawItem.device_label || rawItem.source || 'RAW')}</span>
-                    ${subtypeBadge}
-                    <span class="file-type-tag badge-pcap">RAW PCAP</span>
-                </div>
-                <div class="crack-raw-view-title">${escapeHtml(rawItem.filename || rawItem.source_file || 'RAW item')}</div>
-                ${summaryBits}
-                ${detailsBadge}
-                ${warningsHtml}
+                ${renderArtifactSummary({
+                    kicker: 'RAW PCAP details',
+                    title,
+                    badges,
+                    chips: metaChips,
+                    warnings,
+                })}
                 ${renderDetailsView(details)}
             </div>
         `;
     }
 
     const detailsBlock = artifactType === 'pcap' && rawItem.details_present
-        ? '<div class="crack-raw-view-meta">Details are available for this RAW capture.</div>'
+        ? '<div class="crack-summary-note">Details are available for this RAW capture.</div>'
         : '';
 
-    return `
-        <div class="crack-raw-view">
-            <div class="crack-raw-view-header">
-                <div class="crack-raw-view-title-row">
-                    ${artifactType === '22000'
-                        ? renderSemanticBadge('RAW HASH', 'source-badge badge-role-state-raw')
-                        : `<span class="${getSourceBadgeClass(rawItem.source)}">${escapeHtml(rawItem.device_label || rawItem.source || 'RAW')}</span>`}
-                    ${subtypeBadge}
-                    <span class="file-type-tag ${artifactType === 'pcap' ? 'badge-pcap' : 'badge-hash'}">${artifactType === 'pcap' ? 'RAW PCAP' : 'RAW 22000'}</span>
-                </div>
-                <div class="crack-raw-view-title">${escapeHtml(rawItem.filename || rawItem.source_file || 'RAW item')}</div>
-            </div>
-            ${metaBits.map((bit) => `<div class="crack-raw-view-meta">${escapeHtml(String(bit))}</div>`).join('')}
-            ${detailsBadge}
-            ${warningsHtml}
+    return renderArtifactSummary({
+        kicker: artifactType === 'pcap' ? 'RAW capture artifact' : 'RAW hash artifact',
+        title,
+        badges,
+        chips: metaChips,
+        warnings,
+        body: `
             ${analysisBlock}
-            ${artifactType === '22000' ? '<div class="crack-raw-view-meta">RAW hash files can be cracked directly or used to build a canonical WDRS hash for this network.</div>' : ''}
+            ${artifactType === '22000' ? '<div class="crack-summary-note">RAW hash files can be cracked directly or used to build a canonical WDRS hash for this network.</div>' : ''}
             ${detailsBlock}
-        </div>
-    `;
+        `,
+    });
+}
+
+function placeConvertHashButton(location = 'default') {
+    const button = document.getElementById('btn-convert-hash');
+    if (!button) return;
+
+    if (location === 'raw-conversions') {
+        const rawSlot = document.getElementById('raw-canonical-conversion-slot');
+        if (rawSlot && button.parentElement !== rawSlot) {
+            rawSlot.appendChild(button);
+        }
+        if (rawSlot) rawSlot.style.display = 'flex';
+        return;
+    }
+
+    const rawSlot = document.getElementById('raw-canonical-conversion-slot');
+    if (rawSlot) rawSlot.style.display = 'none';
+    const anchor = document.getElementById('btn-convert-hash-anchor');
+    if (anchor && anchor.parentElement && anchor.nextElementSibling !== button) {
+        anchor.after(button);
+    }
+}
+
+function setAttackPanelExpanded(toggle, section, expanded) {
+    if (!toggle || !section) return;
+    toggle.setAttribute('data-expanded', expanded ? 'true' : 'false');
+    section.style.display = expanded ? 'flex' : 'none';
+    const arrow = toggle.querySelector('.legacy-toggle-arrow');
+    if (arrow) arrow.classList.toggle('legacy-toggle-open', expanded);
+}
+
+function closeSiblingAttackPanels(activeToggle = null) {
+    if (crackingAttackPanelMode !== 'single') return;
+    document.querySelectorAll('[data-attack-panel-toggle]').forEach((toggle) => {
+        if (toggle === activeToggle) return;
+        const panelId = toggle.getAttribute('data-attack-panel-toggle');
+        const section = document.querySelector(`[data-attack-panel-body="${panelId}"]`);
+        setAttackPanelExpanded(toggle, section, false);
+    });
+}
+
+function toggleAttackPanel(toggle, section, onExpanded = null) {
+    if (!toggle || !section) return;
+    const nextExpanded = toggle.getAttribute('data-expanded') !== 'true';
+    if (nextExpanded) closeSiblingAttackPanels(toggle);
+    setAttackPanelExpanded(toggle, section, nextExpanded);
+    if (nextExpanded && typeof onExpanded === 'function') onExpanded();
 }
 
 async function selectFile(file, element) {
@@ -3101,6 +3199,7 @@ async function selectFile(file, element) {
     if (pcapConversions) pcapConversions.style.display = 'none';
     if (aircrackToggle) aircrackToggle.style.display = 'none';
     fileFeedback.style.display = 'none';
+    placeConvertHashButton('default');
     btnConvert.style.display = 'none';
     if (statusContainer) statusContainer.style.display = 'none';
     const pmkToggle = document.getElementById('pmk-section-toggle');
@@ -3162,18 +3261,27 @@ async function selectFile(file, element) {
             }
             
             if (isRunning) {
-                btnPcapHash.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
-                btnPcapHash.disabled = true;
-                btnAircrack.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
-                btnAircrack.disabled = true;
+                if (btnPcapHash) {
+                    btnPcapHash.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
+                    btnPcapHash.disabled = true;
+                }
+                if (btnAircrack) {
+                    btnAircrack.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
+                    btnAircrack.disabled = true;
+                }
             } else {
-                btnPcapHash.innerHTML = '<i class="fa-solid fa-hashtag"></i> GENERATE HASH (22000)';
-                btnPcapHash.disabled = false;
-                btnAircrack.innerHTML = '<i class="fa-solid fa-wind"></i> QUICK ATTACK (AIRCRACK-NG)';
-                btnAircrack.disabled = false;
+                if (btnPcapHash) {
+                    btnPcapHash.innerHTML = '<i class="fa-solid fa-hashtag"></i> GENERATE HASH (22000)';
+                    btnPcapHash.disabled = false;
+                }
+                if (btnAircrack) {
+                    btnAircrack.innerHTML = '<i class="fa-solid fa-wind"></i> QUICK ATTACK (AIRCRACK-NG)';
+                    btnAircrack.disabled = false;
+                }
             }
             break;
         case 'raw_pcap':
+            placeConvertHashButton('raw-conversions');
             btnConvert.style.display = 'flex';
             btnConvert.innerHTML = '<i class="fa-solid fa-layer-group"></i> BUILD CANONICAL';
             btnConvert.disabled = Boolean(isRunning);
@@ -3240,15 +3348,23 @@ async function selectFile(file, element) {
                 }
             }
             if (isRunning) {
-                btnPcapHash.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
-                btnPcapHash.disabled = true;
-                btnAircrack.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
-                btnAircrack.disabled = true;
+                if (btnPcapHash) {
+                    btnPcapHash.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
+                    btnPcapHash.disabled = true;
+                }
+                if (btnAircrack) {
+                    btnAircrack.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> BUSY...';
+                    btnAircrack.disabled = true;
+                }
             } else {
-                btnPcapHash.innerHTML = '<i class="fa-solid fa-hashtag"></i> GENERATE HASH (22000)';
-                btnPcapHash.disabled = false;
-                btnAircrack.innerHTML = '<i class="fa-solid fa-wind"></i> QUICK ATTACK (AIRCRACK-NG)';
-                btnAircrack.disabled = false;
+                if (btnPcapHash) {
+                    btnPcapHash.innerHTML = '<i class="fa-solid fa-hashtag"></i> GENERATE HASH (22000)';
+                    btnPcapHash.disabled = false;
+                }
+                if (btnAircrack) {
+                    btnAircrack.innerHTML = '<i class="fa-solid fa-wind"></i> QUICK ATTACK (AIRCRACK-NG)';
+                    btnAircrack.disabled = false;
+                }
             }
             break;
         case 'raw_22000':
@@ -3324,18 +3440,15 @@ async function selectFile(file, element) {
         case 'pcap.cracked':
             fileFeedback.style.display = 'flex';
             fileFeedback.style.flexDirection = 'column';
-            fileFeedback.style.alignItems = 'flex-start';
-            fileFeedback.style.gap = '5px';
+            fileFeedback.style.alignItems = 'stretch';
+            fileFeedback.style.gap = '8px';
             
-            fileFeedback.innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px; width:100%;">
-                    <i class="fa-solid fa-check-double" style="color: var(--neon-green)"></i> 
-                    <span style="color: var(--neon-green); font-weight:bold;">CRACKED DATA FOUND</span>
-                </div>
-                <div style="width:100%; text-align:center; padding:10px; color:#666;">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Loading content...
-                </div>
-            `;
+            fileFeedback.innerHTML = renderArtifactSummary({
+                kicker: 'Cracked credential',
+                title: file.name,
+                badges: '<span class="file-type-tag badge-cracked">CRACKED</span>',
+                body: '<div class="crack-summary-note"><i class="fa-solid fa-spinner fa-spin"></i> Loading content...</div>',
+            });
 
             try {
                 let content = await API.getFileContent(file.name, {
@@ -3349,17 +3462,19 @@ async function selectFile(file, element) {
                 
                 const formattedContent = `<div class="cracked-content-box">${escapeHtml(content)}</div>`;
 
-                fileFeedback.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px; width:100%; margin-bottom:5px;">
-                        <i class="fa-solid fa-check-double" style="color: var(--neon-green)"></i> 
-                        <span style="color: var(--neon-green); font-weight:bold;">CRACKED DATA FOUND</span>
-                    </div>
-                    ${formattedContent}
-                `;
+                fileFeedback.innerHTML = renderArtifactSummary({
+                    kicker: 'CRACKED DATA FOUND',
+                    title: file.name,
+                    badges: '<span class="file-type-tag badge-cracked">CRACKED</span>',
+                    body: formattedContent,
+                });
             } catch (e) {
-                fileFeedback.innerHTML = `
-                    <div style="color: var(--neon-red);"><i class="fa-solid fa-triangle-exclamation"></i> Failed to load file content.</div>
-                `;
+                fileFeedback.innerHTML = renderArtifactSummary({
+                    kicker: 'Cracked credential',
+                    title: file.name,
+                    badges: '<span class="file-type-tag badge-cracked">CRACKED</span>',
+                    warnings: ['Failed to load file content.'],
+                });
             }
             break;
         case 'try':
@@ -3375,15 +3490,12 @@ async function selectFile(file, element) {
             fileFeedback.style.flexDirection = 'column';
             fileFeedback.style.alignItems = 'stretch';
             fileFeedback.style.gap = '8px';
-            fileFeedback.innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px; width:100%;">
-                    <i class="fa-solid fa-magnifying-glass-chart" style="color: var(--neon-cyan)"></i> 
-                    <span style="color: var(--neon-cyan); font-weight:bold;">DETAILS</span>
-                </div>
-                <div style="width:100%; text-align:center; padding:10px; color:#666;">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Loading details...
-                </div>
-            `;
+            fileFeedback.innerHTML = renderArtifactSummary({
+                kicker: 'Fingerprint details',
+                title: file.name,
+                badges: '<span class="file-type-tag badge-details">DETAILS</span>',
+                body: '<div class="crack-summary-note"><i class="fa-solid fa-spinner fa-spin"></i> Loading details...</div>',
+            });
 
             if (pcapConversions) pcapConversions.style.display = 'none';
             if (btnPcapHash) btnPcapHash.style.display = '';
@@ -3408,12 +3520,21 @@ async function selectFile(file, element) {
                 }
                 fileFeedback.innerHTML = renderDetailsView(details, recommendation);
             } catch (e) {
-                fileFeedback.innerHTML = `<div style="color: var(--neon-red);"><i class="fa-solid fa-triangle-exclamation"></i> Failed to load details: ${escapeHtml(e.message)}</div>`;
+                fileFeedback.innerHTML = renderArtifactSummary({
+                    kicker: 'Fingerprint details',
+                    title: file.name,
+                    badges: '<span class="file-type-tag badge-details">DETAILS</span>',
+                    warnings: [`Failed to load details: ${e.message}`],
+                });
             }
             break;
         default:
             fileFeedback.style.display = 'flex';
-            fileFeedback.innerHTML = `<i class="fa-solid fa-question-circle"></i> File type not recognized for direct action.`;
+            fileFeedback.innerHTML = renderArtifactSummary({
+                kicker: 'Unsupported file',
+                title: file.name || 'Unknown file',
+                warnings: ['File type not recognized for direct action.'],
+            });
             break;
     }
 }
@@ -3518,12 +3639,21 @@ export function setupCrackingListeners() {
     crackingAccordionMode = normalizeCrackingAccordionMode(
         document.documentElement?.dataset?.crackingAccordionMode
     );
+    crackingAttackPanelMode = normalizeCrackingAttackPanelMode(
+        document.documentElement?.dataset?.crackingAttackPanelMode
+    );
     if (window.__kovilCrackingConfigAppliedHandler) {
         window.removeEventListener('kovil:config-applied', window.__kovilCrackingConfigAppliedHandler);
     }
     window.__kovilCrackingConfigAppliedHandler = (event) => {
         const config = event?.detail?.config || {};
         crackingAccordionMode = normalizeCrackingAccordionMode(config.ui_cracking_accordion_mode);
+        crackingAttackPanelMode = normalizeCrackingAttackPanelMode(config.ui_cracking_attack_panel_mode);
+        if (crackingAttackPanelMode === 'single') {
+            const expanded = Array.from(document.querySelectorAll('[data-attack-panel-toggle]'))
+                .find((toggle) => toggle.getAttribute('data-expanded') === 'true');
+            closeSiblingAttackPanels(expanded || null);
+        }
     };
     window.addEventListener('kovil:config-applied', window.__kovilCrackingConfigAppliedHandler);
 
@@ -3603,12 +3733,7 @@ export function setupCrackingListeners() {
     const legacySection = document.getElementById('crack-aircrack-options');
     if (legacyToggle && legacySection) {
         legacyToggle.addEventListener('click', () => {
-            const isExpanded = legacyToggle.getAttribute('data-expanded') === 'true';
-            const nextExpanded = !isExpanded;
-            legacyToggle.setAttribute('data-expanded', nextExpanded ? 'true' : 'false');
-            legacySection.style.display = nextExpanded ? 'flex' : 'none';
-            const arrow = legacyToggle.querySelector('.legacy-toggle-arrow');
-            if (arrow) arrow.classList.toggle('legacy-toggle-open', nextExpanded);
+            toggleAttackPanel(legacyToggle, legacySection);
         });
     }
 
@@ -3617,13 +3742,7 @@ export function setupCrackingListeners() {
     const pmkSection = document.getElementById('crack-pmk-options');
     if (pmkToggle && pmkSection) {
         pmkToggle.addEventListener('click', () => {
-            const isExpanded = pmkToggle.getAttribute('data-expanded') === 'true';
-            const nextExpanded = !isExpanded;
-            pmkToggle.setAttribute('data-expanded', nextExpanded ? 'true' : 'false');
-            pmkSection.style.display = nextExpanded ? 'flex' : 'none';
-            const arrow = pmkToggle.querySelector('.legacy-toggle-arrow');
-            if (arrow) arrow.classList.toggle('legacy-toggle-open', nextExpanded);
-            if (nextExpanded) refreshPmkDatabases();
+            toggleAttackPanel(pmkToggle, pmkSection, refreshPmkDatabases);
         });
     }
     const btnPmkBuild = document.getElementById('btn-pmk-build');
@@ -3638,12 +3757,7 @@ export function setupCrackingListeners() {
     const wpsSection = document.getElementById('crack-wps-options');
     if (wpsToggleEl && wpsSection) {
         wpsToggleEl.addEventListener('click', () => {
-            const isExpanded = wpsToggleEl.getAttribute('data-expanded') === 'true';
-            const nextExpanded = !isExpanded;
-            wpsToggleEl.setAttribute('data-expanded', nextExpanded ? 'true' : 'false');
-            wpsSection.style.display = nextExpanded ? 'flex' : 'none';
-            const arrow = wpsToggleEl.querySelector('.legacy-toggle-arrow');
-            if (arrow) arrow.classList.toggle('legacy-toggle-open', nextExpanded);
+            toggleAttackPanel(wpsToggleEl, wpsSection);
         });
     }
     const btnWpsAttack = document.getElementById('btn-wps-attack');
@@ -3978,7 +4092,18 @@ function renderDetailsView(d, recommendation = null) {
     if (!d) {
         return `
             <div class="details-view-scroll">
-                <div style="color:#888;">No details available.</div>
+                <div class="details-card">
+                    <div class="details-card-head">
+                        <div>
+                            <div class="details-card-kicker">Fingerprint details</div>
+                            <div class="details-card-title">No details available</div>
+                        </div>
+                        <div class="details-card-badges">
+                            <span class="file-type-tag badge-details">DETAILS</span>
+                        </div>
+                    </div>
+                    <div class="details-footer-meta">Select or extract a details artifact to inspect radio, security and RAW Sniffer evidence.</div>
+                </div>
             </div>
         `;
     }
@@ -4022,7 +4147,7 @@ function renderDetailsView(d, recommendation = null) {
         { label: 'Group', value: sec.group_cipher || 'Unknown' },
         { label: 'PMF', value: sec.pmf || 'Unknown' },
         { label: 'Vendor', value: d.vendor || 'Unknown' },
-    ].map(p => `<span style="padding:4px 8px; border:1px solid rgba(255,255,255,0.08); border-radius:4px; background:rgba(255,255,255,0.04); font-size:0.78rem; line-height:1.2;">${escapeHtml(p.label)}: <b>${escapeHtml(p.value)}</b></span>`).join('');
+    ].map(p => renderCompactChip(p.label, p.value, 'details-chip')).join('');
 
     const warningsHtml = (meta.warnings || []).map(w => `<li>${escapeHtml(w)}</li>`).join('') || '<li>None</li>';
     const evidenceHtml = (cls.evidence || []).map(e => `<li>${escapeHtml(e)}</li>`).join('') || '<li>None</li>';
@@ -4031,16 +4156,18 @@ function renderDetailsView(d, recommendation = null) {
         : 'Not present';
 
     const sectionRows = (rows) => rows.map(r => `
-        <div style="color:#8aa;">${escapeHtml(r.label)}</div>
-        <div>${escapeHtml(r.value)}</div>
+        <div class="details-compact-label">${escapeHtml(r.label)}</div>
+        <div class="details-compact-value">${escapeHtml(r.value)}</div>
     `).join('');
 
-    const makeSection = (title, rows) => {
+    const makeSection = (title, rows, options = {}) => {
         if (!rows.length) return '';
         return `
-            <div style="font-weight:bold; font-size:0.78rem; margin-top:4px;">${escapeHtml(title)}</div>
-            <div style="display:grid; grid-template-columns: 90px 1fr; gap:4px 8px; font-size:0.76rem; line-height:1.25;">
+            <div class="details-compact-section${options.wide ? ' details-compact-section--wide' : ''}">
+                <div class="details-compact-title">${escapeHtml(title)}</div>
+                <div class="details-compact-rows">
                 ${sectionRows(rows)}
+                </div>
             </div>
         `;
     };
@@ -4122,36 +4249,38 @@ function renderDetailsView(d, recommendation = null) {
     }
 
     const rawWarnings = Array.isArray(rawAggregate.warnings) ? rawAggregate.warnings : [];
-    const rawWarningsHtml = rawWarnings.map(w => `<li>${escapeHtml(String(w))}</li>`).join('') || '<li>None</li>';
+    const rawWarningsHtml = rawWarnings.map(w => `<div>${escapeHtml(String(w))}</div>`).join('') || '<div>None</div>';
     const rawFilesHtml = rawFiles.map((file) => {
         const warnings = Array.isArray(file?.warnings) ? file.warnings : [];
         const warningsText = warnings.length ? warnings.map(w => escapeHtml(String(w))).join('; ') : 'None';
         return `
-            <li>
-                <b>${escapeHtml(file?.source_file || 'unknown')}</b>
-                | bcn ${escapeHtml(String(file?.beacon_count ?? 0))}
-                | eapol ${escapeHtml(String(file?.eapol_count ?? 0))}
-                | probes ${escapeHtml(String(file?.probe_client_count ?? 0))}
-                | ch ${escapeHtml(String(file?.channel ?? '-'))}
-                | freq ${escapeHtml(String(file?.frequency_mhz ?? '-'))} MHz
-                | ssid ${escapeHtml(file?.ssid || '<hidden>')}
-                ${file?.ssid_raw_hex ? `| hex ${escapeHtml(file.ssid_raw_hex)}` : ''}
-                ${file?.last_seen_offset_s !== null && file?.last_seen_offset_s !== undefined ? `| last ${escapeHtml(String(file.last_seen_offset_s))}s` : ''}
-                <div style="color:#777;">warnings: ${warningsText}</div>
-            </li>
+            <div class="details-raw-file-row">
+                <div class="details-raw-file-name">${escapeHtml(file?.source_file || 'unknown')}</div>
+                <div class="details-chip-row">
+                    ${renderCompactChip('BCN', file?.beacon_count ?? 0, 'details-chip')}
+                    ${renderCompactChip('EAPOL', file?.eapol_count ?? 0, 'details-chip')}
+                    ${renderCompactChip('PROBES', file?.probe_client_count ?? 0, 'details-chip')}
+                    ${renderCompactChip('CH', file?.channel ?? '-', 'details-chip')}
+                    ${renderCompactChip('FREQ', `${file?.frequency_mhz ?? '-'} MHz`, 'details-chip')}
+                    ${renderCompactChip('SSID', file?.ssid || '<hidden>', 'details-chip')}
+                    ${file?.ssid_raw_hex ? renderCompactChip('HEX', file.ssid_raw_hex, 'details-chip') : ''}
+                    ${file?.last_seen_offset_s !== null && file?.last_seen_offset_s !== undefined ? renderCompactChip('LAST', `${file.last_seen_offset_s}s`, 'details-chip') : ''}
+                </div>
+                <div class="details-footer-meta">warnings: ${warningsText}</div>
+            </div>
         `;
     }).join('');
     const rawFilesBlock = rawPresent
         ? `
-            <div>
-                <div style="font-weight:bold; font-size:0.78rem;">Raw Files</div>
-                <ul style="margin:2px 0 0 14px; padding:0; font-size:0.72rem; line-height:1.2;">
-                    ${rawFilesHtml || '<li>None</li>'}
-                </ul>
+            <div class="details-compact-section details-compact-section--wide">
+                <div class="details-compact-title">Raw Files</div>
+                <div class="details-raw-file-list">
+                    ${rawFilesHtml || '<div class="details-footer-meta">None</div>'}
+                </div>
             </div>
-            <div>
-                <div style="font-weight:bold; font-size:0.78rem;">Raw Warnings</div>
-                <ul style="margin:2px 0 0 14px; padding:0; font-size:0.72rem; line-height:1.2;">${rawWarningsHtml}</ul>
+            <div class="details-compact-section details-compact-section--wide">
+                <div class="details-compact-title">Raw Warnings</div>
+                <div class="details-warning-list">${rawWarningsHtml}</div>
             </div>
         `
         : '';
@@ -4162,49 +4291,53 @@ function renderDetailsView(d, recommendation = null) {
 
     return `
         <div class="details-view-scroll">
-            <div class="details-card" style="display:flex; flex-direction:column; gap:8px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                <div style="font-weight:bold; font-size:0.92rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(d.ssid || 'SSID')}</div>
-                <div style="color:#888; font-size:0.74rem; font-family:monospace;">${escapeHtml(d.bssid || '')}</div>
-            </div>
-
-            <div style="display:flex; flex-wrap:wrap; gap:6px;">${pills}</div>
-
-            <div style="display:grid; grid-template-columns: 70px 1fr; gap:4px 8px; font-size:0.78rem; line-height:1.25;">
-                <div style="color:#8aa;">WPS</div>
-                <div>${wpsSummary}</div>
-                ${showClass ? `
-                    <div style="color:#8aa;">Class</div>
-                    <div style="display:flex; align-items:center;">
-                        <span style="padding:2px 8px; border:1px solid ${badgeColor}; color:${badgeColor}; border-radius:4px; text-transform:uppercase; letter-spacing:0.4px; font-size:0.74rem;">
-                            ${escapeHtml(deviceLabel)} (${(cls.confidence || 0).toFixed(2)}${cls.tier ? ` | ${escapeHtml(cls.tier)}` : ''})
-                        </span>
+            <div class="details-card">
+                <div class="details-card-head">
+                    <div>
+                        <div class="details-card-kicker">Fingerprint details</div>
+                        <div class="details-card-title">${escapeHtml(d.ssid || 'SSID')}</div>
                     </div>
-                ` : `
-                    <div style="color:#8aa;">Class</div>
-                    <div style="color:#888;">Insufficient evidence</div>
-                `}
+                    <div class="details-card-badges">
+                        <span class="details-chip"><span>BSSID</span><b>${escapeHtml(d.bssid || '')}</b></span>
+                    </div>
+                </div>
+
+                <div class="details-chip-row">${pills}</div>
             </div>
 
-            ${showClass ? `<ul style="margin:0 0 0 14px; padding:0; font-size:0.74rem; line-height:1.2;">${evidenceHtml}</ul>` : ''}
+            <div class="details-compact-grid">
+                <div class="details-compact-section details-compact-section--wide">
+                    <div class="details-compact-title">Security profile</div>
+                    <div class="details-compact-rows">
+                        <div class="details-compact-label">WPS</div>
+                        <div class="details-compact-value">${wpsSummary}</div>
+                        <div class="details-compact-label">Class</div>
+                        <div class="details-compact-value">
+                            ${showClass
+                                ? `<span style="padding:2px 8px; border:1px solid ${badgeColor}; color:${badgeColor}; border-radius:4px; text-transform:uppercase; letter-spacing:0.4px; font-size:0.68rem;">${escapeHtml(deviceLabel)} (${(cls.confidence || 0).toFixed(2)}${cls.tier ? ` | ${escapeHtml(cls.tier)}` : ''})</span>`
+                                : '<span style="color:#888;">Insufficient evidence</span>'}
+                        </div>
+                    </div>
+                    ${showClass ? `<div class="details-warning-list">${evidenceHtml.replace(/<li>/g, '<div>').replace(/<\/li>/g, '</div>')}</div>` : ''}
+                </div>
 
-            ${makeSection('Radio', radioRows)}
-            ${makeSection('Rates', ratesRows)}
-            ${makeSection('PHY', phyRows)}
-            ${makeSection('Capabilities', capsRows)}
-            ${makeSection('QBSS', qbssRows)}
-            ${makeSection('Raw Sniffer', rawRows)}
-            ${rawFilesBlock}
+                ${makeSection('Radio', radioRows)}
+                ${makeSection('Rates', ratesRows)}
+                ${makeSection('PHY', phyRows)}
+                ${makeSection('Capabilities', capsRows)}
+                ${makeSection('QBSS', qbssRows)}
+                ${makeSection('Raw Sniffer', rawRows)}
+                ${rawFilesBlock}
+            </div>
             ${insightsSection}
 
-            <div>
-                <div style="font-weight:bold; font-size:0.78rem;">Warnings</div>
-                <ul style="margin:2px 0 0 14px; padding:0; font-size:0.72rem; line-height:1.2;">${warningsHtml}</ul>
+            <div class="details-compact-section details-compact-section--wide">
+                <div class="details-compact-title">Warnings</div>
+                <div class="details-warning-list">${warningsHtml.replace(/<li>/g, '<div>').replace(/<\/li>/g, '</div>')}</div>
             </div>
 
-            <div style="color:#666; font-size:0.72rem; line-height:1.2;">Source: ${escapeHtml(meta.source || '')} @ ${escapeHtml(meta.timestamp || '')}</div>
-            ${meta.ssid_raw_hex ? `<div style="color:#777; font-size:0.7rem; line-height:1.2;">Original SSID hex: ${escapeHtml(meta.ssid_raw_hex)}</div>` : ''}
-        </div>
+            <div class="details-footer-meta">Source: ${escapeHtml(meta.source || '')} @ ${escapeHtml(meta.timestamp || '')}</div>
+            ${meta.ssid_raw_hex ? `<div class="details-footer-meta">Original SSID hex: ${escapeHtml(meta.ssid_raw_hex)}</div>` : ''}
         </div>
     `;
 }

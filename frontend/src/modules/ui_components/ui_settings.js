@@ -90,6 +90,11 @@ function normalizeCrackingAccordionMode(value) {
     return CRACKING_ACCORDION_MODE_ALLOWED.has(normalized) ? normalized : 'multi';
 }
 
+function normalizeCrackingAttackPanelMode(value) {
+    const normalized = String(value || 'multi').trim().toLowerCase();
+    return CRACKING_ACCORDION_MODE_ALLOWED.has(normalized) ? normalized : 'multi';
+}
+
 function normalizeWardriveReplaySpeedDefault(value) {
     const normalized = String(value || '1').trim();
     return REPLAY_SPEED_ALLOWED.has(normalized) ? normalized : '1';
@@ -845,6 +850,7 @@ export function applyClientConfig(config = {}, options = {}) {
     applyWardriveColor(uiConfig.wardriveColor);
     applyLayoutSettings(config);
     root.dataset.crackingAccordionMode = normalizeCrackingAccordionMode(config.ui_cracking_accordion_mode);
+    root.dataset.crackingAttackPanelMode = normalizeCrackingAttackPanelMode(config.ui_cracking_attack_panel_mode);
     setMarkerIcons(
         uiConfig.iconPwned,
         uiConfig.iconLocked,
@@ -868,6 +874,7 @@ export function applyClientConfig(config = {}, options = {}) {
                 ui_sidebar_preset: normalizeSidebarPreset(config.ui_sidebar_preset),
                 ui_font_scale: normalizeFontScale(config.ui_font_scale),
                 ui_cracking_accordion_mode: normalizeCrackingAccordionMode(config.ui_cracking_accordion_mode),
+                ui_cracking_attack_panel_mode: normalizeCrackingAttackPanelMode(config.ui_cracking_attack_panel_mode),
                 ui_wardrive_replay_speed_default: normalizeWardriveReplaySpeedDefault(config.ui_wardrive_replay_speed_default),
                 ui_wardrive_replay_follow_camera_default: !!config.ui_wardrive_replay_follow_camera_default,
                 ui_wardrive_sessions_sort_by: normalizeWardriveSessionsSortBy(config.ui_wardrive_sessions_sort_by),
@@ -1034,6 +1041,7 @@ export async function openSettings() {
         setSelectValue('conf-ui-sidebar-preset', normalizeSidebarPreset(config.ui_sidebar_preset), 'standard');
         setSelectValue('conf-ui-font-scale', normalizeFontScale(config.ui_font_scale), '100');
         setSelectValue('conf-ui-cracking-accordion-mode', normalizeCrackingAccordionMode(config.ui_cracking_accordion_mode), 'multi');
+        setSelectValue('conf-ui-cracking-attack-panel-mode', normalizeCrackingAttackPanelMode(config.ui_cracking_attack_panel_mode), 'multi');
         applyLayoutSettings(config);
         
     } catch (e) {
@@ -1110,6 +1118,9 @@ export async function saveSettings() {
         ui_font_scale: normalizeFontScale(document.getElementById('conf-ui-font-scale')?.value),
         ui_cracking_accordion_mode: normalizeCrackingAccordionMode(
             document.getElementById('conf-ui-cracking-accordion-mode')?.value
+        ),
+        ui_cracking_attack_panel_mode: normalizeCrackingAttackPanelMode(
+            document.getElementById('conf-ui-cracking-attack-panel-mode')?.value
         ),
         ui_wardrive_replay_speed_default: normalizeWardriveReplaySpeedDefault(
             document.getElementById('conf-wardrive-replay-speed-default')?.value

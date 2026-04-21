@@ -197,6 +197,11 @@ function mountSettingsDom() {
       <option value="single">single</option>
     </select>
 
+    <select id="conf-ui-cracking-attack-panel-mode">
+      <option value="multi">multi</option>
+      <option value="single">single</option>
+    </select>
+
     <select id="conf-wardrive-replay-speed-default">
       <option value="0.05">0.05</option>
       <option value="0.1">0.1</option>
@@ -289,6 +294,7 @@ function setDefaults() {
     ui_sidebar_preset: "wide",
     ui_font_scale: "110",
     ui_cracking_accordion_mode: "single",
+    ui_cracking_attack_panel_mode: "single",
     ui_wardrive_replay_speed_default: "2",
     ui_wardrive_replay_autoplay: true,
     ui_wardrive_replay_auto_focus: false,
@@ -471,6 +477,7 @@ describe("ui_settings", () => {
     expect(document.getElementById("conf-ui-sidebar-preset").value).toBe("wide");
     expect(document.getElementById("conf-ui-font-scale").value).toBe("110");
     expect(document.getElementById("conf-ui-cracking-accordion-mode").value).toBe("single");
+    expect(document.getElementById("conf-ui-cracking-attack-panel-mode").value).toBe("single");
     expect(document.getElementById("conf-wardrive-replay-speed-default").value).toBe("2");
     expect(document.getElementById("conf-wardrive-replay-autoplay").checked).toBe(true);
     expect(document.getElementById("conf-wardrive-replay-auto-focus").checked).toBe(false);
@@ -572,6 +579,7 @@ describe("ui_settings", () => {
     document.getElementById("conf-ui-sidebar-preset").value = "narrow";
     document.getElementById("conf-ui-font-scale").value = "90";
     document.getElementById("conf-ui-cracking-accordion-mode").value = "single";
+    document.getElementById("conf-ui-cracking-attack-panel-mode").value = "single";
     document.getElementById("conf-wardrive-replay-speed-default").value = "0.1";
     document.getElementById("conf-wardrive-replay-autoplay").checked = true;
     document.getElementById("conf-wardrive-replay-auto-focus").checked = false;
@@ -627,6 +635,7 @@ describe("ui_settings", () => {
         ui_sidebar_preset: "narrow",
         ui_font_scale: "90",
         ui_cracking_accordion_mode: "single",
+        ui_cracking_attack_panel_mode: "single",
         ui_wardrive_replay_speed_default: "0.1",
         ui_wardrive_replay_autoplay: true,
         ui_wardrive_replay_auto_focus: false,
