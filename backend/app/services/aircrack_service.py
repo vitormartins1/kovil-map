@@ -11,7 +11,7 @@ from app.utils.pcap import (
     build_pcap_search_roots,
     resolve_pcap_reference,
 )
-from app.utils.handshake_artifacts import get_capture_artifact_path
+from app.utils.handshake_artifacts import get_source_sidecar_path
 from app.core.job_manager import job_manager
 from app.services.history_service import history_service
 
@@ -61,11 +61,11 @@ class AircrackService(BaseService):
 
             use_wsl = self._should_use_wsl(aircrack_bin)
             capture_cracked_path = (
-                get_capture_artifact_path(
-                    capture_id,
+                get_source_sidecar_path(
+                    pcap_path,
                     "cracked",
-                    handshakes_dir=HANDSHAKES_DIR,
                     ensure_parent=True,
+                    pcap_cracked=True,
                 )
                 if capture_id and not raw_item_id
                 else os.path.join(HANDSHAKES_DIR, f"{base_name}.pcap.cracked")
@@ -77,7 +77,7 @@ class AircrackService(BaseService):
             )
             key_file = os.path.join(
                 artifact_dir,
-                "capture.key" if capture_id and not raw_item_id else f"{base_name}.key",
+                f"{base_name}.key",
             )
 
             cwd = None

@@ -9,7 +9,6 @@ from app.core.config import (
     M5EVIL_HANDSHAKES_DIR,
 )
 from app.utils.pcap import build_pcap_search_roots, resolve_pcap_reference
-from app.utils.handshake_artifacts import get_capture_artifact_path
 from app.core.job_manager import job_manager
 from app.services.history_service import history_service
 
@@ -216,14 +215,10 @@ class PmkService(BaseService):
                 "message": f"PCAP file not found: {pcap_filename}",
             }
 
-        artifact_dir = (
-            get_capture_artifact_path(capture_id)
-            if capture_id and not raw_item_id
-            else os.path.dirname(pcap_path)
-        )
+        artifact_dir = os.path.dirname(pcap_path)
         key_file = os.path.join(
             artifact_dir,
-            "capture.key" if capture_id and not raw_item_id else f"{base_name}.key",
+            f"{base_name}.key",
         )
 
         cmd_args = []

@@ -19,7 +19,7 @@ from app.utils.pcap import (
     build_pcap_search_roots,
     resolve_pcap_reference,
 )
-from app.utils.handshake_artifacts import get_capture_artifact_path
+from app.utils.handshake_artifacts import get_source_sidecar_path
 from app.services.base_service import BaseService
 from app.services.history_service import history_service
 from app.services.data_loader import reload_data
@@ -720,12 +720,7 @@ class FingerprintService(BaseService):
                 ".", 1
             )[0]
             details_path = (
-                get_capture_artifact_path(
-                    capture_id,
-                    "details",
-                    handshakes_dir=HANDSHAKES_DIR,
-                    ensure_parent=True,
-                )
+                get_source_sidecar_path(pcap_path, "details", ensure_parent=True)
                 if capture_id
                 else os.path.join(HANDSHAKES_DIR, f"{base_name}.details")
             )

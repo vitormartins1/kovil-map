@@ -58,10 +58,12 @@ def test_build_demo_data_generates_v5_pack(tmp_path, monkeypatch):
     )
     assert len(session_tags) == 4
     assert session_tags["20260411_001500_wardriving"] == "car"
-    sample_capture_dir = next(
-        (pack_root / "runtime" / "handshakes" / "captures").iterdir()
-    )
-    assert (sample_capture_dir / "capture.pcap").exists()
+    handshakes_dir = pack_root / "runtime" / "handshakes"
+    sample_pcap = next(handshakes_dir.glob("*.pcap"))
+    sample_base = sample_pcap.stem
+    assert (handshakes_dir / f"{sample_base}.details").exists()
+    assert (handshakes_dir / f"{sample_base}.try").exists()
+    assert not (handshakes_dir / "captures").exists()
 
     for session in manifest["wardrive_sessions"]:
         multiplier = float(session["density_multiplier"])

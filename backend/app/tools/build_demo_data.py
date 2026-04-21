@@ -2275,61 +2275,29 @@ def _build_capture_assets(runtime_root: Path) -> dict[str, Any]:
 
         line = _hash_line(network_id, suffix=filename)
         line_index[capture_id] = line
-        captures_dir = runtime_root / "handshakes" / "captures" / capture_id
-        captures_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(pcap_path, captures_dir / "capture.pcap")
+        base_name = Path(filename).stem
         _json_dump(
-            captures_dir / "manifest.json",
-            {
-                "artifact_scope": "capture",
-                "capture_id": capture_id,
-                "demo_profile": PROFILE_ID,
-                "mac": network["bssid"],
-                "network_id": network_id,
-                "source": source,
-                "source_filename": filename,
-                "source_path_role": role,
-                "ssid": network["ssid"],
-                "scenario": scenario,
-                "version": 1,
-            },
-        )
-        _json_dump(
-            captures_dir / "capture.details",
+            capture_root / f"{base_name}.details",
             _details_payload(network_id, source=source),
         )
         if spec.get("hash_ready", True):
-            (captures_dir / "capture.22000").write_text(f"{line}\n", encoding="utf-8")
+            (capture_root / f"{base_name}.22000").write_text(
+                f"{line}\n", encoding="utf-8"
+            )
         if spec.get("cracked"):
-            (captures_dir / "capture.cracked").write_text(
+            (capture_root / f"{base_name}.cracked").write_text(
                 f"{network['password']}\n", encoding="utf-8"
             )
-        (captures_dir / "capture.try").write_text(
+        (capture_root / f"{base_name}.try").write_text(
             f"demo::{network_id}::{source}\n", encoding="utf-8"
         )
 
         if spec.get("legacy_sidecars"):
-            base_name = Path(filename).stem
-            _json_dump(
-                runtime_root / "handshakes" / f"{base_name}.details",
-                _details_payload(network_id, source=source),
-            )
             if spec.get("gps"):
                 _json_dump(
                     runtime_root / "handshakes" / f"{base_name}.paw-gps.json",
                     _gps_payload(network_id, capture_filename=filename),
                 )
-            if spec.get("hash_ready", True):
-                (runtime_root / "handshakes" / f"{base_name}.22000").write_text(
-                    f"{line}\n", encoding="utf-8"
-                )
-            if spec.get("cracked"):
-                (runtime_root / "handshakes" / f"{base_name}.pcap.cracked").write_text(
-                    f"{network['password']}\n", encoding="utf-8"
-                )
-            (runtime_root / "handshakes" / f"{base_name}.try").write_text(
-                f"demo::{network_id}::{source}\n", encoding="utf-8"
-            )
 
         capture_record = {
             "capture_id": capture_id,

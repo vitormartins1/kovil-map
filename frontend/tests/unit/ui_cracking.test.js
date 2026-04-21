@@ -456,22 +456,9 @@ describe("ui_cracking actions", () => {
     expect(document.getElementById("crack-handshake-set-summary").textContent).toContain("HANDSHAKE SET");
     expect(document.getElementById("crack-handshake-set-summary").textContent).not.toContain("Preferred:");
     expect(document.getElementById("selected-file-info").textContent).toContain("Cafe_aabbccddeeff.22000");
-    expect(document.getElementById("crack-file-list").textContent).toContain("LEGACY / SHARED ARTIFACTS");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("LEGACY / SHARED ARTIFACTS");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("hidden_aabbccddeeff__wdrs__.22000");
     expect(document.getElementById("crack-file-list").textContent).toContain("HS_AABBCCDDEEFF.pcap");
-
-    const legacyHeader = Array.from(
-      document.querySelectorAll("#crack-file-list .capture-group-header")
-    ).find((el) => el.textContent.includes("LEGACY / SHARED ARTIFACTS"));
-    expect(legacyHeader).toBeTruthy();
-
-    const legacyBody = legacyHeader.nextElementSibling;
-    expect(legacyBody.hidden).toBe(true);
-
-    legacyHeader.click();
-    expect(legacyBody.hidden).toBe(false);
-
-    legacyHeader.click();
-    expect(legacyBody.hidden).toBe(true);
   });
 
   test("capture rows inside device accordions do not repeat the device badge", async () => {
@@ -581,7 +568,7 @@ describe("ui_cracking actions", () => {
     await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe");
     await flushAsync();
 
-    expect(document.querySelector(".capture-section-divider-label")?.textContent).toContain("DERIVED / SHARED ARTIFACTS");
+    expect(document.querySelector(".capture-section-divider-label")?.textContent).toContain("DERIVED ARTIFACTS");
     const selectedRow = document.querySelector("#crack-file-list .file-item.selected");
     expect(selectedRow).toBeTruthy();
     const activeGroup = selectedRow.closest(".capture-group");
@@ -630,7 +617,7 @@ describe("ui_cracking actions", () => {
     expect(rawChild?.querySelector(":scope > .capture-group-header")?.textContent).toContain("Bruce");
   });
 
-  test("combined and legacy selections activate their own accordions", async () => {
+  test("combined selections activate the combined accordion", async () => {
     mockAPI.getHandshakeSet.mockResolvedValue({
       handshake_set_id: "aabbccddeeff",
       mac: "AA:BB:CC:DD:EE:FF",
@@ -687,14 +674,8 @@ describe("ui_cracking actions", () => {
     expect(combinedHeader?.classList.contains("capture-group-header-active")).toBe(true);
     expect(combinedHeader?.closest(".capture-group")?.classList.contains("capture-group-card")).toBe(true);
     expect(combinedHeader?.closest(".capture-group")?.classList.contains("capture-group-derived-root")).toBe(true);
-
-    await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe", "legacy_shared.22000");
-    await flushAsync();
-    const legacyHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
-      .find((el) => el.textContent.includes("LEGACY / SHARED ARTIFACTS"));
-    expect(legacyHeader?.classList.contains("capture-group-header-active")).toBe(true);
-    expect(legacyHeader?.closest(".capture-group")?.classList.contains("capture-group-card")).toBe(true);
-    expect(legacyHeader?.closest(".capture-group")?.classList.contains("capture-group-derived-root")).toBe(true);
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("LEGACY / SHARED ARTIFACTS");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("legacy_shared.22000");
   });
 
   test("opening derived accordions auto-selects their first file", async () => {
@@ -765,11 +746,7 @@ describe("ui_cracking actions", () => {
     await flushAsync();
     expect(document.getElementById("selected-file-info").textContent).toContain("combined_latest.22000");
 
-    const legacyHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
-      .find((el) => el.textContent.includes("LEGACY / SHARED ARTIFACTS"));
-    legacyHeader.click();
-    await flushAsync();
-    expect(document.getElementById("selected-file-info").textContent).toContain("legacy_a.22000");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("legacy_a.22000");
   });
 
   test("opening RAW root expands the first device branch and selects its first file", async () => {
@@ -1660,7 +1637,7 @@ describe("ui_cracking actions", () => {
     expect(legacySection?.textContent || "").not.toContain("hidden_aabbccddeeff__wdrs__.22000");
   });
 
-  test("semantic badge classes stay distinct for details, raw, combined, legacy/shared and WDRS", async () => {
+  test("semantic badge classes stay distinct for details, raw, combined and WDRS", async () => {
     mockAPI.getHandshakeSet.mockResolvedValueOnce({
       handshake_set_id: "aabbccddeeff",
       mac: "AA:BB:CC:DD:EE:FF",
@@ -1717,7 +1694,7 @@ describe("ui_cracking actions", () => {
     expect(document.querySelector("#selected-file-info .badge-role-state-wdrs")).toBeTruthy();
     expect(document.querySelector("#crack-file-list .badge-role-state-raw")).toBeTruthy();
     expect(document.querySelector("#crack-file-list .badge-role-state-combined")).toBeTruthy();
-    expect(document.querySelector("#crack-file-list .badge-role-state-shared")).toBeTruthy();
+    expect(document.querySelector("#crack-file-list .badge-role-state-shared")).toBeFalsy();
   });
 
   test("handshake set summary shows RAW Sniffer and Combined badges plus dynamic counts when present", async () => {

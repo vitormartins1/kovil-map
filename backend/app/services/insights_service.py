@@ -535,20 +535,21 @@ class InsightsService:
     ) -> bool:
         if filename:
             base = os.path.basename(filename).rsplit(".", 1)[0]
-            cracked_name = (
-                "combined.cracked"
+            cracked_names = (
+                ["combined.cracked"]
                 if combined_build_id
-                else ("capture.cracked" if capture_id else f"{base}.pcap.cracked")
+                else [f"{base}.cracked", f"{base}.pcap.cracked"]
             )
-            cracked_candidate = resolve_artifact_path(
-                cracked_name,
-                handshakes_dir=HANDSHAKES_DIR,
-                capture_id=capture_id,
-                combined_build_id=combined_build_id,
-                mac=mac,
-            )
-            if cracked_candidate and os.path.exists(cracked_candidate):
-                return True
+            for cracked_name in cracked_names:
+                cracked_candidate = resolve_artifact_path(
+                    cracked_name,
+                    handshakes_dir=HANDSHAKES_DIR,
+                    capture_id=capture_id,
+                    combined_build_id=combined_build_id,
+                    mac=mac,
+                )
+                if cracked_candidate and os.path.exists(cracked_candidate):
+                    return True
 
         mac_clean = self._mac_to_clean(mac)
         if not mac_clean:

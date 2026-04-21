@@ -84,11 +84,6 @@ def patch_pcap_resolve(monkeypatch, tmp_path):
             "basename": "capture",
         },
     )
-    monkeypatch.setattr(
-        pmk_service_module,
-        "get_capture_artifact_path",
-        lambda cid: str(tmp_path),
-    )
     return tmp_path
 
 

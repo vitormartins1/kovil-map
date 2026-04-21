@@ -59,9 +59,7 @@ def test_extract_uses_capture_id_resolution_when_present(tmp_path, monkeypatch):
     external_pcap.write_text("pcap", encoding="utf-8")
 
     monkeypatch.setattr(fs_module, "HANDSHAKES_DIR", str(hand_dir))
-    capture_dir = hand_dir / "captures" / "cap-123"
-    capture_dir.mkdir(parents=True)
-    (capture_dir / "capture.details").write_text(
+    (external_dir / "Alias.details").write_text(
         json.dumps(
             {"ssid": "CaptureAlias", "meta": {"timestamp": "2026-01-01T00:00:00Z"}}
         ),
@@ -85,7 +83,7 @@ def test_extract_uses_capture_id_resolution_when_present(tmp_path, monkeypatch):
     assert result["status"] == "success"
     assert result["cached"] is True
     assert result["details"]["ssid"] == "CaptureAlias"
-    assert result["saved_path"].endswith("captures/cap-123/capture.details")
+    assert result["saved_path"].endswith("external/Alias.details")
 
 
 def test_extract_uses_raw_item_id_resolution_and_raw_safe_details_name(

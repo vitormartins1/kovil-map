@@ -74,6 +74,7 @@ UIHudDensity = Literal["compact", "balanced", "comfortable"]
 UISidebarPreset = Literal["narrow", "standard", "wide"]
 UIFontScale = Literal["90", "100", "110"]
 UICrackingAccordionMode = Literal["multi", "single"]
+UICrackingAttackPanelMode = Literal["multi", "single"]
 UIWardriveReplaySpeed = Literal[
     "0.05", "0.1", "0.25", "0.5", "1", "1.5", "2", "2.5", "4", "8"
 ]
@@ -160,6 +161,7 @@ class ConfigUpdateRequest(BaseModel):
     ui_sidebar_preset: Optional[UISidebarPreset] = None
     ui_font_scale: Optional[UIFontScale] = None
     ui_cracking_accordion_mode: Optional[UICrackingAccordionMode] = None
+    ui_cracking_attack_panel_mode: Optional[UICrackingAttackPanelMode] = None
     ui_wardrive_replay_speed_default: Optional[UIWardriveReplaySpeed] = None
     ui_wardrive_replay_autoplay: Optional[bool] = None
     ui_wardrive_replay_auto_focus: Optional[bool] = None

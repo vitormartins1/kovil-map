@@ -13,6 +13,15 @@ CAPTURE_ARTIFACT_FILENAMES = {
     "manifest": "manifest.json",
 }
 
+CAPTURE_ARTIFACT_EXTENSIONS = {
+    "details": ".details",
+    "22000": ".22000",
+    "history": ".try",
+    "cracked": ".cracked",
+    "pcap_cracked": ".pcap.cracked",
+    "key": ".key",
+}
+
 COMBINED_ARTIFACT_FILENAMES = {
     "22000": "combined.22000",
     "history": "combined.try",
@@ -68,6 +77,95 @@ def get_capture_artifact_path(
     if not capture_dir:
         return None
     return os.path.join(capture_dir, filename)
+
+
+def _strip_capture_extension(filename: str | None) -> str:
+    name = os.path.basename(str(filename or "").strip())
+    lower_name = name.lower()
+    for ext in (
+        ".pcapng",
+        ".pcap",
+        ".22000",
+        ".pcap.cracked",
+        ".cracked",
+        ".details",
+        ".try",
+    ):
+        if lower_name.endswith(ext):
+            return name[: -len(ext)]
+    return os.path.splitext(name)[0]
+
+
+def get_capture_artifact_filename(
+    source_filename: str | None,
+    artifact_type: str,
+    *,
+    pcap_cracked: bool = False,
+) -> str | None:
+    base_name = _strip_capture_extension(source_filename)
+    if not base_name:
+        return None
+    normalized_type = str(artifact_type or "").strip().lower()
+    if normalized_type == "cracked" and pcap_cracked:
+        normalized_type = "pcap_cracked"
+    extension = CAPTURE_ARTIFACT_EXTENSIONS.get(normalized_type)
+    if not extension:
+        return None
+    return f"{base_name}{extension}"
+
+
+def get_source_sidecar_path(
+    source_path: str | None,
+    artifact_type: str,
+    *,
+    ensure_parent: bool = False,
+    pcap_cracked: bool = False,
+) -> str | None:
+    if not source_path:
+        return None
+    filename = get_capture_artifact_filename(
+        os.path.basename(str(source_path)),
+        artifact_type,
+        pcap_cracked=pcap_cracked,
+    )
+    if not filename:
+        return None
+    parent = os.path.dirname(str(source_path))
+    if ensure_parent and parent:
+        os.makedirs(parent, exist_ok=True)
+    return os.path.join(parent, filename)
+
+
+def get_capture_source_artifact_path(
+    capture_id: str | None,
+    artifact_type: str,
+    handshakes_dir: str = HANDSHAKES_DIR,
+    ensure_parent: bool = False,
+    pcap_cracked: bool = False,
+) -> str | None:
+    capture_key = str(capture_id or "").strip()
+    if not capture_key:
+        return None
+    try:
+        from app.services.handshake_catalog import resolve_capture_pcap
+
+        capture = resolve_capture_pcap(capture_key)
+    except Exception:
+        capture = None
+    source_path = capture.get("path") if isinstance(capture, dict) else None
+    if source_path:
+        return get_source_sidecar_path(
+            source_path,
+            artifact_type,
+            ensure_parent=ensure_parent,
+            pcap_cracked=pcap_cracked,
+        )
+    return get_capture_artifact_path(
+        capture_key,
+        artifact_type,
+        handshakes_dir=handshakes_dir,
+        ensure_parent=ensure_parent,
+    )
 
 
 def get_combined_root(
@@ -175,7 +273,9 @@ def build_artifact_entry(
 
 
 def list_capture_artifacts(
-    capture_id: str | None, handshakes_dir: str = HANDSHAKES_DIR
+    capture_id: str | None,
+    handshakes_dir: str = HANDSHAKES_DIR,
+    source_path: str | None = None,
 ) -> dict[str, Any]:
     capture_dir = get_capture_dir(capture_id, handshakes_dir=handshakes_dir)
     manifest = read_json(
@@ -190,23 +290,74 @@ def list_capture_artifacts(
         "other": [],
         "manifest": manifest,
     }
+    source_specs = (
+        ("details", "details", get_source_sidecar_path(source_path, "details")),
+        ("hash_22000", "22000", get_source_sidecar_path(source_path, "22000")),
+        ("cracked", "cracked", get_source_sidecar_path(source_path, "cracked")),
+        (
+            "cracked",
+            "cracked",
+            get_source_sidecar_path(source_path, "cracked", pcap_cracked=True),
+        ),
+        ("history", "try", get_source_sidecar_path(source_path, "history")),
+    )
+    seen_paths: set[str] = set()
+    for target_group, artifact_type, path in source_specs:
+        if not path or not os.path.exists(path):
+            continue
+        artifact = build_artifact_entry(
+            path=path,
+            name=os.path.basename(path),
+            artifact_type=artifact_type,
+            artifact_scope="capture",
+            capture_id=capture_id,
+        )
+        if artifact:
+            artifacts[target_group].append(artifact)
+            seen_paths.add(os.path.abspath(path))
+
     if not capture_dir or not os.path.isdir(capture_dir):
         return artifacts
 
     mapping = {
-        CAPTURE_ARTIFACT_FILENAMES["details"]: ("details", "details"),
-        CAPTURE_ARTIFACT_FILENAMES["22000"]: ("hash_22000", "22000"),
-        CAPTURE_ARTIFACT_FILENAMES["cracked"]: ("cracked", "cracked"),
-        CAPTURE_ARTIFACT_FILENAMES["history"]: ("history", "try"),
+        CAPTURE_ARTIFACT_FILENAMES["details"]: (
+            "details",
+            "details",
+            get_capture_artifact_filename(source_path, "details"),
+        ),
+        CAPTURE_ARTIFACT_FILENAMES["22000"]: (
+            "hash_22000",
+            "22000",
+            get_capture_artifact_filename(source_path, "22000"),
+        ),
+        CAPTURE_ARTIFACT_FILENAMES["cracked"]: (
+            "cracked",
+            "cracked",
+            get_capture_artifact_filename(source_path, "cracked"),
+        ),
+        CAPTURE_ARTIFACT_FILENAMES["history"]: (
+            "history",
+            "try",
+            get_capture_artifact_filename(source_path, "history"),
+        ),
     }
     for name in sorted(os.listdir(capture_dir)):
         if name == CAPTURE_ARTIFACT_FILENAMES["manifest"]:
             continue
         full_path = os.path.join(capture_dir, name)
-        target_group, artifact_type = mapping.get(name, ("other", name.split(".")[-1]))
+        if os.path.abspath(full_path) in seen_paths:
+            continue
+        target_group, artifact_type, display_name = mapping.get(
+            name, ("other", name.split(".")[-1], name)
+        )
+        if any(
+            item.get("type") == artifact_type and item.get("name") == display_name
+            for item in artifacts.get(target_group, [])
+        ):
+            continue
         artifact = build_artifact_entry(
             path=full_path,
-            name=name,
+            name=display_name or name,
             artifact_type=artifact_type,
             artifact_scope="capture",
             capture_id=capture_id,
@@ -301,6 +452,18 @@ def resolve_artifact_path(
         return None
 
     if capture_id:
+        try:
+            from app.services.handshake_catalog import resolve_capture_pcap
+
+            capture = resolve_capture_pcap(capture_id)
+        except Exception:
+            capture = None
+        source_path = capture.get("path") if isinstance(capture, dict) else None
+        if source_path:
+            source_candidate = os.path.join(os.path.dirname(source_path), name)
+            if os.path.exists(source_candidate):
+                return source_candidate
+
         capture_dir = get_capture_dir(capture_id, handshakes_dir=handshakes_dir)
         if capture_dir:
             candidate = os.path.join(capture_dir, name)

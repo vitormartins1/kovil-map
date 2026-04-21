@@ -35,17 +35,16 @@ def test_get_history_path_for_known_extensions(tmp_path, monkeypatch):
 def test_get_history_path_with_capture_id(tmp_path, monkeypatch):
     monkeypatch.setattr(hs_module, "HANDSHAKES_DIR", str(tmp_path))
 
-    # Mock get_capture_artifact_path to return a specific path
     def mock_get_capture(capture_id, *args, **kwargs):
         if capture_id == "cap1":
-            return f"/captures/{capture_id}/history.try"
+            return f"/captures/{capture_id}/test.try"
         return None
 
-    monkeypatch.setattr(hs_module, "get_capture_artifact_path", mock_get_capture)
+    monkeypatch.setattr(hs_module, "get_capture_source_artifact_path", mock_get_capture)
 
     service = hs_module.HistoryService()
     path = service.get_history_path("test.pcap", capture_id="cap1")
-    assert path == "/captures/cap1/history.try"
+    assert path == "/captures/cap1/test.try"
 
 
 def test_get_history_path_with_combined_build_id(tmp_path, monkeypatch):

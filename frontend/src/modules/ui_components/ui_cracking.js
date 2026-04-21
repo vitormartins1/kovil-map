@@ -852,7 +852,7 @@ function renderSectionDivider(label) {
 
 function appendDerivedArtifactsDivider(list) {
     const divider = document.createElement('div');
-    divider.innerHTML = renderSectionDivider('DERIVED / SHARED ARTIFACTS');
+    divider.innerHTML = renderSectionDivider('DERIVED ARTIFACTS');
     list.appendChild(divider.firstElementChild);
 }
 
@@ -1270,10 +1270,9 @@ function renderHandshakeSetList(list, handshakeSet, files, fileToSelectName = nu
     const rawCanonicalFiles = currentRawContext?.present ? getRawCanonicalFiles(files) : [];
     const rawCanonicalKeys = new Set(rawCanonicalFiles.map((file) => file.ui_key));
 
-    const standaloneFiles = (Array.isArray(files) ? files : []).filter(
-        (file) => (!file.capture_id || !captureIdSet.has(file.capture_id))
-            && !rawCanonicalKeys.has(file.ui_key)
-    );
+    // Legacy/shared flat artifacts are intentionally hidden from the main
+    // operator flow. Capture-scoped files now live inside their source groups.
+    const standaloneFiles = [];
     const willRenderRaw = Boolean(currentRawContext?.present);
     const willRenderCombined = Array.isArray(handshakeSet?.captures) && (
         handshakeSet.captures.length >= 2

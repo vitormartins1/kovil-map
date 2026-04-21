@@ -84,7 +84,7 @@ def test_handshake_catalog_groups_sources_and_scores_preferred_capture(
     assert {item["source"] for item in pcap_entries} == {"brucegotchi", "m5evil"}
 
 
-def test_handshake_catalog_prefers_capture_scoped_artifacts_and_lists_combined_candidates(
+def test_handshake_catalog_prefers_source_sidecars_and_lists_combined_candidates(
     tmp_path,
     monkeypatch,
 ):
@@ -108,17 +108,15 @@ def test_handshake_catalog_prefers_capture_scoped_artifacts_and_lists_combined_c
     capture = initial_catalog["AA:BB:CC:DD:EE:FF"]["captures"][0]
     capture_id = capture["capture_id"]
 
-    capture_dir = hand_dir / "captures" / capture_id
-    capture_dir.mkdir(parents=True)
-    (capture_dir / "capture.22000").write_text(
+    (hand_dir / "Cafe_aabbccddeeff.22000").write_text(
         "WPA*02*abc*001122334455*aabbccddeeff*74657374*00\n",
         encoding="utf-8",
     )
-    (capture_dir / "capture.details").write_text(
+    (hand_dir / "Cafe_aabbccddeeff.details").write_text(
         json.dumps({"ssid": "Cafe", "security": {"wpa_version": "WPA2"}}),
         encoding="utf-8",
     )
-    (capture_dir / "capture.try").write_text(
+    (hand_dir / "Cafe_aabbccddeeff.try").write_text(
         json.dumps([{"status": "started"}]),
         encoding="utf-8",
     )
@@ -172,10 +170,10 @@ def test_handshake_catalog_prefers_capture_scoped_artifacts_and_lists_combined_c
     history_entry = pwn_capture["artifacts"]["history"][0]
     assert details_entry["artifact_scope"] == "capture"
     assert details_entry["artifact_owner_capture_id"] == capture_id
-    assert hash_entry["name"] == "capture.22000"
+    assert hash_entry["name"] == "Cafe_aabbccddeeff.22000"
     assert hash_entry["artifact_scope"] == "capture"
     assert hash_entry["valid_hash_lines"] == 1
-    assert history_entry["name"] == "capture.try"
+    assert history_entry["name"] == "Cafe_aabbccddeeff.try"
 
     flat_names = {
         (
@@ -185,7 +183,44 @@ def test_handshake_catalog_prefers_capture_scoped_artifacts_and_lists_combined_c
         )
         for item in handshake_set["flat_files"]
     }
-    assert ("capture.22000", "capture", capture_id) in flat_names
+    assert ("Cafe_aabbccddeeff.22000", "capture", capture_id) in flat_names
+
+
+def test_handshake_catalog_falls_back_to_legacy_capture_artifacts_with_source_names(
+    tmp_path,
+    monkeypatch,
+):
+    hand_dir = tmp_path / "handshakes"
+    hand_dir.mkdir()
+
+    monkeypatch.setattr(handshake_catalog, "HANDSHAKES_DIR", str(hand_dir))
+    monkeypatch.setattr(
+        handshake_catalog, "BRUCE_HANDSHAKES_DIR", str(tmp_path / "missing-bruce")
+    )
+    monkeypatch.setattr(
+        handshake_catalog, "BRUCE_PCAP_DIR", str(tmp_path / "missing-bruce-root")
+    )
+    monkeypatch.setattr(
+        handshake_catalog, "M5EVIL_HANDSHAKES_DIR", str(tmp_path / "missing-m5")
+    )
+
+    write_test_pcap(hand_dir / "Cafe_aabbccddeeff.pcap")
+    initial_catalog = handshake_catalog.build_handshake_catalog()
+    capture_id = initial_catalog["AA:BB:CC:DD:EE:FF"]["captures"][0]["capture_id"]
+
+    capture_dir = hand_dir / "captures" / capture_id
+    capture_dir.mkdir(parents=True)
+    (capture_dir / "capture.details").write_text(
+        json.dumps({"ssid": "Cafe"}), encoding="utf-8"
+    )
+    (capture_dir / "capture.try").write_text(
+        json.dumps({"entries": [{"status": "started"}]}), encoding="utf-8"
+    )
+
+    catalog = handshake_catalog.build_handshake_catalog()
+    capture = catalog["AA:BB:CC:DD:EE:FF"]["captures"][0]
+    assert capture["artifacts"]["details"][0]["name"] == "Cafe_aabbccddeeff.details"
+    assert capture["artifacts"]["history"][0]["name"] == "Cafe_aabbccddeeff.try"
 
 
 def test_resolve_capture_pcap_returns_none_for_invalid_id(monkeypatch, tmp_path):

@@ -19,9 +19,10 @@ from app.utils.pcap import (
 )
 from app.utils.handshake_artifacts import (
     create_combined_build_id,
-    get_capture_artifact_path,
+    get_capture_source_artifact_path,
     get_combined_artifact_path,
     get_combined_build_dir,
+    get_source_sidecar_path,
     resolve_artifact_path,
     write_json,
 )
@@ -723,22 +724,19 @@ class HashcatService(BaseService):
                 if resolved
                 else str(pcap_filename).rsplit(".", 1)[0]
             )
-            output_file = (
-                get_capture_artifact_path(
-                    capture_id,
-                    "22000",
-                    handshakes_dir=HANDSHAKES_DIR,
-                    ensure_parent=True,
-                )
-                if capture_id and not raw_item_id
-                else os.path.join(HANDSHAKES_DIR, f"{base_name}.22000")
-            )
-
             if not pcap_path or not os.path.exists(pcap_path):
                 return {
                     "status": "error",
                     "message": f"PCAP file not found: {pcap_filename}",
                 }
+
+            output_file = (
+                get_source_sidecar_path(pcap_path, "22000", ensure_parent=True)
+                if capture_id and not raw_item_id
+                else os.path.join(HANDSHAKES_DIR, f"{base_name}.22000")
+            )
+            if not output_file:
+                output_file = os.path.join(HANDSHAKES_DIR, f"{base_name}.22000")
 
             use_wsl = self._should_use_wsl(hcx_bin)
             cwd = None
@@ -848,36 +846,18 @@ class HashcatService(BaseService):
                 (resolved or {}).get("basename")
                 or os.path.basename(str(pcap_filename)).rsplit(".", 1)[0]
             )
-            target_name = (
-                os.path.basename(output_filename)
-                if output_filename
-                else (
-                    os.path.basename(
-                        get_capture_artifact_path(
-                            capture_id,
-                            "22000",
-                            handshakes_dir=HANDSHAKES_DIR,
-                            ensure_parent=True,
-                        )
-                    )
-                    if capture_id and not raw_item_id
-                    else f"{base_name}.22000"
+            if output_filename:
+                output_file = (
+                    str(output_filename)
+                    if os.path.isabs(str(output_filename))
+                    else os.path.join(HANDSHAKES_DIR, os.path.basename(output_filename))
                 )
-            )
-            output_file = (
-                (
-                    get_capture_artifact_path(
-                        capture_id,
-                        "22000",
-                        handshakes_dir=HANDSHAKES_DIR,
-                        ensure_parent=True,
-                    )
-                    if capture_id and not raw_item_id and not output_filename
-                    else os.path.join(HANDSHAKES_DIR, target_name)
-                )
-                if not os.path.isabs(str(output_filename or ""))
-                else str(output_filename)
-            )
+            elif capture_id and not raw_item_id:
+                output_file = get_source_sidecar_path(
+                    pcap_path, "22000", ensure_parent=True
+                ) or os.path.join(HANDSHAKES_DIR, f"{base_name}.22000")
+            else:
+                output_file = os.path.join(HANDSHAKES_DIR, f"{base_name}.22000")
             tmp_output_file = f"{output_file}.tmp.{uuid.uuid4().hex[:8]}"
 
             cwd = None
@@ -1284,7 +1264,10 @@ class HashcatService(BaseService):
             if not unique_lines:
                 return {
                     "status": "error",
-                    "message": "No valid .22000 candidates available for the selected captures",
+                    "message": (
+                        "No combinable capture artifacts found. Select captures with a "
+                        "valid .22000 hash or a valid PCAP that hcxpcapngtool can convert."
+                    ),
                 }
 
             with open(output_path, "w", encoding="utf-8") as handle:
@@ -1690,26 +1673,23 @@ class HashcatService(BaseService):
                 if resolved_hash
                 else hash_filename.rsplit(".", 1)[0]
             )
-            output_file = (
-                get_capture_artifact_path(
+            if capture_id:
+                output_file = get_capture_source_artifact_path(
                     capture_id,
                     "cracked",
                     handshakes_dir=HANDSHAKES_DIR,
                     ensure_parent=True,
+                ) or get_source_sidecar_path(hash_path, "cracked", ensure_parent=True)
+            elif combined_build_id:
+                output_file = get_combined_artifact_path(
+                    mac,
+                    combined_build_id,
+                    "cracked",
+                    handshakes_dir=HANDSHAKES_DIR,
+                    ensure_parent=True,
                 )
-                if capture_id
-                else (
-                    get_combined_artifact_path(
-                        mac,
-                        combined_build_id,
-                        "cracked",
-                        handshakes_dir=HANDSHAKES_DIR,
-                        ensure_parent=True,
-                    )
-                    if combined_build_id
-                    else os.path.join(HANDSHAKES_DIR, f"{base_name}.cracked")
-                )
-            )
+            else:
+                output_file = os.path.join(HANDSHAKES_DIR, f"{base_name}.cracked")
 
             if not hash_path or not os.path.exists(hash_path):
                 return {
