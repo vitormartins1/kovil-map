@@ -962,6 +962,28 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.capture-group-card {
+    margin: 6px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.032),
+        rgba(255, 255, 255, 0.012)
+    );
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.capture-group-card + .capture-group-card {
+    margin-top: 8px;
+}
+
+.capture-group-card > .capture-group-header {
+    min-height: 54px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+}
+
 .capture-group-header {
     width: 100%;
     border: none;
@@ -1055,16 +1077,32 @@ body {
 }
 
 .capture-group-body {
-    padding: 0 0 4px;
+    padding: 4px 0 6px;
     background: rgba(255, 255, 255, 0.015);
 }
 
 .capture-group-body .file-item {
-    padding-left: 18px;
+    margin: 4px 8px;
+    padding: 7px 10px 7px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.045);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.08);
+    box-shadow: inset 2px 0 0 rgba(255, 255, 255, 0.035);
+}
+
+.capture-group-body .file-item:hover {
+    background: rgba(0, 243, 255, 0.075);
+    border-color: rgba(0, 243, 255, 0.16);
+}
+
+.capture-group-body .file-item.selected {
+    background: color-mix(in srgb, var(--theme-color) 18%, rgba(0, 0, 0, 0.12));
+    border-color: color-mix(in srgb, var(--theme-color) 34%, rgba(255, 255, 255, 0.08));
+    box-shadow: inset 3px 0 0 var(--theme-color);
 }
 
 .capture-group-standalone {
-    padding-bottom: 4px;
+    padding-bottom: 0;
 }
 
 .capture-section-divider {
@@ -1358,7 +1396,7 @@ body {
 }
 
 .capture-group-raw-root {
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
 .crack-raw-context-toolbar {
@@ -1409,6 +1447,10 @@ body {
     border-radius: 6px;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.08);
+}
+
+.capture-group-card .capture-group-raw-child {
+    box-shadow: none;
 }
 
 .capture-group-raw-child::before {

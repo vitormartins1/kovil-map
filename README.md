@@ -15,6 +15,10 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 
 ## Tactical Map
 
+<p align="center">
+  <img src="docs/assets/screenshots/t-map.gif" alt="KOVIL TATICAL MAP" />
+</p>
+
 - map-first cockpit for known networks, cluster review, popup actions, and rapid target triage
 - spatial overlays for conquered, to-conquer, discovered, and intelligence-driven zone layers
 - search and status-driven review across dense local datasets with source-aware context
@@ -45,7 +49,7 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 ## Recon Center
 
 <p align="center">
-  <img src="docs/assets/screenshots/map-interface/recon-intel-interface-close.png" alt="KOVIL MAP NO-GPS workspace" />
+  <img src="docs/assets/screenshots/map-interface/recon-intel-interface-close.png" alt="KOVIL Recon Center workspace" />
 </p>
 
 - unified intelligence workspace across SURFACE, INTEL, OPS, GEO, SIGINT, REPORT, and COMMS
@@ -56,7 +60,7 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 ## WarDrive Workspace
 
 <p align="center">
-  <img src="docs/assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png" alt="KOVIL MAP WarDrive workspace replaying a session in Rio de Janeiro" />
+  <img src="docs/assets/screenshots/wardrive-sessions.gif" alt="KOVIL MAP WarDrive workspace replaying a session in Rio de Janeiro" />
 </p>
 
 - session hierarchy and region drilldown for large CSV-derived route datasets

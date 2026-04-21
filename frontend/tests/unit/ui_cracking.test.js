@@ -510,6 +510,9 @@ describe("ui_cracking actions", () => {
     expect(pwnRow.textContent).not.toContain("Pwnagotchi");
     expect(bruceRow.textContent).not.toContain("Brucegotchi");
     expect(m5Row.textContent).not.toContain("M5Evil");
+    expect(pwnRow.closest(".capture-group")?.classList.contains("capture-group-card")).toBe(true);
+    expect(pwnRow.closest(".capture-group")?.classList.contains("capture-group-source-root")).toBe(true);
+    expect(pwnRow.closest(".capture-group-body")).toBeTruthy();
   });
 
   test("default selected file marks its owning device accordion active and renders derived divider", async () => {
@@ -559,6 +562,9 @@ describe("ui_cracking actions", () => {
     expect(selectedRow).toBeTruthy();
     const activeGroup = selectedRow.closest(".capture-group");
     expect(activeGroup?.classList.contains("capture-group-active")).toBe(true);
+    expect(activeGroup?.classList.contains("capture-group-card")).toBe(true);
+    expect(activeGroup?.classList.contains("capture-group-source-root")).toBe(true);
+    expect(selectedRow.closest(".capture-group-body")).toBeTruthy();
     const activeHeader = activeGroup?.querySelector(":scope > .capture-group-header");
     expect(activeHeader?.classList.contains("capture-group-header-active")).toBe(true);
 
@@ -592,6 +598,8 @@ describe("ui_cracking actions", () => {
     const rawRoot = rawRootHeader?.closest(".capture-group-raw-root");
     const rawBody = rawRoot?.querySelector(":scope > .crack-raw-context-body");
     const rawChild = rawBody?.querySelector(":scope > .capture-group-raw-child");
+    expect(rawRoot?.classList.contains("capture-group-card")).toBe(true);
+    expect(rawRoot?.classList.contains("capture-group-derived-root")).toBe(true);
     expect(rawRootHeader?.classList.contains("capture-group-header-active")).toBe(true);
     expect(rawDeviceHeader?.classList.contains("capture-group-header-active")).toBe(true);
     expect(rawBody?.classList.contains("crack-raw-context-body-tree")).toBe(true);
@@ -653,12 +661,16 @@ describe("ui_cracking actions", () => {
     const combinedHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
       .find((el) => el.textContent.includes("COMBINED CANDIDATES"));
     expect(combinedHeader?.classList.contains("capture-group-header-active")).toBe(true);
+    expect(combinedHeader?.closest(".capture-group")?.classList.contains("capture-group-card")).toBe(true);
+    expect(combinedHeader?.closest(".capture-group")?.classList.contains("capture-group-derived-root")).toBe(true);
 
     await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe", "legacy_shared.22000");
     await flushAsync();
     const legacyHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
       .find((el) => el.textContent.includes("LEGACY / SHARED ARTIFACTS"));
     expect(legacyHeader?.classList.contains("capture-group-header-active")).toBe(true);
+    expect(legacyHeader?.closest(".capture-group")?.classList.contains("capture-group-card")).toBe(true);
+    expect(legacyHeader?.closest(".capture-group")?.classList.contains("capture-group-derived-root")).toBe(true);
   });
 
   test("opening derived accordions auto-selects their first file", async () => {

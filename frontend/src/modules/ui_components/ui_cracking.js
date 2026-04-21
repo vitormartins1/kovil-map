@@ -1174,7 +1174,7 @@ function renderHandshakeSetList(list, handshakeSet, files, fileToSelectName = nu
     (Array.isArray(handshakeSet?.captures) ? handshakeSet.captures : []).forEach((capture) => {
         const captureFiles = getCaptureFiles(capture.capture_id, files);
         const group = document.createElement('div');
-        group.className = 'capture-group';
+        group.className = 'capture-group capture-group-card capture-group-source-root';
         const header = document.createElement('button');
         header.type = 'button';
         header.className = 'capture-group-header';
@@ -1293,7 +1293,7 @@ function renderHandshakeSetList(list, handshakeSet, files, fileToSelectName = nu
 
     if (standaloneFiles.length) {
         const section = document.createElement('div');
-        section.className = 'capture-group capture-group-standalone';
+        section.className = 'capture-group capture-group-card capture-group-derived-root capture-group-standalone';
         const expanded = standaloneFiles.some((file) => file.name === fileToSelectName);
         const defaultFile = standaloneFiles[0] || null;
         const header = document.createElement('button');
@@ -1432,7 +1432,7 @@ function appendRawContextAccordion(
     });
 
     const topLevel = document.createElement('div');
-    topLevel.className = 'capture-group capture-group-raw-root';
+    topLevel.className = 'capture-group capture-group-card capture-group-derived-root capture-group-raw-root';
     const expanded = grouped.some((group) =>
         group.items.some((item) => {
             const targetName = String(fileToSelectName || '').trim();
@@ -1708,7 +1708,7 @@ function appendCombinedCandidatesAccordion(list, handshakeSet, itemByKey, fileTo
     }
 
     const topLevel = document.createElement('div');
-    topLevel.className = 'capture-group capture-group-combined-root';
+    topLevel.className = 'capture-group capture-group-card capture-group-derived-root capture-group-combined-root';
     const targetBuildId = String(contextOptions?.combinedBuildId || '').trim();
     const expanded = combinedCandidates.some((file) => {
         if (targetBuildId && String(file?.combined_build_id || '').trim() === targetBuildId) return true;
