@@ -57,7 +57,7 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 - COMMS cluster intelligence and map-facing Intelligence Zones for geospatial relationship review
 - target-level drilldown for attack surface, threat analysis, signal intelligence, and operational planning
 
-## WarDrive Workspace
+## Wardrive Workspace
 
 <p align="center">
   <img src="docs/assets/screenshots/wardrive-sessions.gif" alt="KOVIL MAP WarDrive workspace replaying a session in Rio de Janeiro" />
