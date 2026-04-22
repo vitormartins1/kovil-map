@@ -5,6 +5,7 @@ import csv
 import hashlib
 import json
 import math
+import os
 import re
 import shutil
 import struct
@@ -23,6 +24,9 @@ PROFILE_DESCRIPTION = (
 )
 PROFILE_VERSION = 5
 BUILD_STAMP = "2026-04-15T00:00:00Z"
+DEMO_SOURCE_MTIME = datetime.fromisoformat(
+    BUILD_STAMP.replace("Z", "+00:00")
+).timestamp()
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 PACK_ROOT = BACKEND_ROOT / "demo_data" / PROFILE_ID
@@ -1551,6 +1555,7 @@ def _write_pcap(path: Path, frames: list[tuple[int, int, bytes]]) -> None:
         handle.write(_pcap_global_header())
         for ts_sec, ts_usec, payload in frames:
             handle.write(_pcap_packet(ts_sec, ts_usec, payload))
+    os.utime(path, (DEMO_SOURCE_MTIME, DEMO_SOURCE_MTIME))
 
 
 def _build_demo_frames(
