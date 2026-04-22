@@ -76,8 +76,14 @@ def _collect_related_files(handshakes_dir, base_name):
 
 
 def _read_cracked_password(handshakes_dir, base_name):
-    pcap_cracked_file = os.path.join(handshakes_dir, f"{base_name}.pcap.cracked")
-    if not os.path.exists(pcap_cracked_file):
+    cracked_candidates = (
+        os.path.join(handshakes_dir, f"{base_name}.cracked"),
+        os.path.join(handshakes_dir, f"{base_name}.pcap.cracked"),
+    )
+    pcap_cracked_file = next(
+        (path for path in cracked_candidates if os.path.exists(path)), None
+    )
+    if not pcap_cracked_file:
         return False, None
     try:
         with open(pcap_cracked_file, "r") as cracked_file:

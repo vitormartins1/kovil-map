@@ -125,6 +125,7 @@ _ALLOWED_UI_HUD_DENSITY = {"compact", "balanced", "comfortable"}
 _ALLOWED_UI_SIDEBAR_PRESETS = {"narrow", "standard", "wide"}
 _ALLOWED_UI_FONT_SCALE = {"90", "100", "110"}
 _ALLOWED_UI_CRACKING_ACCORDION_MODES = {"multi", "single"}
+_ALLOWED_UI_CRACKING_ATTACK_PANEL_MODES = {"multi", "single"}
 _ALLOWED_M5_WEB_PROTOCOLS = {"http", "https"}
 _ALLOWED_UI_WARDRIVE_REPLAY_SPEEDS = {
     "0.05",
@@ -221,6 +222,7 @@ DEFAULT_CONFIG = {
     "ui_sidebar_preset": "standard",
     "ui_font_scale": "100",
     "ui_cracking_accordion_mode": "multi",
+    "ui_cracking_attack_panel_mode": "multi",
     "ui_wardrive_replay_speed_default": "1",
     "ui_wardrive_replay_autoplay": False,
     "ui_wardrive_replay_auto_focus": True,
@@ -577,6 +579,11 @@ def normalize_config(raw_config):
         migrated.get("ui_cracking_accordion_mode"),
         DEFAULT_CONFIG["ui_cracking_accordion_mode"],
         _ALLOWED_UI_CRACKING_ACCORDION_MODES,
+    )
+    normalized["ui_cracking_attack_panel_mode"] = _normalize_choice(
+        migrated.get("ui_cracking_attack_panel_mode"),
+        DEFAULT_CONFIG["ui_cracking_attack_panel_mode"],
+        _ALLOWED_UI_CRACKING_ATTACK_PANEL_MODES,
     )
     normalized["ui_wardrive_replay_speed_default"] = _normalize_choice(
         migrated.get("ui_wardrive_replay_speed_default"),

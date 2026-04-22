@@ -1,0 +1,28 @@
+{
+  "bssid": "A2:B2:E0:02:D8:80",
+  "classification": {
+    "confidence": 0.84,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "LAPA_GUEST_0561",
+  "vendor": "Carioca Hospitality",
+  "wps": {
+    "present": false
+  }
+}

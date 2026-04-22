@@ -95,6 +95,9 @@ const mockAPI = {
   extractRawSniffer: jest.fn(),
   clearDetailsFiles: jest.fn(),
   clearCache: jest.fn(),
+  installDemoData: jest.fn(),
+  removeDemoData: jest.fn(),
+  getDemoDataStatus: jest.fn(),
   getAnalyticsHeatmap: jest.fn(),
   getAnalyticsChannelSummary: jest.fn(),
   getAnalyticsHotspots: jest.fn(),
@@ -147,6 +150,7 @@ const mockUiConfig = {
 const mockApplyTheme = jest.fn();
 const mockApplyWardriveColor = jest.fn();
 const mockApplyLayoutSettings = jest.fn();
+const mockRenderDemoDataStatus = jest.fn();
 const mockApplyClientConfig = jest.fn((config = {}) => {
   mockApplyLayoutSettings(config);
   mockApplyTheme(config.ui_theme || mockUiConfig.theme);
@@ -257,6 +261,7 @@ jest.mock("../../src/modules/ui_components/ui_settings.js", () => ({
   applyClientConfig: (...args) => mockApplyClientConfig(...args),
   openSettings: (...args) => mockOpenSettings(...args),
   closeSettings: (...args) => mockCloseSettings(...args),
+  renderDemoDataStatus: (...args) => mockRenderDemoDataStatus(...args),
   saveSettings: (...args) => mockSaveSettings(...args),
 }));
 
@@ -399,6 +404,7 @@ function resetMocks() {
   mockApplyTheme.mockReset();
   mockApplyWardriveColor.mockReset();
   mockApplyLayoutSettings.mockReset();
+  mockRenderDemoDataStatus.mockReset();
   mockApplyClientConfig.mockClear();
   mockOpenSettings.mockReset();
   mockCloseSettings.mockReset();
@@ -482,6 +488,22 @@ function resetMocks() {
   mockAPI.getReconCacheManifest.mockResolvedValue({ scope: "test-scope" });
   mockAPI.clearDetailsFiles.mockResolvedValue({ deleted_count: 0, failed_count: 0 });
   mockAPI.clearCache.mockResolvedValue({ raw_metadata_deleted_count: 0, raw_metadata_failed_count: 0 });
+  mockAPI.installDemoData.mockResolvedValue({
+    profile_id: "showcase-core-v5",
+    label: "Showcase Core v5",
+    summary: { networks_total: 15939, wardrive_sessions: 11, raw_files: 7, gps_backed_locked_networks: 12 },
+    ui_seed: {
+      lists: { targets: ["AA:BB:CC:DD:EE:FF"], favs: ["11:22:33:44:55:66"] },
+      modes: { targets: true, favs: true, process: true, logs: true, zones: true, conquered: true },
+    },
+  });
+  mockAPI.removeDemoData.mockResolvedValue({
+    restore_mode: "snapshot",
+    ui_restore: {
+      lists: { targets: [], favs: [] },
+      modes: { targets: false, favs: false, process: false, logs: false, zones: false, conquered: false },
+    },
+  });
   window.confirm = jest.fn(() => false);
 }
 
@@ -547,6 +569,8 @@ function mountUiDom() {
     "btn-clear-history",
     "btn-clear-details",
     "btn-clear-cache",
+    "btn-install-demo-data",
+    "btn-remove-demo-data",
     "btn-quick-settings",
     "btn-multi-create",
     "btn-multi-clear",
@@ -679,6 +703,12 @@ function mountUiDom() {
   const settingsPanel = document.createElement("div");
   settingsPanel.className = "settings-panel";
   settingsModal.appendChild(settingsPanel);
+  const demoStatus = document.createElement("div");
+  demoStatus.id = "demo-data-status";
+  settingsPanel.appendChild(demoStatus);
+  const demoSummary = document.createElement("div");
+  demoSummary.id = "demo-data-summary";
+  settingsPanel.appendChild(demoSummary);
 
   [
     "count-total",
@@ -925,7 +955,7 @@ describe("ui module", () => {
 
     document.dispatchEvent(
       new CustomEvent("statsUpdated", {
-        detail: { total: 10, cracked: 2, wardrive: 1, open: 2, locked: 5, noGpsTotal: 3, noGpsCracked: 1 },
+        detail: { total: 10, cracked: 2, wardrive: 1, open: 2, locked: 5, noGpsTotal: 3, noGpsCracked: 1, noGpsLocked: 2 },
       })
     );
     expect(document.getElementById("count-total").innerText).toEqual(13);

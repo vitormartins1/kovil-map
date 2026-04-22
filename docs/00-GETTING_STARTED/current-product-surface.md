@@ -4,7 +4,7 @@ This page is the canonical reference for the current operator-facing names used 
 
 If you see older internal names such as `analytics` in code, state flags, or some technical docs, read them as implementation details, not as the current top-level UI naming.
 
-![WarDrive workspace replaying a Rio de Janeiro session](../assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png)
+![WarDrive workspace replaying a Rio de Janeiro session](../assets/screenshots/wardrive-sessions.gif)
 
 ## Default Cockpit
 

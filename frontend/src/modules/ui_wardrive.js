@@ -155,6 +155,104 @@ function getLevelWeight(region) {
     return LEVEL_WEIGHT[String(region?.level_key || region?.level || '').toLowerCase()] || 99;
 }
 
+function getWardriveRegionNetworkCount(region) {
+    return Number(region?.stats?.networks_count || 0);
+}
+
+function getWardriveRegionId(region) {
+    return String(region?.id || '').trim();
+}
+
+function getWardriveRegionParentId(region, regionById) {
+    const directParentId = String(region?.parent_id || '').trim();
+    if (directParentId && regionById.has(directParentId)) return directParentId;
+
+    const currentId = getWardriveRegionId(region);
+    const lineage = Array.isArray(region?.lineage) ? region.lineage : [];
+    const lineageIds = lineage
+        .map((item) => String(item?.id || '').trim())
+        .filter((item) => item && regionById.has(item));
+    const ownIndex = lineageIds.indexOf(currentId);
+    if (ownIndex > 0) return lineageIds[ownIndex - 1];
+    if (ownIndex < 0 && lineageIds.length > 1) return lineageIds[lineageIds.length - 2];
+    return null;
+}
+
+function getWardriveRegionAncestorIds(region, regionById) {
+    const ancestors = [];
+    const seen = new Set();
+    let current = region;
+
+    while (current) {
+        const currentId = getWardriveRegionId(current);
+        if (!currentId || seen.has(currentId)) break;
+        ancestors.push(currentId);
+        seen.add(currentId);
+
+        const parentId = getWardriveRegionParentId(current, regionById);
+        current = parentId ? regionById.get(parentId) : null;
+    }
+
+    return ancestors;
+}
+
+function pickMappedWardriveSessionRegion(mapped = []) {
+    const regionById = new Map(mapped.map((region) => [getWardriveRegionId(region), region]));
+    const childParentIds = new Set();
+    mapped.forEach((region) => {
+        const parentId = getWardriveRegionParentId(region, regionById);
+        if (parentId) childParentIds.add(parentId);
+    });
+
+    const leaves = mapped.filter((region) => !childParentIds.has(getWardriveRegionId(region)));
+    const focusRegions = leaves.length ? leaves : mapped;
+    if (focusRegions.length === 1) return focusRegions[0];
+
+    const ancestorChains = focusRegions.map((region) => getWardriveRegionAncestorIds(region, regionById));
+    const [firstChain] = ancestorChains;
+    const commonAncestorId = (firstChain || []).find((candidateId) =>
+        ancestorChains.every((chain) => chain.includes(candidateId))
+    );
+    if (commonAncestorId && regionById.has(commonAncestorId)) {
+        return regionById.get(commonAncestorId);
+    }
+
+    return [...mapped].sort((a, b) => {
+        const depthDiff = getLevelWeight(b) - getLevelWeight(a);
+        if (depthDiff !== 0) return depthDiff;
+        const countDiff = getWardriveRegionNetworkCount(b) - getWardriveRegionNetworkCount(a);
+        if (countDiff !== 0) return countDiff;
+        return String(a?.name || '').localeCompare(String(b?.name || ''), 'en');
+    })[0] || null;
+}
+
+function pickWardriveRegion(regions = [], preferredId = null, { preferSessionFocus = false } = {}) {
+    const list = Array.isArray(regions) ? regions.filter(Boolean) : [];
+    if (!list.length) return null;
+
+    const normalizedPreferredId = String(preferredId || '').trim();
+    if (normalizedPreferredId) {
+        const preferred = list.find((region) => String(region?.id || '') === normalizedPreferredId);
+        if (preferred) return preferred;
+    }
+
+    if (preferSessionFocus) {
+        const unmapped = list.find((region) => getWardriveRegionId(region) === 'unmapped') || null;
+        const mapped = list.filter((region) => getWardriveRegionId(region) !== 'unmapped');
+        const bestMapped = pickMappedWardriveSessionRegion(mapped);
+
+        if (
+            unmapped
+            && getWardriveRegionNetworkCount(unmapped) > getWardriveRegionNetworkCount(bestMapped)
+        ) {
+            return unmapped;
+        }
+        if (bestMapped) return bestMapped;
+    }
+
+    return list[0] || null;
+}
+
 function getNode(id) {
     return document.getElementById(id);
 }
@@ -1478,6 +1576,80 @@ function setWardriveActiveReplaySession(sessionId) {
     }
 }
 
+function getWardriveTrackBounds(track) {
+    const bbox = track?.bbox || {};
+    const bboxValues = [
+        Number(bbox.min_lat),
+        Number(bbox.min_lng),
+        Number(bbox.max_lat),
+        Number(bbox.max_lng),
+    ];
+    if (bboxValues.every(Number.isFinite)) {
+        return {
+            min_lat: bboxValues[0],
+            min_lng: bboxValues[1],
+            max_lat: bboxValues[2],
+            max_lng: bboxValues[3],
+        };
+    }
+
+    const points = Array.isArray(track?.points) ? track.points : [];
+    const coords = points
+        .map((point) => ({
+            lat: Number(point?.lat),
+            lng: Number(point?.lng),
+        }))
+        .filter((point) => Number.isFinite(point.lat) && Number.isFinite(point.lng));
+    if (!coords.length) return null;
+
+    return coords.reduce((acc, point) => ({
+        min_lat: Math.min(acc.min_lat, point.lat),
+        min_lng: Math.min(acc.min_lng, point.lng),
+        max_lat: Math.max(acc.max_lat, point.lat),
+        max_lng: Math.max(acc.max_lng, point.lng),
+    }), {
+        min_lat: coords[0].lat,
+        min_lng: coords[0].lng,
+        max_lat: coords[0].lat,
+        max_lng: coords[0].lng,
+    });
+}
+
+function getWardriveSelectedTracksFocusTarget(tracks = []) {
+    const validTracks = (Array.isArray(tracks) ? tracks : []).filter((track) => (
+        Array.isArray(track?.points) && track.points.length
+    ));
+    if (!validTracks.length) return null;
+    if (validTracks.length === 1) return validTracks[0];
+
+    const bounds = validTracks.map(getWardriveTrackBounds).filter(Boolean);
+    if (!bounds.length) return validTracks[0];
+    const bbox = bounds.reduce((acc, item) => ({
+        min_lat: Math.min(acc.min_lat, item.min_lat),
+        min_lng: Math.min(acc.min_lng, item.min_lng),
+        max_lat: Math.max(acc.max_lat, item.max_lat),
+        max_lng: Math.max(acc.max_lng, item.max_lng),
+    }), bounds[0]);
+
+    return {
+        session_id: '__selected_wardrive_tracks__',
+        label: 'Selected WarDrive tracks',
+        bbox,
+        points: validTracks.flatMap((track) => Array.isArray(track.points) ? track.points : []),
+    };
+}
+
+function focusSelectedWardriveTracks() {
+    const selectedIds = new Set(
+        wardriveSelectedSessionIds.map((item) => String(item || '').trim()).filter(Boolean)
+    );
+    const selectedTracks = selectedIds.size
+        ? wardriveSessionTracks.filter((track) => selectedIds.has(String(track?.session_id || '').trim()))
+        : wardriveSessionTracks;
+    const focusTarget = getWardriveSelectedTracksFocusTarget(selectedTracks);
+    if (focusTarget) focusWardriveTrack(focusTarget);
+}
+
 function resetWardriveReplayPlayback() {
     clearWardriveReplayTimer();
     wardriveReplayProgress = 0;
@@ -1622,6 +1794,9 @@ async function refreshWardriveSessionTracks() {
             renderCurrentWardriveZones();
         }
         applyWardriveReplayMapState();
+        if (wardriveUiConfig.replayAutoFocus) {
+            focusSelectedWardriveTracks();
+        }
     } catch (err) {
         if (requestId !== wardriveReplayReq) return;
         wardriveReplayLoading = false;
@@ -2195,7 +2370,7 @@ function renderSessionsPanel() {
 
         const handleSessionSelection = async () => {
             toggleWardriveSession(sessionId);
-            await refreshWardriveHierarchy(true);
+            await refreshWardriveHierarchy(false);
         };
 
         item.addEventListener('click', async () => {
@@ -2363,7 +2538,11 @@ function restoreWorkspaceFromSnapshot() {
         return;
     }
 
-    const selectedRegion = wardriveHierarchy.find((item) => item.id === wardriveSelectedRegionId) || wardriveHierarchy[0];
+    const selectedRegion = pickWardriveRegion(
+        wardriveHierarchy,
+        wardriveSelectedRegionId,
+        { preferSessionFocus: wardriveSelectedSessionIds.length > 0 }
+    );
     wardriveSelectedRegionId = selectedRegion?.id || null;
     expandWardriveRegionAncestors(wardriveSelectedRegionId, wardriveHierarchy);
     renderRegionsList();
@@ -2384,7 +2563,6 @@ function restoreWorkspaceFromSnapshot() {
 
     if (
         wardriveSelectedRegionId
-        && wardriveSelectedRegionId !== 'unmapped'
         && (!Array.isArray(wardriveLastZones) || wardriveLastZones.length === 0)
     ) {
         showWardriveZonesLoadingState();
@@ -2481,7 +2659,6 @@ async function loadWardriveZones(regionId, shouldFitBounds) {
 async function selectWardriveRegion(regionId, shouldFitBounds) {
     wardriveSelectedRegionId = regionId;
     selectRegionRow(regionId);
-    setWardriveExplorerPane(WORKSPACE_EXPLORER_PANE_ZONES);
     const selected = wardriveHierarchy.find((item) => String(item?.id || '') === String(regionId || '')) || null;
     wardriveLastRegionPayload = selected || null;
     wardriveLastRegionStats = selected?.stats || null;
@@ -2546,7 +2723,11 @@ async function refreshWardriveHierarchy(keepSelection = true) {
         }
 
         const preferredId = keepSelection ? wardriveSelectedRegionId : null;
-        const selected = wardriveHierarchy.find((region) => region.id === preferredId) || wardriveHierarchy[0];
+        const selected = pickWardriveRegion(
+            wardriveHierarchy,
+            preferredId,
+            { preferSessionFocus: wardriveSelectedSessionIds.length > 0 }
+        );
         wardriveSelectedRegionId = selected?.id || null;
         expandWardriveRegionAncestors(wardriveSelectedRegionId, wardriveHierarchy);
         renderRegionsList();
@@ -2557,14 +2738,8 @@ async function refreshWardriveHierarchy(keepSelection = true) {
         wardriveLastZoneComparison = null;
         renderRegionSummary(selected, selected?.stats || null);
         renderWardriveRegion(selected || null);
-        if (selected?.id === 'unmapped') {
-            wardriveZonesLoading = false;
-            renderWardriveZones([]);
-            renderZonesList([]);
-        } else {
-            showWardriveZonesLoadingState();
-            void loadWardriveZones(selected.id, !keepSelection);
-        }
+        showWardriveZonesLoadingState();
+        void loadWardriveZones(selected.id, !keepSelection && wardriveSelectedSessionIds.length === 0);
         applyWardriveSessionMapFilter();
         void refreshWardriveSessionTracks();
     } catch (err) {
@@ -2746,6 +2921,20 @@ export async function activateWardriveMode() {
 export function deactivateWardriveMode() {
     if (!STATE.modes.wardrive) return;
     STATE.modes.wardrive = false;
+    const hadSessionFilter = wardriveSelectedSessionIds.length > 0;
+    if (hadSessionFilter) {
+        wardriveSelectedSessionIds = [];
+        wardriveSelectedRegionId = null;
+        wardriveActiveReplaySessionId = null;
+        wardriveReplayProgress = 0;
+        wardriveSessionTracks = [];
+        wardriveLastRegionPayload = null;
+        wardriveLastRegionStats = null;
+        wardriveLastZones = [];
+        wardriveLastZoneComparison = null;
+        wardriveWorkspaceWarm = false;
+        wardriveWorkspaceDirty = true;
+    }
 
     const btn = getNode('btn-wardrive');
     if (btn) btn.classList.remove('active');
@@ -2761,6 +2950,12 @@ export function deactivateWardriveMode() {
     suspendMapModeButtons(false);
     syncWardriveSourceLock();
     clearWardriveLayers();
+    if (hadSessionFilter) {
+        renderSessionFilterSummary();
+        renderSessionsPanel();
+        renderWardriveRouteReplaySection();
+        renderMarkers(STATE.allPositions || {}, false);
+    }
     saveModes();
 }
 
@@ -2791,7 +2986,11 @@ export async function prewarmWardriveWorkspace() {
         wardriveMapsSummary = hierarchyPayload?.maps_summary || {};
         wardriveHierarchy = mergeHierarchyWithUnmapped(hierarchyPayload);
         const preferredId = wardriveSelectedRegionId;
-        const selected = wardriveHierarchy.find((region) => region.id === preferredId) || wardriveHierarchy[0] || null;
+        const selected = pickWardriveRegion(
+            wardriveHierarchy,
+            preferredId,
+            { preferSessionFocus: wardriveSelectedSessionIds.length > 0 }
+        );
         wardriveSelectedRegionId = selected?.id || null;
         wardriveLastRegionPayload = selected;
         wardriveLastRegionStats = selected?.stats || null;
@@ -3085,6 +3284,8 @@ export function __testResetWardriveState() {
 export const __testWardriveHelpers = {
     byLevelName,
     getLevelWeight,
+    getWardriveRegionNetworkCount,
+    pickWardriveRegion,
     normalizeWardriveSessionSortBy,
     normalizeWardriveSessionSortDirection,
     loadWardriveSessionsUiFilters,

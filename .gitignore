@@ -69,6 +69,7 @@ backend/data/wardrive/20260315_160040_wardriving.csv
 /backend/data/maps/**/*.sql
 /backend/data/maps/**/data/metadata.json
 /backend/data/m5evil
+/backend/data_backups
 /backend/scripts/manual/__pycache__
 .pytest_cache/
 .ruff_cache/
@@ -77,3 +78,4 @@ docs/.DS_Store
 .github/.DS_Store
 frontend/.DS_Store
 backend/config.local.json
+/backend/data/airolib

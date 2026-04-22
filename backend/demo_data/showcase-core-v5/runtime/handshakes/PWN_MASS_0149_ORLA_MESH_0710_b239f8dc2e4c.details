@@ -1,0 +1,28 @@
+{
+  "bssid": "B2:39:F8:DC:2E:4C",
+  "classification": {
+    "confidence": 0.84,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ORLA_MESH_0710",
+  "vendor": "Orla Telecom",
+  "wps": {
+    "present": false
+  }
+}

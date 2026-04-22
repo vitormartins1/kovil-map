@@ -1,0 +1,28 @@
+{
+  "bssid": "06:EE:11:22:33:55",
+  "classification": {
+    "confidence": 0.85,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "brucegotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "JARDIM_BOTANICO_CYCLE_LAB",
+  "vendor": "Botanical Research Guest",
+  "wps": {
+    "present": false
+  }
+}

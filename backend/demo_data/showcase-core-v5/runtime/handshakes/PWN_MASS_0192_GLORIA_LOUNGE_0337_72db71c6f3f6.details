@@ -1,0 +1,28 @@
+{
+  "bssid": "72:DB:71:C6:F3:F6",
+  "classification": {
+    "confidence": 0.79,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 4,
+    "frequency_mhz": 2427
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "GLORIA_LOUNGE_0337",
+  "vendor": "Centro Mobility",
+  "wps": {
+    "present": false
+  }
+}

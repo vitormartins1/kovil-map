@@ -89,7 +89,7 @@ def test_aircrack_run_attack_uses_capture_id_resolution(tmp_path, monkeypatch):
     )
     assert result == {"status": "started", "job_id": "job-cap"}
     assert str(external_pcap) in captured["command"]
-    assert str(hand_dir / "captures" / "cap-123" / "capture.key") in captured["command"]
+    assert str(external_dir / "Alias.key") in captured["command"]
 
 
 def test_aircrack_run_attack_uses_raw_item_id_resolution(tmp_path, monkeypatch):

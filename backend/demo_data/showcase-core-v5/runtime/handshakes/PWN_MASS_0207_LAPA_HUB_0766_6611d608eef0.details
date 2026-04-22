@@ -1,0 +1,28 @@
+{
+  "bssid": "66:11:D6:08:EE:F0",
+  "classification": {
+    "confidence": 0.8,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 9,
+    "frequency_mhz": 2452
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "LAPA_HUB_0766",
+  "vendor": "Porto Retail Mesh",
+  "wps": {
+    "present": false
+  }
+}

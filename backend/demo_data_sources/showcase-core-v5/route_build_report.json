@@ -1,0 +1,70 @@
+{
+  "centro_lapa_santa_teresa.csv": {
+    "corridor": "Centro + Lapa + Santa Teresa",
+    "density_multiplier": 1.0,
+    "distance_km": 2.202,
+    "points_per_km": 282.94,
+    "route_asset": "centro_lapa_santa_teresa.csv",
+    "route_family": "road",
+    "route_points": 623,
+    "seed_asset": "centro_lapa_santa_teresa.gpx",
+    "seed_points": "copied",
+    "step_distance_m": {
+      "max": 3.66,
+      "median": 3.55,
+      "p90": 3.59
+    },
+    "transport_mode": "car"
+  },
+  "copacabana_arpoador_ipanema_lagoa.csv": {
+    "corridor": "Copacabana + Arpoador + Ipanema + Lagoa",
+    "density_multiplier": 1.0,
+    "distance_km": 2.205,
+    "points_per_km": 282.56,
+    "route_asset": "copacabana_arpoador_ipanema_lagoa.csv",
+    "route_family": "road",
+    "route_points": 623,
+    "seed_asset": "copacabana_arpoador_ipanema_lagoa.gpx",
+    "seed_points": "copied",
+    "step_distance_m": {
+      "max": 3.66,
+      "median": 3.54,
+      "p90": 3.6
+    },
+    "transport_mode": "car"
+  },
+  "flamengo_botafogo_urca.csv": {
+    "corridor": "Aterro do Flamengo + Botafogo + Urca",
+    "density_multiplier": 1.0,
+    "distance_km": 2.212,
+    "points_per_km": 282.56,
+    "route_asset": "flamengo_botafogo_urca.csv",
+    "route_family": "road",
+    "route_points": 625,
+    "seed_asset": "flamengo_botafogo_urca.gpx",
+    "seed_points": "copied",
+    "step_distance_m": {
+      "max": 3.66,
+      "median": 3.55,
+      "p90": 3.59
+    },
+    "transport_mode": "car"
+  },
+  "lapa_gloria_praca_maua_motorcycle.csv": {
+    "corridor": "Lapa + Gloria + Praca Maua Motorcycle",
+    "density_multiplier": 0.82,
+    "distance_km": 3.156,
+    "points_per_km": 282.3,
+    "route_asset": "lapa_gloria_praca_maua_motorcycle.csv",
+    "route_family": "road",
+    "route_points": 891,
+    "seed_asset": "lapa_gloria_praca_maua_motorcycle.gpx",
+    "seed_points": 18,
+    "step_distance_m": {
+      "max": 3.67,
+      "median": 3.55,
+      "p90": 3.61
+    },
+    "transport_mode": "motorcycle"
+  }
+}

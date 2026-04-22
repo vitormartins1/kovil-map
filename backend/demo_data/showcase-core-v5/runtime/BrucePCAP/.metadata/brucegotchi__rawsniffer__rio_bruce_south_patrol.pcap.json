@@ -1,0 +1,75 @@
+{
+  "demo_profile": "showcase-core-v5",
+  "device_label": "Bruce",
+  "networks": [
+    {
+      "beacon_count": 18,
+      "bssid": "0E:AA:11:22:33:47",
+      "channel": 157,
+      "eapol_count": 4,
+      "frequency_mhz": 5785,
+      "last_seen_offset_s": 18.0,
+      "probe_client_count": 1,
+      "ssid": "COPA_MEDIA_NODE",
+      "ssid_raw_hex": "434f50415f4d454449415f4e4f4445"
+    },
+    {
+      "beacon_count": 24,
+      "bssid": "02:BB:11:22:33:48",
+      "channel": 1,
+      "eapol_count": 4,
+      "frequency_mhz": 2412,
+      "last_seen_offset_s": 29.0,
+      "probe_client_count": 2,
+      "ssid": "METRO_LINE_4",
+      "ssid_raw_hex": "4d4554524f5f4c494e455f34"
+    },
+    {
+      "beacon_count": 30,
+      "bssid": "06:BB:11:22:33:49",
+      "channel": 11,
+      "eapol_count": 4,
+      "frequency_mhz": 2462,
+      "last_seen_offset_s": 40.0,
+      "probe_client_count": 3,
+      "ssid": "IPANEMA_BOARDWALK",
+      "ssid_raw_hex": "4950414e454d415f424f41524457414c4b"
+    },
+    {
+      "beacon_count": 36,
+      "bssid": "0A:EE:11:22:33:56",
+      "channel": 36,
+      "eapol_count": 4,
+      "frequency_mhz": 5180,
+      "last_seen_offset_s": 51.0,
+      "probe_client_count": 4,
+      "ssid": "ARPOADOR_STAFF_MESH",
+      "ssid_raw_hex": "4152504f41444f525f53544146465f4d455348"
+    },
+    {
+      "beacon_count": 42,
+      "bssid": "06:EE:11:22:33:55",
+      "channel": 1,
+      "eapol_count": 4,
+      "frequency_mhz": 2412,
+      "last_seen_offset_s": 62.0,
+      "probe_client_count": 5,
+      "ssid": "JARDIM_BOTANICO_CYCLE_LAB",
+      "ssid_raw_hex": "4a415244494d5f424f54414e49434f5f4359434c455f4c4142"
+    }
+  ],
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::4e1a4617f2c046cc",
+  "schema_version": 1,
+  "source": "brucegotchi",
+  "source_file": "rio_bruce_south_patrol.pcap",
+  "source_mtime": 1776814568.8884833,
+  "source_path_role": "rawsniffer",
+  "source_size": 4465,
+  "stats": {
+    "beacon_frames": 150,
+    "eapol_frames": 20,
+    "networks_count": 5
+  },
+  "warnings": []
+}

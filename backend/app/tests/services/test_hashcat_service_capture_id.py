@@ -47,13 +47,11 @@ def test_convert_pcap_uses_capture_id_resolution(tmp_path, monkeypatch):
     assert result == {
         "status": "started",
         "job_id": "job-cap",
-        "output_file": "capture.22000",
+        "output_file": "CaptureA.22000",
     }
     assert captured["command"][0] == "hcxpcapngtool"
     assert str(external_pcap) in captured["command"]
-    assert (
-        str(hand_dir / "captures" / "cap-123" / "capture.22000") in captured["command"]
-    )
+    assert str(external_dir / "CaptureA.22000") in captured["command"]
 
 
 def test_convert_pcap_uses_raw_item_id_resolution(tmp_path, monkeypatch):

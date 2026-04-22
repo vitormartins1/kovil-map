@@ -186,22 +186,45 @@ function mountCrackingDom() {
     <div id="crack-actions" style="display:none"></div>
 
     <div id="selected-file-info"></div>
+    <div id="btn-convert-hash-anchor"></div>
     <button id="btn-convert-hash"></button>
-    <button id="btn-pcap-generate-hash"></button>
     <button id="btn-quick-attack"></button>
-    <button id="btn-extract-details"></button>
 
     <div id="file-type-badge"></div>
     <div id="crack-progress-text"></div>
     <div id="crack-mini-bar"></div>
     <div class="crack-status-container"></div>
 
+    <div id="crack-file-feedback-pre-attack-anchor"></div>
     <div id="crack-config-preview"></div>
-    <div id="crack-aircrack-options"></div>
-    <div id="crack-pcap-conversions"></div>
+    <div id="crack-file-feedback-pre-conversions-anchor"></div>
+    <div id="crack-aircrack-options" class="attack-panel-body attack-panel-body--aircrack" data-attack-panel-body="aircrack">
+      <div class="attack-panel-intro"></div>
+      <div class="attack-panel-fields"></div>
+      <div class="attack-panel-actions"></div>
+    </div>
+    <div id="crack-pcap-conversions">
+      <div class="pcap-conversion-actions">
+      <div id="raw-canonical-conversion-slot"></div>
+      <button id="btn-pcap-generate-hash"></button>
+      <button id="btn-extract-details"></button>
+      </div>
+    </div>
     <div id="crack-file-feedback"></div>
 
-    <button id="aircrack-legacy-toggle" data-expanded="false"><span class="legacy-toggle-arrow"></span></button>
+    <button id="aircrack-legacy-toggle" class="attack-panel-toggle attack-panel-toggle--aircrack" data-attack-panel-toggle="aircrack" data-expanded="false"><span class="legacy-toggle-arrow"></span></button>
+    <button id="pmk-section-toggle" class="attack-panel-toggle attack-panel-toggle--pmk" data-attack-panel-toggle="pmk" data-expanded="false"><span class="legacy-toggle-arrow"></span></button>
+    <div id="crack-pmk-options" class="attack-panel-body attack-panel-body--pmk" data-attack-panel-body="pmk">
+      <div class="attack-panel-intro"></div>
+      <div class="attack-panel-fields"></div>
+      <div class="attack-panel-actions"></div>
+    </div>
+    <button id="wps-section-toggle" class="attack-panel-toggle attack-panel-toggle--wps" data-attack-panel-toggle="wps" data-expanded="false"><span class="legacy-toggle-arrow"></span></button>
+    <div id="crack-wps-options" class="attack-panel-body attack-panel-body--wps" data-attack-panel-body="wps">
+      <div class="attack-panel-intro"></div>
+      <div class="attack-panel-fields attack-panel-fields--two"></div>
+      <div class="attack-panel-actions"></div>
+    </div>
 
     <select id="wordlist-select"></select>
     <select id="crack-wordlist-select"></select>
@@ -307,6 +330,7 @@ describe("ui_cracking actions", () => {
     resetState();
     mountCrackingDom();
     delete document.documentElement.dataset.crackingAccordionMode;
+    delete document.documentElement.dataset.crackingAttackPanelMode;
     window.alert = jest.fn();
     window.confirm = jest.fn().mockReturnValue(true);
   });
@@ -432,22 +456,9 @@ describe("ui_cracking actions", () => {
     expect(document.getElementById("crack-handshake-set-summary").textContent).toContain("HANDSHAKE SET");
     expect(document.getElementById("crack-handshake-set-summary").textContent).not.toContain("Preferred:");
     expect(document.getElementById("selected-file-info").textContent).toContain("Cafe_aabbccddeeff.22000");
-    expect(document.getElementById("crack-file-list").textContent).toContain("LEGACY / SHARED ARTIFACTS");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("LEGACY / SHARED ARTIFACTS");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("hidden_aabbccddeeff__wdrs__.22000");
     expect(document.getElementById("crack-file-list").textContent).toContain("HS_AABBCCDDEEFF.pcap");
-
-    const legacyHeader = Array.from(
-      document.querySelectorAll("#crack-file-list .capture-group-header")
-    ).find((el) => el.textContent.includes("LEGACY / SHARED ARTIFACTS"));
-    expect(legacyHeader).toBeTruthy();
-
-    const legacyBody = legacyHeader.nextElementSibling;
-    expect(legacyBody.hidden).toBe(true);
-
-    legacyHeader.click();
-    expect(legacyBody.hidden).toBe(false);
-
-    legacyHeader.click();
-    expect(legacyBody.hidden).toBe(true);
   });
 
   test("capture rows inside device accordions do not repeat the device badge", async () => {
@@ -510,6 +521,9 @@ describe("ui_cracking actions", () => {
     expect(pwnRow.textContent).not.toContain("Pwnagotchi");
     expect(bruceRow.textContent).not.toContain("Brucegotchi");
     expect(m5Row.textContent).not.toContain("M5Evil");
+    expect(pwnRow.closest(".capture-group")?.classList.contains("capture-group-card")).toBe(true);
+    expect(pwnRow.closest(".capture-group")?.classList.contains("capture-group-source-root")).toBe(true);
+    expect(pwnRow.closest(".capture-group-body")).toBeTruthy();
   });
 
   test("default selected file marks its owning device accordion active and renders derived divider", async () => {
@@ -554,11 +568,14 @@ describe("ui_cracking actions", () => {
     await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe");
     await flushAsync();
 
-    expect(document.querySelector(".capture-section-divider-label")?.textContent).toContain("DERIVED / SHARED ARTIFACTS");
+    expect(document.querySelector(".capture-section-divider-label")?.textContent).toContain("DERIVED ARTIFACTS");
     const selectedRow = document.querySelector("#crack-file-list .file-item.selected");
     expect(selectedRow).toBeTruthy();
     const activeGroup = selectedRow.closest(".capture-group");
     expect(activeGroup?.classList.contains("capture-group-active")).toBe(true);
+    expect(activeGroup?.classList.contains("capture-group-card")).toBe(true);
+    expect(activeGroup?.classList.contains("capture-group-source-root")).toBe(true);
+    expect(selectedRow.closest(".capture-group-body")).toBeTruthy();
     const activeHeader = activeGroup?.querySelector(":scope > .capture-group-header");
     expect(activeHeader?.classList.contains("capture-group-header-active")).toBe(true);
 
@@ -589,11 +606,18 @@ describe("ui_cracking actions", () => {
       .find((el) => el.textContent.includes("RAW Sniffer"));
     const rawDeviceHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
       .find((el) => el.textContent.includes("Bruce"));
+    const rawRoot = rawRootHeader?.closest(".capture-group-raw-root");
+    const rawBody = rawRoot?.querySelector(":scope > .crack-raw-context-body");
+    const rawChild = rawBody?.querySelector(":scope > .capture-group-raw-child");
+    expect(rawRoot?.classList.contains("capture-group-card")).toBe(true);
+    expect(rawRoot?.classList.contains("capture-group-derived-root")).toBe(true);
     expect(rawRootHeader?.classList.contains("capture-group-header-active")).toBe(true);
     expect(rawDeviceHeader?.classList.contains("capture-group-header-active")).toBe(true);
+    expect(rawBody?.classList.contains("crack-raw-context-body-tree")).toBe(true);
+    expect(rawChild?.querySelector(":scope > .capture-group-header")?.textContent).toContain("Bruce");
   });
 
-  test("combined and legacy selections activate their own accordions", async () => {
+  test("combined selections activate the combined accordion", async () => {
     mockAPI.getHandshakeSet.mockResolvedValue({
       handshake_set_id: "aabbccddeeff",
       mac: "AA:BB:CC:DD:EE:FF",
@@ -648,12 +672,10 @@ describe("ui_cracking actions", () => {
     const combinedHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
       .find((el) => el.textContent.includes("COMBINED CANDIDATES"));
     expect(combinedHeader?.classList.contains("capture-group-header-active")).toBe(true);
-
-    await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe", "legacy_shared.22000");
-    await flushAsync();
-    const legacyHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
-      .find((el) => el.textContent.includes("LEGACY / SHARED ARTIFACTS"));
-    expect(legacyHeader?.classList.contains("capture-group-header-active")).toBe(true);
+    expect(combinedHeader?.closest(".capture-group")?.classList.contains("capture-group-card")).toBe(true);
+    expect(combinedHeader?.closest(".capture-group")?.classList.contains("capture-group-derived-root")).toBe(true);
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("LEGACY / SHARED ARTIFACTS");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("legacy_shared.22000");
   });
 
   test("opening derived accordions auto-selects their first file", async () => {
@@ -724,14 +746,10 @@ describe("ui_cracking actions", () => {
     await flushAsync();
     expect(document.getElementById("selected-file-info").textContent).toContain("combined_latest.22000");
 
-    const legacyHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
-      .find((el) => el.textContent.includes("LEGACY / SHARED ARTIFACTS"));
-    legacyHeader.click();
-    await flushAsync();
-    expect(document.getElementById("selected-file-info").textContent).toContain("legacy_a.22000");
+    expect(document.getElementById("crack-file-list").textContent).not.toContain("legacy_a.22000");
   });
 
-  test("opening RAW nested accordions auto-selects their first file while RAW root does not", async () => {
+  test("opening RAW root expands the first device branch and selects its first file", async () => {
     mockAPI.getHandshakeFiles.mockResolvedValueOnce([]);
     mockAPI.getHandshakeRawContext.mockResolvedValueOnce({
       present: true,
@@ -748,18 +766,51 @@ describe("ui_cracking actions", () => {
     await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe");
     await flushAsync();
 
-    const initialSelected = document.getElementById("selected-file-info").textContent;
+    const rawRoot = document.querySelector("#crack-file-list .capture-group-raw-root");
+    const rawChildren = Array.from(rawRoot.querySelectorAll(":scope > .crack-raw-context-body > .capture-group-raw-child"));
+    expect(rawChildren).toHaveLength(2);
+    expect(rawChildren[0].textContent).toContain("Bruce");
+    expect(rawChildren[1].textContent).toContain("M5Evil");
+
     const rawRootHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
       .find((el) => el.textContent.includes("RAW Sniffer"));
     rawRootHeader.click();
     await flushAsync();
-    expect(document.getElementById("selected-file-info").textContent).toBe(initialSelected);
-
-    const bruceRawHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
-      .find((el) => el.textContent.includes("Bruce"));
-    bruceRawHeader.click();
-    await flushAsync();
     expect(document.getElementById("selected-file-info").textContent).toContain("raw_city_center.pcap");
+    expect(rawChildren[0].querySelector(":scope > .capture-group-body").hidden).toBe(false);
+    expect(rawChildren[1].querySelector(":scope > .capture-group-body").hidden).toBe(true);
+
+    const m5RawHeader = Array.from(document.querySelectorAll("#crack-file-list .capture-group-header"))
+      .find((el) => el.textContent.includes("M5Evil"));
+    m5RawHeader.click();
+    await flushAsync();
+    expect(document.getElementById("selected-file-info").textContent).toContain("raw_m5_drive.pcap");
+  });
+
+  test("RAW canonical WDRS accordion renders as a RAW child branch", async () => {
+    mockAPI.getHandshakeFiles.mockResolvedValueOnce([
+      { name: "hidden_aabbccddeeff__wdrs__.22000", type: "22000", size: 90, modified: 1700000003, source: "legacy", device_label: "Legacy", source_path_role: "handshakes" },
+    ]);
+    mockAPI.getHandshakeRawContext.mockResolvedValueOnce({
+      present: true,
+      bssid: "AA:BB:CC:DD:EE:FF",
+      files: [{ raw_item_id: "raw::pcap::bruce-1", source: "brucegotchi", device_label: "Bruce", source_file: "raw_city_center.pcap", filename: "raw_city_center.pcap", eapol_count: 2, beacon_count: 9 }],
+      hash_files: [],
+    });
+
+    const uiCracking = loadUiCrackingModule();
+    uiCracking.setupCrackingListeners();
+    await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "Cafe");
+    await flushAsync();
+
+    const rawRoot = document.querySelector("#crack-file-list .capture-group-raw-root");
+    const rawChildren = Array.from(rawRoot.querySelectorAll(":scope > .crack-raw-context-body > .capture-group-raw-child"));
+    expect(rawChildren.map((node) => node.querySelector(":scope > .capture-group-header")?.textContent)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("Bruce"),
+        expect.stringContaining("Canonical (WDRS)"),
+      ])
+    );
   });
 
   test("single accordion mode closes sibling top-level groups when opening another branch", async () => {
@@ -892,6 +943,31 @@ describe("ui_cracking actions", () => {
     combinedHeader.click();
     expect(combinedBody.hidden).toBe(false);
     expect(pwnBody.hidden).toBe(false);
+  });
+
+  test("single attack panel mode closes sibling attack panels", () => {
+    document.documentElement.dataset.crackingAttackPanelMode = "single";
+    const uiCracking = loadUiCrackingModule();
+    uiCracking.setupCrackingListeners();
+
+    document.getElementById("aircrack-legacy-toggle").click();
+    expect(document.getElementById("aircrack-legacy-toggle").getAttribute("data-expanded")).toBe("true");
+    expect(document.getElementById("crack-aircrack-options").style.display).toBe("flex");
+
+    document.getElementById("wps-section-toggle").click();
+    expect(document.getElementById("aircrack-legacy-toggle").getAttribute("data-expanded")).toBe("false");
+    expect(document.getElementById("crack-aircrack-options").style.display).toBe("none");
+    expect(document.getElementById("wps-section-toggle").getAttribute("data-expanded")).toBe("true");
+    expect(document.getElementById("crack-wps-options").style.display).toBe("flex");
+  });
+
+  test("attack panels use compact action-panel structure", () => {
+    expect(document.getElementById("aircrack-legacy-toggle").classList.contains("attack-panel-toggle")).toBe(true);
+    expect(document.getElementById("pmk-section-toggle").classList.contains("attack-panel-toggle--pmk")).toBe(true);
+    expect(document.getElementById("wps-section-toggle").classList.contains("attack-panel-toggle--wps")).toBe(true);
+    expect(document.querySelector("#crack-aircrack-options .attack-panel-intro")).toBeTruthy();
+    expect(document.querySelector("#crack-pmk-options .attack-panel-fields")).toBeTruthy();
+    expect(document.querySelector("#crack-wps-options .attack-panel-actions")).toBeTruthy();
   });
 
   test("combined candidates accordion builds and reselects the new combined artifact", async () => {
@@ -1117,6 +1193,13 @@ describe("ui_cracking actions", () => {
     await flushAsync();
     await flushAsync();
 
+    const combinedRow = document.querySelector("#crack-file-list .file-item.selected");
+    expect(combinedRow?.querySelector(".fa-hashtag")).toBeTruthy();
+    expect(combinedRow?.querySelector(".source-badge")?.textContent).toContain("COMBINED");
+    const combinedMeta = combinedRow?.querySelector(".file-meta-combined");
+    expect(combinedMeta?.textContent).toContain("captures 2");
+    expect(combinedMeta?.getAttribute("title")).toContain("deduped 29");
+
     const feedback = document.getElementById("crack-file-feedback").textContent;
     expect(feedback).toContain("COMBINED ORIGIN");
     expect(feedback).toContain("2 capture(s) included");
@@ -1277,6 +1360,7 @@ describe("ui_cracking actions", () => {
           device_label: "M5Evil",
           filename: "raw_1.pcap",
           source_file: "raw_1.pcap",
+          source_path_role: "rawsniffer",
           eapol_count: 1,
           beacon_count: 8,
         },
@@ -1307,6 +1391,7 @@ describe("ui_cracking actions", () => {
     const names = Array.from(document.querySelectorAll("#crack-file-list .file-item .file-name-text"))
       .map((el) => el.textContent.trim());
     expect(names).toEqual(["raw_1.22000", "raw_1.details", "raw_1.try"]);
+    expect(document.getElementById("crack-file-list").classList.contains("crack-file-list-flat")).toBe(true);
     expect(document.querySelectorAll("#crack-file-list .capture-group").length).toBe(0);
     expect(document.getElementById("selected-file-info").textContent).toContain("RAW HASH");
     expect(document.getElementById("selected-file-info").textContent).not.toContain("M5Evil");
@@ -1451,6 +1536,7 @@ describe("ui_cracking actions", () => {
           device_label: "M5Evil",
           filename: "raw_1.22000",
           source_raw_file: "raw_1.pcap",
+          source_path_role: "rawsniffer",
           valid_hash_lines: 2,
         },
       ],
@@ -1461,9 +1547,22 @@ describe("ui_cracking actions", () => {
     await uiCracking.openCrackingPanel("AA:BB:CC:DD:EE:FF", "My SSID");
 
     const rawPcapRow = document.querySelector('.file-item[data-raw-item-id="raw::pcap::abc123"]');
+    expect(rawPcapRow.querySelector(".fa-handshake")).toBeTruthy();
+    expect(rawPcapRow.querySelector(".file-meta")?.getAttribute("title")).toContain("EAPOL 1 | Beacons 8");
+    expect(rawPcapRow.querySelector(".file-meta")?.getAttribute("title")).not.toContain("RAWSNIFFER");
     rawPcapRow.click();
     await flushAsync();
+    expect(document.getElementById("crack-file-feedback-pre-conversions-anchor").nextElementSibling).toBe(
+      document.getElementById("crack-file-feedback")
+    );
+    expect(
+      Boolean(document.getElementById("crack-file-feedback").compareDocumentPosition(document.getElementById("crack-pcap-conversions")) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
     expect(document.getElementById("btn-convert-hash").innerHTML).toContain("BUILD CANONICAL");
+    expect(document.getElementById("raw-canonical-conversion-slot").contains(document.getElementById("btn-convert-hash"))).toBe(true);
+    expect(
+      Boolean(document.getElementById("btn-convert-hash").compareDocumentPosition(document.getElementById("btn-pcap-generate-hash")) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
     expect(document.getElementById("btn-pcap-generate-hash").disabled).toBe(false);
     expect(document.getElementById("btn-quick-attack").disabled).toBe(false);
     mockAPI.convertPcap.mockResolvedValueOnce({ status: "started", job_id: "job-convert" });
@@ -1472,9 +1571,19 @@ describe("ui_cracking actions", () => {
     expect(mockAPI.convertPcap).toHaveBeenCalledWith("raw_1.pcap", null, "raw::pcap::abc123");
 
     const rawHashRow = document.querySelector('.file-item[data-raw-item-id="raw::22000::def456"]');
+    expect(rawHashRow.querySelector(".fa-hashtag")).toBeTruthy();
+    expect(rawHashRow.querySelector(".file-meta")?.getAttribute("title")).toContain("raw_1.pcap");
+    expect(rawHashRow.querySelector(".file-meta")?.getAttribute("title")).not.toContain("RAWSNIFFER");
     rawHashRow.click();
     await flushAsync();
+    expect(document.getElementById("crack-file-feedback-pre-attack-anchor").nextElementSibling).toBe(
+      document.getElementById("crack-file-feedback")
+    );
+    expect(
+      Boolean(document.getElementById("crack-file-feedback").compareDocumentPosition(document.getElementById("crack-config-preview")) & Node.DOCUMENT_POSITION_FOLLOWING)
+    ).toBe(true);
     expect(document.getElementById("btn-convert-hash").innerHTML).toContain("START CRACKING");
+    expect(document.getElementById("btn-convert-hash-anchor").nextElementSibling).toBe(document.getElementById("btn-convert-hash"));
     expect(document.getElementById("selected-file-info").textContent).toContain("RAW HASH");
     expect(document.getElementById("selected-file-info").textContent).not.toContain("M5Evil");
     const fileListText = document.getElementById("crack-file-list").textContent;
@@ -1528,7 +1637,7 @@ describe("ui_cracking actions", () => {
     expect(legacySection?.textContent || "").not.toContain("hidden_aabbccddeeff__wdrs__.22000");
   });
 
-  test("semantic badge classes stay distinct for details, raw, combined, legacy/shared and WDRS", async () => {
+  test("semantic badge classes stay distinct for details, raw, combined and WDRS", async () => {
     mockAPI.getHandshakeSet.mockResolvedValueOnce({
       handshake_set_id: "aabbccddeeff",
       mac: "AA:BB:CC:DD:EE:FF",
@@ -1585,7 +1694,7 @@ describe("ui_cracking actions", () => {
     expect(document.querySelector("#selected-file-info .badge-role-state-wdrs")).toBeTruthy();
     expect(document.querySelector("#crack-file-list .badge-role-state-raw")).toBeTruthy();
     expect(document.querySelector("#crack-file-list .badge-role-state-combined")).toBeTruthy();
-    expect(document.querySelector("#crack-file-list .badge-role-state-shared")).toBeTruthy();
+    expect(document.querySelector("#crack-file-list .badge-role-state-shared")).toBeFalsy();
   });
 
   test("handshake set summary shows RAW Sniffer and Combined badges plus dynamic counts when present", async () => {
@@ -1771,6 +1880,8 @@ describe("ui_cracking actions", () => {
     const button = document.querySelector('[data-open-raw-analysis="true"]');
     expect(button).toBeTruthy();
     expect(document.getElementById("crack-file-feedback").textContent).toContain("RAW Analysis available");
+    expect(document.querySelector("#crack-file-feedback .crack-artifact-summary")).toBeTruthy();
+    expect(document.querySelector("#crack-file-feedback .crack-summary-chip-row")?.textContent).toContain("EAPOL");
   });
 
   test("RAW PCAP with details uses details-style feedback and avoids repeated device badge in row", async () => {
@@ -1960,6 +2071,8 @@ describe("ui_cracking actions", () => {
     expect(document.getElementById("crack-file-feedback").textContent).toContain("ATTACK INSIGHTS");
     expect(document.getElementById("crack-file-feedback").classList.contains("crack-feedback-details")).toBe(true);
     expect(document.querySelector("#crack-file-feedback .details-view-scroll")).not.toBeNull();
+    expect(document.querySelector("#crack-file-feedback .details-card")).not.toBeNull();
+    expect(document.querySelector("#crack-file-feedback .details-compact-section")).not.toBeNull();
 
     clickFileByName("capture.try");
     await flushAsync();
@@ -1984,6 +2097,7 @@ describe("ui_cracking actions", () => {
     expect(mockAPI.getMultiFileContent).toHaveBeenCalledWith("batch_alpha.22000");
     expect(document.getElementById("crack-ssid").innerText).toBe("BATCH");
     expect(document.getElementById("crack-mac").innerText).toBe("batch_alpha.22000");
+    expect(document.getElementById("crack-file-list").classList.contains("crack-file-list-flat")).toBe(true);
 
     await uiCracking.clearHistory();
     expect(mockAPI.clearHistory).toHaveBeenCalledTimes(1);
@@ -2978,6 +3092,7 @@ describe("ui_cracking actions", () => {
 
     const empty = uiCracking.__test.renderDetailsView(null);
     expect(empty).toContain("details-view-scroll");
+    expect(empty).toContain("details-card");
     expect(empty).toContain("No details available");
 
     const lowConfidence = uiCracking.__test.renderDetailsView({

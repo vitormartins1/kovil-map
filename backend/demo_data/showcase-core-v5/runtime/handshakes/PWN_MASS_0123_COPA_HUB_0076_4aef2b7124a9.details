@@ -1,0 +1,28 @@
+{
+  "bssid": "4A:EF:2B:71:24:A9",
+  "classification": {
+    "confidence": 0.91,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 3,
+    "frequency_mhz": 2422
+  },
+  "security": {
+    "auth_mode": "[WPA3-SAE-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA3"
+  },
+  "ssid": "COPA_HUB_0076",
+  "vendor": "Beachside Fiber",
+  "wps": {
+    "present": false
+  }
+}

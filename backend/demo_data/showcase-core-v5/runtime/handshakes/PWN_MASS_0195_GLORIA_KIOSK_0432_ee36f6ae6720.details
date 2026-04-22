@@ -1,0 +1,28 @@
+{
+  "bssid": "EE:36:F6:AE:67:20",
+  "classification": {
+    "confidence": 0.76,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "already_cracked",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "GLORIA_KIOSK_0432",
+  "vendor": "Boulevard Link",
+  "wps": {
+    "present": false
+  }
+}

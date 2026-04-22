@@ -1,6 +1,7 @@
 const mockAPI = {
   getConfig: jest.fn(),
   getHashcatDevices: jest.fn(),
+  getDemoDataStatus: jest.fn(),
   saveConfig: jest.fn(),
   probePwnagotchiSync: jest.fn(),
   probeM5EvilSync: jest.fn(),
@@ -47,6 +48,10 @@ function mountSettingsDom() {
       <div id="conf-m5-test-status"></div>
       <button id="btn-conf-bruce-test" type="button">test</button>
       <div id="conf-bruce-test-status"></div>
+      <div id="demo-data-status"></div>
+      <div id="demo-data-summary"></div>
+      <button id="btn-install-demo-data" type="button">install</button>
+      <button id="btn-remove-demo-data" type="button">remove</button>
     </div>
     <details id="settings-advanced"></details>
 
@@ -192,6 +197,11 @@ function mountSettingsDom() {
       <option value="single">single</option>
     </select>
 
+    <select id="conf-ui-cracking-attack-panel-mode">
+      <option value="multi">multi</option>
+      <option value="single">single</option>
+    </select>
+
     <select id="conf-wardrive-replay-speed-default">
       <option value="0.05">0.05</option>
       <option value="0.1">0.1</option>
@@ -284,6 +294,7 @@ function setDefaults() {
     ui_sidebar_preset: "wide",
     ui_font_scale: "110",
     ui_cracking_accordion_mode: "single",
+    ui_cracking_attack_panel_mode: "single",
     ui_wardrive_replay_speed_default: "2",
     ui_wardrive_replay_autoplay: true,
     ui_wardrive_replay_auto_focus: false,
@@ -302,6 +313,12 @@ function setDefaults() {
     { id: "1", name: "GPU 1", type: "OpenCL", backend: "OpenCL" },
     { id: "2", name: "GPU 2", type: "CUDA", backend: "CUDA" },
   ]);
+  mockAPI.getDemoDataStatus.mockResolvedValue({
+    active: false,
+    available_profiles: [{ profile_id: "showcase-core-v5", label: "Showcase Core v5" }],
+    snapshot_available: false,
+    summary: null,
+  });
 
   mockAPI.saveConfig.mockResolvedValue({ status: "ok" });
   mockAPI.probePwnagotchiSync.mockResolvedValue({
@@ -460,6 +477,7 @@ describe("ui_settings", () => {
     expect(document.getElementById("conf-ui-sidebar-preset").value).toBe("wide");
     expect(document.getElementById("conf-ui-font-scale").value).toBe("110");
     expect(document.getElementById("conf-ui-cracking-accordion-mode").value).toBe("single");
+    expect(document.getElementById("conf-ui-cracking-attack-panel-mode").value).toBe("single");
     expect(document.getElementById("conf-wardrive-replay-speed-default").value).toBe("2");
     expect(document.getElementById("conf-wardrive-replay-autoplay").checked).toBe(true);
     expect(document.getElementById("conf-wardrive-replay-auto-focus").checked).toBe(false);
@@ -473,6 +491,9 @@ describe("ui_settings", () => {
     expect(document.getElementById("conf-wardrive-primary-zone-accent-color").value).toBe("purple");
     expect(document.getElementById("conf-wardrive-secondary-accent-color").value).toBe("white");
     expect(document.getElementById("settings-advanced").open).toBe(false);
+    expect(document.getElementById("demo-data-status").textContent).toBe("DEMO DATA: INACTIVE");
+    expect(document.getElementById("btn-install-demo-data").disabled).toBe(false);
+    expect(document.getElementById("btn-remove-demo-data").disabled).toBe(true);
   });
 
   test("openSettings fallback device to all when default not available", async () => {
@@ -558,6 +579,7 @@ describe("ui_settings", () => {
     document.getElementById("conf-ui-sidebar-preset").value = "narrow";
     document.getElementById("conf-ui-font-scale").value = "90";
     document.getElementById("conf-ui-cracking-accordion-mode").value = "single";
+    document.getElementById("conf-ui-cracking-attack-panel-mode").value = "single";
     document.getElementById("conf-wardrive-replay-speed-default").value = "0.1";
     document.getElementById("conf-wardrive-replay-autoplay").checked = true;
     document.getElementById("conf-wardrive-replay-auto-focus").checked = false;
@@ -613,6 +635,7 @@ describe("ui_settings", () => {
         ui_sidebar_preset: "narrow",
         ui_font_scale: "90",
         ui_cracking_accordion_mode: "single",
+        ui_cracking_attack_panel_mode: "single",
         ui_wardrive_replay_speed_default: "0.1",
         ui_wardrive_replay_autoplay: true,
         ui_wardrive_replay_auto_focus: false,

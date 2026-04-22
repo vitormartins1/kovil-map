@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from app.core.config import HANDSHAKES_DIR
 from app.utils.handshake_artifacts import (
-    get_capture_artifact_path,
+    get_capture_source_artifact_path,
     get_combined_artifact_path,
 )
 import logging
@@ -21,7 +21,7 @@ class HistoryService:
         mac=None,
     ):
         if capture_id:
-            capture_path = get_capture_artifact_path(
+            capture_path = get_capture_source_artifact_path(
                 capture_id, "history", handshakes_dir=HANDSHAKES_DIR, ensure_parent=True
             )
             if capture_path:

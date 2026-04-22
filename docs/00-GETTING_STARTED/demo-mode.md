@@ -1,42 +1,85 @@
 # Demo Mode & Mock Data
 
-KOVIL MAP includes a demo mode for developers and new users who want to explore the UI and cracking flows without a real Pwnagotchi or field captures.
+KOVIL MAP now ships an opt-in public demo pack called `showcase-core-v5`.
+
+It exists for two main cases:
+
+- onboarding new users who do not have capture devices yet
+- generating screenshots or walkthroughs without exposing sensitive field data
+
+The current design is a **safe switch**, not a merge. When installed, the demo pack temporarily replaces the mutable runtime dataset used by the app. When removed, KOVIL MAP restores the previous runtime snapshot if one exists, then deletes that temporary snapshot.
 
 ## What Is Included
 
-The demo dataset populates the local database with:
+The pack is synthetic and versioned under `backend/demo_data/showcase-core-v5/`.
 
-- **WiFi networks:** around 50 mock networks spread across a real geographic area for cluster and heatmap testing
-- **Handshakes:** valid `.pcap` test files
-- **Passwords:** weak passwords such as `password123` and `12345678` so cracking succeeds quickly with demo wordlists
-- **Raw data:** `raw_*.pcap` files that simulate Bruce-style raw captures for Raw Sniffer testing
+It includes:
 
----
+- four Rio de Janeiro WarDrive sessions, already transport-tagged as `car` and `motorcycle`
+- the original three high-density tourist car loops preserved from V3
+- one additional motorcycle showcase route through the Lapa / Gloria / Praca Maua corridor
+- high-density synthetic Bruce-style Wardrive overlays calibrated from a real reference profile, without reusing any real identities
+- richer handshake coverage across Pwnagotchi, Bruce and M5Evil paths
+- a mass Pwnagotchi layer that promotes 240 already-observed Wardrive networks into handshake-backed examples
+- 250+ GPS-backed locked networks plus seven No-GPS locked examples that behave consistently across Map, Analytics, picker flows, and cracking UI
+- 50+ cracked showcase networks with explicit artifact access from the popup
+- clustered locked and cracked hotspots across Lapa, Praca Maua, Arpoador, Copacabana, Botafogo/Urca, Aterro, and Centro to make `to-conquer` and `conquered` zones non-empty
+- five intentionally not-ready / partial-artifact examples for conversion and inspection walkthroughs
+- two combined candidate examples plus cross-source handshake sets
+- demo RAW Sniffer inputs for Bruce RAW, M5 RawSniffer and M5 Master Sniffer, with stronger Wardrive + handshake + RAW crossover
+- a small demo wordlist bundle exposed only while demo mode is active
+- UI seed data for `Targets`, `Favorites`, and a few helpful panel modes
 
-## How to Enable It
+Current Rio corridors are:
 
-Use a local backup/restore workflow to switch safely without overwriting your real data.
+- `Centro + Lapa + Santa Teresa`
+- `Aterro do Flamengo + Botafogo + Urca`
+- `Copacabana + Arpoador + Ipanema + Lagoa`
+- `Lapa + Gloria + Praca Maua Motorcycle`
 
-Make sure the backend is not running, then:
+The data is designed to exercise:
 
-1. Back up the current `backend/data/` directory to a timestamped folder such as `backend/data_backup_TIMESTAMP/`.
-2. Clear the active `backend/data/` directory.
-3. Copy `backend/mock_data/` into `backend/data/`.
-4. Restore a test-friendly `config.json` if needed.
+- Tactical Map
+- Recon Center
+- WarDrive Workspace
+- Raw Sniffer
+- Batch / No-GPS workflows
+- cracking demos with varied target difficulty
 
----
+## How To Use It
 
-## Testing the Demo Data
+Use the built-in maintenance controls inside the app:
 
-After enabling demo mode and starting the app:
+1. Open `System Settings`.
+2. Go to `Maintenance`.
+3. Click `INSTALL DEMO DATA`.
 
-1. Check that the networks appear on the map and test zoom and clustering.
-2. Open a locked network and start a cracking job with a small wordlist.
-3. Use **Sync** to confirm the app behaves normally even when no device is connected.
+KOVIL MAP will:
 
----
+- snapshot the current mutable runtime dataset into one temporary active restore point
+- replace the active runtime roots with the showcase pack
+- reload caches and data
+- attempt a best-effort Recon prewarm when `tshark` is available
 
-## Restoring Your Real Data
+To leave demo mode:
 
-1. Remove the contents of `backend/data/`.
-2. Copy the most recent `backend/data_backup_XXX` folder back into place.
+1. Open `System Settings`.
+2. Go to `Maintenance`.
+3. Click `REMOVE DEMO DATA`.
+
+If a real runtime snapshot existed before install, it is restored automatically and the temporary backup is removed after the restore succeeds.
+
+## Notes
+
+- Demo mode is **not enabled by default**.
+- Real and demo datasets are intentionally not mixed together in the active view.
+- Demo mode does not keep historical workspace snapshots; only one temporary active snapshot exists while demo mode is active.
+- Demo wordlists do not overwrite the user's configured `custom_wordlists_path`.
+- The tracked demo source pack is deterministic and can be regenerated by maintainers with:
+
+```bash
+cd backend
+.venv313/bin/python -m app.tools.build_demo_data --validate
+```
+
+Only `showcase-core-v5` is tracked as the public demo profile. Older experimental packs were removed to keep the repository smaller and avoid maintaining obsolete demo assets.

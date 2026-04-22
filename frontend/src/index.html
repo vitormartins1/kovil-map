@@ -518,6 +518,13 @@
                                             <option value="single">Single Open Branch</option>
                                         </select>
                                     </div>
+                                    <div class="form-group">
+                                        <label>ATTACK PANEL BEHAVIOR</label>
+                                        <select id="conf-ui-cracking-attack-panel-mode" class="settings-select">
+                                            <option value="multi">Keep Multiple Open (Default)</option>
+                                            <option value="single">Single Open Attack Panel</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -773,10 +780,20 @@
                 </div>
 
                 <div class="settings-maintenance-row">
-                    <div class="section-title section-title--danger">
-                        <i class="fa-solid fa-trash"></i> MAINTENANCE
+                    <div class="settings-maintenance-copy">
+                        <div class="section-title section-title--danger">
+                            <i class="fa-solid fa-trash"></i> MAINTENANCE
+                        </div>
+                        <div class="settings-maintenance-status" id="demo-data-status">DEMO DATA: INACTIVE</div>
+                        <p class="settings-note" id="demo-data-summary">Optional synthetic showcase data for onboarding, screenshots and feature walkthroughs.</p>
                     </div>
                     <div class="settings-maintenance-actions">
+                        <button class="cyber-button-small bg-green fg-black settings-maintenance-button" id="btn-install-demo-data">
+                            <i class="fa-solid fa-box-open"></i> INSTALL DEMO DATA
+                        </button>
+                        <button class="cyber-button-small bg-yellow fg-black settings-maintenance-button" id="btn-remove-demo-data">
+                            <i class="fa-solid fa-box-archive"></i> REMOVE DEMO DATA
+                        </button>
                         <button class="cyber-button-small bg-red fg-white settings-maintenance-button" id="btn-clear-history">
                             <i class="fa-solid fa-trash-can"></i> CLEAR HISTORY (.try FILES)
                         </button>
@@ -1352,19 +1369,20 @@
                             <div id="crack-actions" class="crack-actions" style="display: none;">
                                 <div class="cyber-razor-top bg-cyan" style="margin: 10px 0;"></div>
                                 
-                                <div class="action-header" style="position: relative;">
+                            <div class="action-header" style="position: relative;">
                                     <div id="selected-file-info" class="selected-file-name"></div>
                                 <div style="display: flex; gap: 5px; align-items: center;">
                                     <div class="file-type-badge" id="file-type-badge">PCAP</div>
                                     <i class="fa-solid fa-gear config-edit-btn" id="btn-quick-settings" title="Edit Global Config" style="cursor: pointer; color: var(--neon-cyan);"></i>
                                 </div>
                             </div>
+                            <div id="crack-file-feedback-pre-attack-anchor" style="display:none;"></div>
                             
                             <!-- Config Preview (Only for .22000) -->
-                            <div id="crack-config-preview" class="crack-config-preview" style="display: flex; flex-direction: row; gap: 10px; align-items: stretch;">
+                            <div id="crack-config-preview" class="crack-config-preview" style="display: flex; flex-direction: column; gap: 8px; align-items: stretch;">
                                 
-                                <!-- Left Column: Inputs -->
-                                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; padding-right: 10px;">
+                                <!-- Attack mode inputs -->
+                                <div class="crack-attack-fields" style="display: flex; flex-direction: column; gap: 8px;">
                                     <!-- MODE ROW -->
                                     <div class="config-row" style="width: 100%; align-items: center;">
                                         <span class="config-label">MODE:</span>
@@ -1473,6 +1491,22 @@
                                         </div>
                                     </div>
 
+                                    <!-- Dynamic attack flags -->
+                                    <div id="custom-flags-container">
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="flag-optimized">
+                                            <label for="flag-optimized">OPTIMIZED (-O)</label>
+                                        </div>
+                                        <div class="form-group-checkbox">
+                                            <input type="checkbox" id="flag-slow">
+                                            <label for="flag-slow">SLOW CANDIDATES (-S)</label>
+                                        </div>
+                                        <div class="form-group-checkbox" style="display: none;" id="flag-increment-container">
+                                            <input type="checkbox" id="flag-increment">
+                                            <label for="flag-increment">INCREMENT</label>
+                                        </div>
+                                    </div>
+
                                     <!-- INCREMENT ROW (Substituído por Slider) -->
                                     <div class="config-row" id="crack-increment-row" style="width: 100%; align-items: center; display: none;">
                                         <span class="config-label">INC:</span>
@@ -1485,110 +1519,101 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Right Column: Checkboxes -->
-                                <div style="width: 150px; display: flex; flex-direction: column; gap: 8px; border-left: 1px solid rgba(0, 243, 255, 0.2); padding-left: 10px; justify-content: center;">
-                                    
-                                    <!-- Custom Flags Container -->
-                                    <div id="custom-flags-container" style="display: flex; flex-direction: column; gap: 8px;">
-                                        <div class="form-group-checkbox" style="margin: 0;">
-                                            <input type="checkbox" id="flag-optimized">
-                                            <label for="flag-optimized" style="font-size: 0.7em; color: #888;">OPTIMIZED (-O)</label>
-                                        </div>
-                                        <div class="form-group-checkbox" style="margin: 0;">
-                                            <input type="checkbox" id="flag-slow">
-                                            <label for="flag-slow" style="font-size: 0.7em; color: #888;">SLOW CANDIDATES (-S)</label>
-                                        </div>
-                                        <div class="form-group-checkbox" style="margin: 0; display: none;" id="flag-increment-container">
-                                            <input type="checkbox" id="flag-increment">
-                                            <label for="flag-increment" style="font-size: 0.7em; color: #888;">INCREMENT</label>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Aircrack Options (Only for .pcap) -->
                             <!-- File Conversions (Always visible for PCAP selection) -->
+                            <div id="crack-file-feedback-pre-conversions-anchor" style="display:none;"></div>
                             <div id="crack-pcap-conversions" style="display:none; flex-direction: column; gap: 10px;">
                                 <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
                                     <span class="config-label" style="font-size: 0.7em; color: var(--neon-cyan); letter-spacing: 1px; font-weight: bold;">FILE CONVERSIONS</span>
                                 </div>
-                                <div style="display: flex; gap: 10px; width: 100%;">
+                                <div class="pcap-conversion-actions">
+                                    <div id="raw-canonical-conversion-slot" class="pcap-conversion-slot" style="display: none;"></div>
                                     <button class="cyber-button-small bg-yellow fg-black" id="btn-pcap-generate-hash" style="flex: 1; padding: 8px; font-size: 11px;">
                                         <i class="fa-solid fa-hashtag"></i> HASH (22000)
                                     </button>
-                                </div>
-                                <div style="display: flex; gap: 10px; width: 100%;">
                                     <button class="cyber-button-small bg-green fg-black" id="btn-extract-details" style="display:none; flex: 1; padding: 8px; font-size: 11px;">
                                         <i class="fa-solid fa-magnifying-glass-chart"></i> EXTRACT DETAILS
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="legacy-toggle-row" id="aircrack-legacy-toggle" data-expanded="false" style="display:none; margin-bottom: 10px;">
+                            <div class="legacy-toggle-row attack-panel-toggle attack-panel-toggle--aircrack" id="aircrack-legacy-toggle" data-attack-panel-toggle="aircrack" data-expanded="false" style="display:none;">
                                 <span class="legacy-toggle-title">
-                                    LEGACY AIRCRACK-NG
-                                    <span class="legacy-badge">LEGACY</span>
+                                    <i class="fa-solid fa-wind"></i>
+                                    AIRCRACK-NG
                                 </span>
                                 <i class="fa-solid fa-chevron-down legacy-toggle-arrow"></i>
                             </div>
 
-                            <div id="crack-aircrack-options" style="display:none; flex-direction: column; gap: 10px; padding-bottom: 10px;">
-                                <!-- Aircrack Attack -->
-                                <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
-                                    <span class="config-label" style="font-size: 0.7em; color: var(--neon-red); letter-spacing: 1px; font-weight: bold;">AIRCRACK-NG ATTACK</span>
-                                    
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">WORDLIST:</span>
-                                        <select id="wordlist-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
-                                        </select>
+                            <div id="crack-aircrack-options" class="attack-panel-body attack-panel-body--aircrack" data-attack-panel-body="aircrack" style="display:none; flex-direction: column; gap: 10px;">
+                                <div class="attack-panel-intro">
+                                    <i class="fa-solid fa-wind attack-panel-intro-icon"></i>
+                                    <div>
+                                        <div class="attack-panel-intro-title">Offline PCAP attack</div>
+                                        <div class="attack-panel-intro-copy">Run aircrack-ng directly against the selected capture using a wordlist.</div>
                                     </div>
                                 </div>
-                                    <button class="cyber-button-small bg-blue fg-black" id="btn-quick-attack" style="width: 100%; padding: 8px; font-size: 11px;">
+                                <div class="attack-panel-fields">
+                                    <div class="attack-panel-field">
+                                        <label for="wordlist-select">WORDLIST</label>
+                                        <select id="wordlist-select" class="settings-select"></select>
+                                    </div>
+                                </div>
+                                <div class="attack-panel-actions">
+                                    <button class="cyber-button-small bg-blue fg-black" id="btn-quick-attack" style="padding: 8px; font-size: 11px;">
                                         <i class="fa-solid fa-wind"></i> QUICK ATTACK
                                     </button>
+                                </div>
                             </div>
 
-                            <button class="cyber-button-small bg-yellow fg-black" id="btn-convert-hash">
+                            <div id="btn-convert-hash-anchor" style="display:none;"></div>
+                            <button class="cyber-button-small bg-yellow fg-black" id="btn-convert-hash" style="width: 100%; padding: 8px; font-size: 11px;">
                                 <i class="fa-solid fa-file-half-dashed"></i> GENERATE HASH
                             </button>
 
                             <!-- PMK Database Section -->
-                            <div class="legacy-toggle-row" id="pmk-section-toggle" data-expanded="false" style="display:none; margin-bottom: 10px;">
+                            <div class="legacy-toggle-row attack-panel-toggle attack-panel-toggle--pmk" id="pmk-section-toggle" data-attack-panel-toggle="pmk" data-expanded="false" style="display:none;">
                                 <span class="legacy-toggle-title">
+                                    <i class="fa-solid fa-database"></i>
                                     PMK DATABASE
                                     <span class="pmk-badge">ACCELERATOR</span>
                                 </span>
                                 <i class="fa-solid fa-chevron-down legacy-toggle-arrow"></i>
                             </div>
 
-                            <div id="crack-pmk-options" style="display:none; flex-direction: column; gap: 10px; padding-bottom: 10px;">
-                                <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
-                                    <span class="config-label" style="font-size: 0.7em; color: var(--neon-cyan); letter-spacing: 1px; font-weight: bold;">AIROLIB-NG PMK PRE-COMPUTATION</span>
-
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">PMK DB:</span>
-                                        <select id="pmk-db-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
+                            <div id="crack-pmk-options" class="attack-panel-body attack-panel-body--pmk" data-attack-panel-body="pmk" style="display:none; flex-direction: column; gap: 10px;">
+                                <div class="attack-panel-intro">
+                                    <i class="fa-solid fa-database attack-panel-intro-icon"></i>
+                                    <div>
+                                        <div class="attack-panel-intro-title">Precomputed PMK workflow</div>
+                                        <div class="attack-panel-intro-copy">Build or reuse an airolib-ng database for repeated attacks against the same ESSID.</div>
+                                    </div>
+                                </div>
+                                <div class="attack-panel-fields">
+                                    <div class="attack-panel-field">
+                                        <label for="pmk-db-select">PMK DB</label>
+                                        <div style="display:flex; align-items:center; gap:5px; min-width:0;">
+                                        <select id="pmk-db-select" class="settings-select">
                                             <option value="">-- no databases --</option>
                                         </select>
-                                        <button class="cyber-button-tiny" id="btn-pmk-refresh" title="Refresh databases" style="margin-left: 4px; padding: 2px 6px;">
+                                        <button class="cyber-button-tiny" id="btn-pmk-refresh" title="Refresh databases" style="padding: 2px 6px;">
                                             <i class="fa-solid fa-arrows-rotate" style="font-size: 0.7em;"></i>
                                         </button>
+                                        </div>
                                     </div>
-
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">ESSID:</span>
-                                        <input type="text" id="pmk-essid-input" class="settings-input" placeholder="Target ESSID" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    <div class="attack-panel-field">
+                                        <label for="pmk-essid-input">ESSID</label>
+                                        <input type="text" id="pmk-essid-input" class="settings-input" placeholder="Target ESSID" />
                                     </div>
-
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">WORDLIST:</span>
-                                        <select id="pmk-wordlist-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
-                                        </select>
+                                    <div class="attack-panel-field">
+                                        <label for="pmk-wordlist-select">WORDLIST</label>
+                                        <select id="pmk-wordlist-select" class="settings-select"></select>
                                     </div>
                                 </div>
 
-                                <div style="display: flex; gap: 6px; width: 100%;">
+                                <div class="attack-panel-actions">
                                     <button class="cyber-button-small bg-cyan fg-black" id="btn-pmk-build" style="flex: 1; padding: 8px; font-size: 11px;">
                                         <i class="fa-solid fa-database"></i> BUILD PMK DB
                                     </button>
@@ -1597,67 +1622,66 @@
                                     </button>
                                 </div>
 
-                                <div id="pmk-status-text" class="crack-progress-text" style="display:none; font-size: 0.7em; color: #8cb7c2;"></div>
+                                <div id="pmk-status-text" class="crack-progress-text attack-panel-status" style="display:none; font-size: 0.7em; color: #8cb7c2;"></div>
                             </div>
 
                             <!-- WPS Attack Section -->
-                            <div class="legacy-toggle-row" id="wps-section-toggle" data-expanded="false" style="display:none; margin-bottom: 10px;">
+                            <div class="legacy-toggle-row attack-panel-toggle attack-panel-toggle--wps" id="wps-section-toggle" data-attack-panel-toggle="wps" data-expanded="false" style="display:none;">
                                 <span class="legacy-toggle-title">
+                                    <i class="fa-solid fa-wifi"></i>
                                     WPS ATTACK
                                     <span class="wps-badge">PIN BRUTE</span>
                                 </span>
                                 <i class="fa-solid fa-chevron-down legacy-toggle-arrow"></i>
                             </div>
 
-                            <div id="crack-wps-options" style="display:none; flex-direction: column; gap: 10px; padding-bottom: 10px;">
-                                <div class="crack-config-preview" style="flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;">
-                                    <span class="config-label" style="font-size: 0.7em; color: var(--neon-magenta); letter-spacing: 1px; font-weight: bold;">REAVER / BULLY WPS PIN ATTACK</span>
-
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">TOOL:</span>
-                                        <select id="wps-tool-select" class="settings-select" style="flex: 1; padding: 4px; font-size: 0.8em;">
+                            <div id="crack-wps-options" class="attack-panel-body attack-panel-body--wps" data-attack-panel-body="wps" style="display:none; flex-direction: column; gap: 10px;">
+                                <div class="attack-panel-intro">
+                                    <i class="fa-solid fa-wifi attack-panel-intro-icon"></i>
+                                    <div>
+                                        <div class="attack-panel-intro-title">WPS PIN attack</div>
+                                        <div class="attack-panel-intro-copy">Launch reaver or bully with the selected BSSID context and monitor interface.</div>
+                                    </div>
+                                </div>
+                                <div class="attack-panel-fields attack-panel-fields--two">
+                                    <div class="attack-panel-field">
+                                        <label for="wps-tool-select">TOOL</label>
+                                        <select id="wps-tool-select" class="settings-select">
                                             <option value="reaver" selected>reaver</option>
                                             <option value="bully">bully</option>
                                         </select>
                                     </div>
-
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">IFACE:</span>
-                                        <input type="text" id="wps-iface-input" class="settings-input" placeholder="wlan0mon" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    <div class="attack-panel-field">
+                                        <label for="wps-iface-input">IFACE</label>
+                                        <input type="text" id="wps-iface-input" class="settings-input" placeholder="wlan0mon" />
                                     </div>
-
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">CHANNEL:</span>
-                                        <input type="text" id="wps-channel-input" class="settings-input" placeholder="Channel" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    <div class="attack-panel-field">
+                                        <label for="wps-channel-input">CHANNEL</label>
+                                        <input type="text" id="wps-channel-input" class="settings-input" placeholder="Channel" />
                                     </div>
-
-                                    <div class="config-row" style="width: 100%; margin-top: 2px; align-items: center;">
-                                        <span class="config-label" style="font-size: 0.7em; white-space: nowrap;">DELAY:</span>
-                                        <input type="number" id="wps-delay-input" class="settings-input" placeholder="Pin delay (s)" min="0" style="flex: 1; padding: 4px; font-size: 0.8em;" />
+                                    <div class="attack-panel-field">
+                                        <label for="wps-delay-input">DELAY</label>
+                                        <input type="number" id="wps-delay-input" class="settings-input" placeholder="Pin delay (s)" min="0" />
                                     </div>
-
-                                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75em; color: #aab; cursor: pointer;">
+                                    <label class="attack-panel-check attack-panel-field--wide">
                                         <input type="checkbox" id="wps-pixie-dust" />
                                         Pixie-Dust (offline attack)
                                     </label>
                                 </div>
 
-                                <button class="cyber-button-small bg-magenta fg-black" id="btn-wps-attack" style="width: 100%; padding: 8px; font-size: 11px;">
+                                <div class="attack-panel-actions">
+                                <button class="cyber-button-small bg-magenta fg-black" id="btn-wps-attack" style="padding: 8px; font-size: 11px;">
                                     <i class="fa-solid fa-wifi"></i> WPS ATTACK
                                 </button>
+                                </div>
 
-                                <div id="wps-status-text" class="crack-progress-text" style="display:none; font-size: 0.7em; color: #c28cb7;"></div>
+                                <div id="wps-status-text" class="crack-progress-text attack-panel-status" style="display:none; font-size: 0.7em; color: #c28cb7;"></div>
                             </div>
                             
-                            <div class="crack-status-container">
-                                <div id="crack-progress-text" class="crack-progress-text">READY</div>
-                                <div class="mini-progress-bar">
-                                    <div id="crack-mini-bar" class="mini-bar-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
+                            <div id="crack-file-feedback-default-anchor" style="display:none;"></div>
 
                             <!-- File Feedback (For other files) -->
-                            <div id="crack-file-feedback" class="crack-config-preview" style="display:none; justify-content: center; align-items: center; gap: 10px; color: #888; margin-bottom: 10px;">
+                            <div id="crack-file-feedback" class="crack-file-feedback" style="display:none;">
                                 <!-- Content injected via JS -->
                             </div>
 

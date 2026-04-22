@@ -1,0 +1,29 @@
+{
+  "build_id": "build-0ee684303d89",
+  "created_at": "2026-04-15T00:00:00Z",
+  "demo_profile": "showcase-core-v5",
+  "included_capture_ids": [
+    "pwnagotchi-handshakes-4d7541cec6029bfe",
+    "brucegotchi-bruce_handshakes-2cbc0b9c52473489",
+    "m5evil-m5evil_handshakes-da083cfc7a62d46e"
+  ],
+  "included_captures": [
+    {
+      "capture_id": "pwnagotchi-handshakes-4d7541cec6029bfe",
+      "source": "pwnagotchi",
+      "source_filename": "RIO_CAFE_LOOP_021122334460.pcap"
+    },
+    {
+      "capture_id": "brucegotchi-bruce_handshakes-2cbc0b9c52473489",
+      "source": "brucegotchi",
+      "source_filename": "HS_021122334460_rio_cafe_loop_bruce.pcap"
+    },
+    {
+      "capture_id": "m5evil-m5evil_handshakes-da083cfc7a62d46e",
+      "source": "m5evil",
+      "source_filename": "HS_021122334460_rio_cafe_loop_m5evil.pcap"
+    }
+  ],
+  "mac": "02:11:22:33:44:60",
+  "network_id": "rio_cafe_loop"
+}

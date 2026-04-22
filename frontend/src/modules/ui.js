@@ -1,4 +1,4 @@
-﻿import { STATE, saveModes } from './state.js';
+﻿import { STATE, saveLists, saveModes } from './state.js';
 import { API } from './api.js';
 import { Socket } from './socket.js';
 import { renderMarkers, calculateZones, calculateToConquerZones, calculateDiscoveredZones, calculateIntelligenceZones, clearDetailsCache, clearAnalyticsHeatmapLayer, clearAnalyticsHotspotsLayer } from './map.js';
@@ -16,7 +16,7 @@ import {
 const ENABLE_MOCK_NETWORKS = false;
 
 // Importando módulos refatorados
-import { uiConfig, applyClientConfig, openSettings, closeSettings, saveSettings } from './ui_components/ui_settings.js';
+import { uiConfig, applyClientConfig, openSettings, closeSettings, renderDemoDataStatus, saveSettings } from './ui_components/ui_settings.js';
 import { updateTargetsList, updateFavsList, updateZonesList, updateToConquerZonesList, updateDiscoveredZonesList, updateIntelligenceZonesList, updateNoGpsList, updateMultiList, updateMultiFilesList, updateMultiContentsList } from './ui_components/ui_lists.js';
 import { activeProcesses, addProcess, updateProcess, restoreActiveJobs, renderProcessList, setupProcessListeners, handleJobCompletionSideEffects, getActiveHashcatJob } from './ui_components/ui_processes.js';
 import { openMultiCrackingPanel, setupCrackingListeners, clearHistory } from './ui_components/ui_cracking.js';
@@ -335,6 +335,100 @@ function syncRightPanelsLayout() {
     rightPanelsContainer.classList.toggle('right-panels--only-logs', hasLogs && !hasCracking && !hasProcess);
 }
 
+function snapshotDemoUiState() {
+    return {
+        lists: {
+            targets: Array.isArray(STATE.lists?.targets) ? [...STATE.lists.targets] : [],
+            favs: Array.isArray(STATE.lists?.favs) ? [...STATE.lists.favs] : [],
+        },
+        modes: {
+            zones: !!STATE.modes?.zones,
+            conquered: !!STATE.modes?.conquered,
+            toConquer: !!STATE.modes?.toConquer,
+            discovered: !!STATE.modes?.discovered,
+            intelligence: !!STATE.modes?.intelligence,
+            targets: !!STATE.modes?.targets,
+            favs: !!STATE.modes?.favs,
+            process: !!STATE.modes?.process,
+            logs: !!STATE.modes?.logs,
+        },
+    };
+}
+
+function applyPersistedPanelModes() {
+    const setActive = (buttonId, active) => {
+        const button = document.getElementById(buttonId);
+        if (button) button.classList.toggle('active', !!active);
+    };
+    const setDisplay = (panelId, active, displayValue = 'flex') => {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.style.display = active ? displayValue : 'none';
+    };
+
+    setActive('btn-zones', STATE.modes.zones);
+    setActive('btn-conquered', STATE.modes.conquered);
+    setActive('btn-to-conquer', STATE.modes.toConquer);
+    setActive('btn-discovered', STATE.modes.discovered);
+    setActive('btn-intelligence', STATE.modes.intelligence);
+    setActive('btn-targets', STATE.modes.targets);
+    setActive('btn-favs', STATE.modes.favs);
+    setDisplay('zones-panel', STATE.modes.zones);
+    setDisplay('targets-panel', STATE.modes.targets);
+    setDisplay('favorites-panel', STATE.modes.favs);
+
+    setActive('btn-toggle-cracking', STATE.modes.cracking);
+    setActive('btn-process', STATE.modes.process);
+    setActive('btn-logs', STATE.modes.logs);
+    setDisplay('cracking-panel', STATE.modes.cracking);
+    setDisplay('process-panel', STATE.modes.process);
+    setDisplay('log-panel', STATE.modes.logs, 'block');
+
+    if (STATE.modes.process && Object.keys(activeProcesses).length === 0) {
+        renderProcessList();
+    }
+
+    syncLeftPanelsLayout();
+    syncRightPanelsLayout();
+}
+
+function applyDemoUiState(seed = null) {
+    if (!seed || typeof seed !== 'object') return;
+
+    const nextTargets = seed?.lists?.targets;
+    const nextFavs = seed?.lists?.favs;
+    if (Array.isArray(nextTargets)) {
+        STATE.lists.targets = nextTargets.map((item) => String(item || '').trim()).filter(Boolean);
+    }
+    if (Array.isArray(nextFavs)) {
+        STATE.lists.favs = nextFavs.map((item) => String(item || '').trim()).filter(Boolean);
+    }
+    saveLists();
+    document.dispatchEvent(new Event('listsUpdated'));
+
+    const modes = seed?.modes;
+    if (modes && typeof modes === 'object') {
+        const modeMap = {
+            zones: 'zones',
+            conquered: 'conquered',
+            toConquer: 'toConquer',
+            discovered: 'discovered',
+            intelligence: 'intelligence',
+            targets: 'targets',
+            favs: 'favs',
+            cracking: 'cracking',
+            process: 'process',
+            logs: 'logs',
+        };
+        Object.entries(modeMap).forEach(([sourceKey, stateKey]) => {
+            if (Object.prototype.hasOwnProperty.call(modes, sourceKey)) {
+                STATE.modes[stateKey] = !!modes[sourceKey];
+            }
+        });
+        saveModes();
+        applyPersistedPanelModes();
+    }
+}
+
 function setPrimaryWorkspaceMode(mode, { clearAnalyticsLayers = true } = {}) {
     const isNoGps = mode === 'noGps';
     const isMulti = mode === 'multi';
@@ -407,6 +501,8 @@ function scheduleLoadData() {
 export const __testUiHelpers = {
     updateFilterClearButtonVisibility,
     applyMainSearchFilter,
+    snapshotDemoUiState,
+    applyDemoUiState,
     buildCrackingTitle,
     buildJobProgressExtraInfo,
     syncRightPanelsLayout,
@@ -542,8 +638,12 @@ function setupSocketListeners() {
                     updateProcess(job.id, job.progress_data.percentage || 0, job.progress_data.stage || (job.status || '').toUpperCase(), job.progress_data.extra || niceDetails, false);
                 }
             } else {
-                const type = (job.type || 'GENERIC').toString().toUpperCase();
-                addProcess(job.id, type, details, job.status ? job.status.toUpperCase() : 'STARTING');
+                const type = (job.meta?.display_type || job.type || 'GENERIC').toString().toUpperCase();
+                const niceDetails = job.meta?.display_details || details;
+                addProcess(job.id, type, niceDetails, job.status ? job.status.toUpperCase() : 'STARTING');
+                if (activeProcesses[job.id] && job.meta?.no_cancel) {
+                    activeProcesses[job.id].noCancel = true;
+                }
                 if (job.progress_data) {
                     updateProcess(job.id, job.progress_data.percentage || 0, job.progress_data.stage || (job.status || '').toUpperCase(), job.progress_data.extra || "", false);
                 }
@@ -819,6 +919,47 @@ function setupEventListeners() {
                 );
             } catch (e) {
                 log(`Failed to clear cache: ${e.message}`, 'error');
+            }
+        });
+    }
+    const btnInstallDemoData = document.getElementById('btn-install-demo-data');
+    if (btnInstallDemoData) {
+        btnInstallDemoData.addEventListener('click', async () => {
+            if (!window.confirm('Install the showcase demo data pack and temporarily replace the current runtime dataset?')) return;
+            try {
+                const out = await API.installDemoData({
+                    profile_id: 'showcase-core-v5',
+                    frontend_state: snapshotDemoUiState(),
+                });
+                applyDemoUiState(out?.ui_seed || null);
+                renderDemoDataStatus({
+                    active: true,
+                    active_profile_label: out?.label || out?.profile_id || 'showcase-core-v5',
+                    active_profile_id: out?.profile_id || 'showcase-core-v5',
+                    summary: out?.summary || {},
+                    snapshot_available: true,
+                });
+                log(`Demo data install started: ${out?.label || out?.profile_id || 'showcase-core-v5'}.`, 'success');
+            } catch (e) {
+                log(`Failed to install demo data: ${e.message}`, 'error');
+            }
+        });
+    }
+    const btnRemoveDemoData = document.getElementById('btn-remove-demo-data');
+    if (btnRemoveDemoData) {
+        btnRemoveDemoData.addEventListener('click', async () => {
+            if (!window.confirm('Remove the active demo data pack and restore the previous runtime dataset if a snapshot exists?')) return;
+            try {
+                const out = await API.removeDemoData();
+                applyDemoUiState(out?.ui_restore || null);
+                renderDemoDataStatus({
+                    active: false,
+                    snapshot_available: false,
+                    summary: null,
+                });
+                log(`Demo data removal started${out?.restore_mode ? ` (${out.restore_mode}).` : '.'}`, 'success');
+            } catch (e) {
+                log(`Failed to remove demo data: ${e.message}`, 'error');
             }
         });
     }
@@ -1975,7 +2116,7 @@ function updateStatsUI(stats) {
     const cracked = (stats.cracked || 0) + (stats.noGpsCracked || 0);
     const wardriveCount = stats.wardrive || 0;
     const openCount = stats.open || 0;
-    const noGpsLocked = Math.max(0, (stats.noGpsTotal || 0) - (stats.noGpsCracked || 0));
+    const noGpsLocked = Math.max(0, stats.noGpsLocked || 0);
     const locked = (stats.locked || 0) + noGpsLocked;
 
     document.getElementById('count-total').innerText = total;

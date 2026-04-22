@@ -18,6 +18,10 @@ from app.services.spatial_normalizer import (
     normalize_network_positions,
 )
 from app.services import handshake_catalog as handshake_catalog_service
+from app.services.network_state import (
+    classify_network_state,
+    handshake_artifact_flags,
+)
 from app.services.data_loader_wardrive_helpers import (
     _classify_wardrive_device,
     _extract_device_classification,
@@ -210,6 +214,11 @@ def _apply_handshake_set_summaries(data):
             preferred = handshake_set.get("preferred_capture") or {}
             preferred_details = preferred.get("details_payload") or {}
             preferred_artifacts = preferred.get("artifacts") or {}
+            preferred_pcap = preferred_artifacts.get("pcap") or {}
+            preferred_hashes = preferred_artifacts.get("hash_22000") or []
+            valid_hash_lines = sum(
+                int(entry.get("valid_hash_lines") or 0) for entry in preferred_hashes
+            )
             summary = {
                 "handshake_set_id": handshake_set.get("handshake_set_id"),
                 "handshake_capture_count": len(handshake_set.get("captures") or []),
@@ -224,6 +233,8 @@ def _apply_handshake_set_summaries(data):
                 "handshake_artifact_summary": dict(
                     handshake_set.get("artifact_summary") or {}
                 ),
+                "preferred_handshake_pcap_size": int(preferred_pcap.get("size") or 0),
+                "preferred_handshake_valid_hash_lines": int(valid_hash_lines or 0),
             }
             item.update(summary)
             item["handshake"] = True
@@ -279,7 +290,22 @@ def _apply_handshake_set_summaries(data):
                     "history": 0,
                 },
             )
+            item.setdefault("preferred_handshake_pcap_size", 0)
+            item.setdefault("preferred_handshake_valid_hash_lines", 0)
 
+        artifact_summary = dict(item.get("handshake_artifact_summary") or {})
+        item.update(
+            handshake_artifact_flags(
+                preferred_pcap_size=item.get("preferred_handshake_pcap_size"),
+                valid_hash_lines=item.get("preferred_handshake_valid_hash_lines"),
+                details_count=artifact_summary.get("details"),
+                cracked_count=artifact_summary.get("cracked"),
+                pcap_count=artifact_summary.get("pcap"),
+                raw_eapol_count=item.get("raw_eapol_count"),
+                raw_pmkid_count=item.get("raw_pmkid_count"),
+            )
+        )
+        item.update(classify_network_state(item))
         item["preferred_geo_source"] = item.get("sourceType")
 
 
@@ -1215,8 +1241,11 @@ def reload_data():
     Força o recarregamento dos dados do disco e atualiza o cache.
     Deve ser chamado após Sync ou Cracking bem-sucedido.
     """
-    global _DATA_CACHE
+    global _DATA_CACHE, _WARDRIVE_SESSION_TAGS, _WARDRIVE_MANIFEST, _WARDRIVE_MANIFEST_PATH
     logger.info("Invalidando cache e recarregando dados.")
+    _WARDRIVE_SESSION_TAGS = None
+    _WARDRIVE_MANIFEST = None
+    _WARDRIVE_MANIFEST_PATH = None
     _DATA_CACHE = _load_from_disk()
     return _DATA_CACHE
 

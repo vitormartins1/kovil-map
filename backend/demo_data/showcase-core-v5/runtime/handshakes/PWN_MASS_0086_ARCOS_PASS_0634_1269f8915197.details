@@ -1,0 +1,28 @@
+{
+  "bssid": "12:69:F8:91:51:97",
+  "classification": {
+    "confidence": 0.8,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 4,
+    "frequency_mhz": 2427
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ARCOS_PASS_0634",
+  "vendor": "Centro Fiber",
+  "wps": {
+    "present": false
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "demo_profile": "showcase-core-v5",
+  "device_label": "M5Evil",
+  "networks": [
+    {
+      "beacon_count": 18,
+      "bssid": "06:DD:11:22:33:51",
+      "channel": 11,
+      "eapol_count": 4,
+      "frequency_mhz": 2462,
+      "last_seen_offset_s": 18.0,
+      "probe_client_count": 1,
+      "ssid": "MARACANA_MEDIA_BUS",
+      "ssid_raw_hex": "4d41524143414e415f4d454449415f425553"
+    },
+    {
+      "beacon_count": 24,
+      "bssid": "0A:DD:11:22:33:52",
+      "channel": 149,
+      "eapol_count": 4,
+      "frequency_mhz": 5745,
+      "last_seen_offset_s": 29.0,
+      "probe_client_count": 2,
+      "ssid": "ENGENHAO_OPS_MESH",
+      "ssid_raw_hex": "454e47454e48414f5f4f50535f4d455348"
+    },
+    {
+      "beacon_count": 30,
+      "bssid": "02:F0:11:22:33:5C",
+      "channel": 149,
+      "eapol_count": 0,
+      "frequency_mhz": 5745,
+      "last_seen_offset_s": 40.0,
+      "probe_client_count": 3,
+      "ssid": "",
+      "ssid_raw_hex": null
+    }
+  ],
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::5369a1de126055f5",
+  "schema_version": 1,
+  "source": "m5evil",
+  "source_file": "rio_m5_north_corridor_demo.pcap",
+  "source_mtime": 1776814568.8908024,
+  "source_path_role": "rawsniffer",
+  "source_size": 2065,
+  "stats": {
+    "beacon_frames": 72,
+    "eapol_frames": 8,
+    "networks_count": 3
+  },
+  "warnings": []
+}

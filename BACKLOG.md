@@ -166,19 +166,21 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 ### Cleanup and mock data
 
 - Priority: `CRITICAL`
-- Status: `IN PROGRESS`
+- Status: `DONE`
 - Estimate: `16-20h`
 - Complexity: `High`
 - Goal: prepare the codebase for public publication with safe demo-ready data.
 - Current state:
   - tracked source, config, docs, and Git history were already sanitized for the public repository
   - live runtime capture data is no longer versioned in the public tree
-  - remaining work is to formalize a dedicated versioned demo dataset/bootstrap flow
+  - public demo dataset flow is now implemented with a versioned pack under `backend/demo_data/showcase-core-v1/`
+  - demo install/remove is available from `System Settings > Maintenance`
+  - runtime snapshots are stored under `backend/data_backups/demo/` and real/demo datasets are not mixed in v1
 - Tasks:
   - keep personal absolute paths, credentials, and local artifacts out of tracked files
   - keep public examples and starter config sanitized
   - provide demo datasets under a dedicated data root
-  - add a first-run demo bootstrap script
+  - keep the maintainer-side builder and manifest deterministic
 
 ### Data-sensitivity review before publishing
 
@@ -212,6 +214,22 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
   - how thresholds should differ by mode
   - how mixed datasets behave
   - whether a smarter automatic mode should exist
+
+### WarDrive session geographic roll-up and focus scope
+
+- Priority: `HIGH`
+- Status: `TODO`
+- Estimate: `6-10h`
+- Complexity: `Medium`
+- Goal: make WarDrive session selection and focus choose the smallest geographic scope that represents the full route, not just the deepest/highest-density region.
+- Current behavior:
+  - the frontend can roll session-focused hierarchy results up to the common visible ancestor
+  - the backend hierarchy is still based on observed network regions, not full route geometry
+- Future requirements:
+  - derive session coverage from track points, including segments with no observed networks
+  - return an explicit `recommended_region_id` / `session_scope` from the hierarchy or session-track API
+  - roll multi-neighborhood sessions to city, multi-city sessions to state, multi-state sessions to country, and preserve robust unmapped fallbacks
+  - add API and UI regression tests for multi-neighborhood, multi-city, multi-state, and unmapped sessions
 
 ## 6. Device Integrations
 

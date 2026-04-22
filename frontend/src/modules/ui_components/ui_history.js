@@ -4,16 +4,21 @@ import { escapeHtml } from '../utils.js';
 export async function renderHistoryPanel(filename, containerElement, options = {}) {
     containerElement.style.display = 'flex';
     containerElement.style.flexDirection = 'column';
-    containerElement.style.alignItems = 'flex-start';
-    containerElement.style.gap = '5px';
+    containerElement.style.alignItems = 'stretch';
+    containerElement.style.gap = '8px';
     
     containerElement.innerHTML = `
-        <div style="display:flex; align-items:center; gap:10px; width:100%;">
-            <i class="fa-solid fa-clock-rotate-left" style="color: var(--neon-cyan)"></i> 
-            <span style="color: var(--neon-cyan); font-weight:bold;">ATTACK HISTORY</span>
-        </div>
-        <div style="width:100%; text-align:center; padding:10px; color:#666;">
-            <i class="fa-solid fa-spinner fa-spin"></i> Loading history...
+        <div class="crack-artifact-summary">
+            <div class="crack-artifact-summary-head">
+                <div>
+                    <div class="crack-artifact-summary-kicker">Attack history</div>
+                    <div class="crack-artifact-summary-title">${escapeHtml(filename)}</div>
+                </div>
+                <div class="crack-artifact-summary-badges">
+                    <span class="file-type-tag badge-history">TRY</span>
+                </div>
+            </div>
+            <div class="crack-summary-note"><i class="fa-solid fa-spinner fa-spin"></i> Loading history...</div>
         </div>
     `;
 
@@ -26,7 +31,20 @@ export async function renderHistoryPanel(filename, containerElement, options = {
             throw new Error("Invalid JSON content");
         }
         
-        let historyHtml = '<div class="history-container">';
+        let historyHtml = `
+            <div class="crack-artifact-summary">
+                <div class="crack-artifact-summary-head">
+                    <div>
+                        <div class="crack-artifact-summary-kicker">Attack history</div>
+                        <div class="crack-artifact-summary-title">${escapeHtml(filename)}</div>
+                    </div>
+                    <div class="crack-artifact-summary-badges">
+                        <span class="file-type-tag badge-history">TRY</span>
+                    </div>
+                </div>
+            </div>
+            <div class="history-container">
+        `;
         
         if (history.entries && history.entries.length > 0) {
             // Sort by start_time desc
@@ -83,7 +101,7 @@ export async function renderHistoryPanel(filename, containerElement, options = {
                 `;
             });
         } else {
-            historyHtml += '<div style="padding:10px; color:#666; text-align:center;">No history entries found.</div>';
+            historyHtml += '<div class="details-footer-meta" style="padding:10px; text-align:center;">No history entries found.</div>';
         }
         
         historyHtml += '</div>';
@@ -91,7 +109,20 @@ export async function renderHistoryPanel(filename, containerElement, options = {
         
     } catch (e) {
         containerElement.innerHTML = `
-            <div style="color: var(--neon-red);"><i class="fa-solid fa-triangle-exclamation"></i> Failed to load history file: ${escapeHtml(e.message)}</div>
+            <div class="crack-artifact-summary">
+                <div class="crack-artifact-summary-head">
+                    <div>
+                        <div class="crack-artifact-summary-kicker">Attack history</div>
+                        <div class="crack-artifact-summary-title">${escapeHtml(filename)}</div>
+                    </div>
+                    <div class="crack-artifact-summary-badges">
+                        <span class="file-type-tag badge-history">TRY</span>
+                    </div>
+                </div>
+                <div class="crack-summary-warnings">
+                    <div><i class="fa-solid fa-triangle-exclamation"></i> Failed to load history file: ${escapeHtml(e.message)}</div>
+                </div>
+            </div>
         `;
     }
 }

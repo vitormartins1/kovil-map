@@ -60,6 +60,7 @@ def test_config_update_request_accepts_known_fields():
         ui_sidebar_preset="wide",
         ui_font_scale="110",
         ui_cracking_accordion_mode="single",
+        ui_cracking_attack_panel_mode="single",
         ui_wardrive_replay_speed_default="0.1",
         ui_wardrive_replay_follow_camera_default=True,
         ui_wardrive_replay_follow_zoom_default="19",
@@ -83,6 +84,7 @@ def test_config_update_request_accepts_known_fields():
     assert req.ui_sidebar_preset == "wide"
     assert req.ui_font_scale == "110"
     assert req.ui_cracking_accordion_mode == "single"
+    assert req.ui_cracking_attack_panel_mode == "single"
     assert req.ui_wardrive_replay_speed_default == "0.1"
     assert req.ui_wardrive_replay_follow_camera_default is True
     assert req.ui_wardrive_replay_follow_zoom_default == "19"
@@ -102,3 +104,5 @@ def test_config_update_request_rejects_unknown_fields():
 def test_config_update_request_rejects_invalid_layout_values():
     with pytest.raises(ValidationError):
         ConfigUpdateRequest(ui_hud_density="ultra")
+    with pytest.raises(ValidationError):
+        ConfigUpdateRequest(ui_cracking_attack_panel_mode="stacked")

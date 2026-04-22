@@ -1,0 +1,28 @@
+{
+  "bssid": "12:B1:61:F9:27:8B",
+  "classification": {
+    "confidence": 0.86,
+    "type": "bridge"
+  },
+  "demo": {
+    "category": "already_cracked",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 6,
+    "frequency_mhz": 2437
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "ARPOADOR_LOUNGE_0927",
+  "vendor": "Lagoa Wi-Fi",
+  "wps": {
+    "present": false
+  }
+}

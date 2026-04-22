@@ -88,7 +88,7 @@ For the canonical naming of the current UI surfaces, see [Current Product Surfac
 
 The Tactical Map is the default cockpit, but specialized workflows can take over the center view when needed.
 
-![WarDrive workspace replaying a Rio de Janeiro session](../assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png)
+![WarDrive workspace replaying a Rio de Janeiro session](../assets/screenshots/wardrive-sessions.gif)
 
 This example shows the current `WARDRIVE` workspace with route replay, active-region context, and the workspace explorer.
 

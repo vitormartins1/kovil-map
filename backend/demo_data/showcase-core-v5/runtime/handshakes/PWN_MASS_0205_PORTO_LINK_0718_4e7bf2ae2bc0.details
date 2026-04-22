@@ -1,0 +1,28 @@
+{
+  "bssid": "4E:7B:F2:AE:2B:C0",
+  "classification": {
+    "confidence": 0.75,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 2,
+    "frequency_mhz": 2417
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "PORTO_LINK_0718",
+  "vendor": "Porto Retail Mesh",
+  "wps": {
+    "present": false
+  }
+}

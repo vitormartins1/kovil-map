@@ -129,6 +129,7 @@ def test_save_config_normalizes_enums_and_paths(tmp_path, monkeypatch):
             "ui_sidebar_preset": "wide",
             "ui_font_scale": "110",
             "ui_cracking_accordion_mode": "single",
+            "ui_cracking_attack_panel_mode": "single",
             "ui_wardrive_replay_speed_default": "0.1",
             "ui_wardrive_replay_autoplay": True,
             "ui_wardrive_replay_auto_focus": False,
@@ -166,6 +167,7 @@ def test_save_config_normalizes_enums_and_paths(tmp_path, monkeypatch):
     assert saved["ui_sidebar_preset"] == "wide"
     assert saved["ui_font_scale"] == "110"
     assert saved["ui_cracking_accordion_mode"] == "single"
+    assert saved["ui_cracking_attack_panel_mode"] == "single"
     assert saved["ui_wardrive_replay_speed_default"] == "0.1"
     assert saved["ui_wardrive_replay_autoplay"] is True
     assert saved["ui_wardrive_replay_auto_focus"] is False

@@ -69,6 +69,22 @@ def test_get_capture_artifact_path_returns_none_for_unknown_type():
     )
 
 
+def test_get_source_sidecar_path_uses_source_basename(tmp_path):
+    source = tmp_path / "Cafe_aabbccddeeff.pcap"
+    assert handshake_artifacts.get_source_sidecar_path(str(source), "details") == str(
+        tmp_path / "Cafe_aabbccddeeff.details"
+    )
+    assert handshake_artifacts.get_source_sidecar_path(str(source), "22000") == str(
+        tmp_path / "Cafe_aabbccddeeff.22000"
+    )
+    assert handshake_artifacts.get_source_sidecar_path(str(source), "history") == str(
+        tmp_path / "Cafe_aabbccddeeff.try"
+    )
+    assert handshake_artifacts.get_source_sidecar_path(
+        str(source), "cracked", pcap_cracked=True
+    ) == str(tmp_path / "Cafe_aabbccddeeff.pcap.cracked")
+
+
 def test_get_combined_artifact_path_returns_none_for_unknown_type():
     assert (
         handshake_artifacts.get_combined_artifact_path(

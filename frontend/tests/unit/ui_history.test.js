@@ -50,6 +50,9 @@ describe("ui_history", () => {
     await renderHistoryPanel("attack.try", container);
 
     expect(mockAPI.getFileContent).toHaveBeenCalledWith("attack.try", {});
+    expect(container.querySelector(".crack-artifact-summary")).toBeTruthy();
+    expect(container.querySelector(".crack-artifact-summary-kicker").textContent).toContain("Attack history");
+    expect(container.querySelector(".file-type-tag").textContent).toContain("TRY");
 
     const entries = container.querySelectorAll(".history-entry");
     expect(entries.length).toBe(2);
@@ -71,6 +74,7 @@ describe("ui_history", () => {
 
     await renderHistoryPanel("empty.try", container);
 
+    expect(container.querySelector(".crack-artifact-summary")).toBeTruthy();
     expect(container.textContent).toContain("No history entries found.");
   });
 
@@ -79,6 +83,7 @@ describe("ui_history", () => {
 
     await renderHistoryPanel("broken.try", container);
 
+    expect(container.querySelector(".crack-summary-warnings")).toBeTruthy();
     expect(container.textContent).toContain("Failed to load history file");
     expect(container.textContent).toContain("Invalid JSON content");
   });

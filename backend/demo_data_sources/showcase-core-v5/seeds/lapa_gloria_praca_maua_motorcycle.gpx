@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:gpx xmlns:ns0="http://www.topografix.com/GPX/1/1" version="1.1" creator="KOVIL MAP Demo V4 Builder">
+  <ns0:trk>
+    <ns0:name>lapa_gloria_praca_maua_motorcycle</ns0:name>
+    <ns0:trkseg>
+      <ns0:trkpt lat="-22.914550" lon="-43.181650">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T04:10:00Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.913650" lon="-43.180050">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T04:10:08Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.912700" lon="-43.178350">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T04:10:16Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.911650" lon="-43.176850">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T04:10:24Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.910450" lon="-43.175950">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T04:10:32Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.908900" lon="-43.175450">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T04:10:40Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.907050" lon="-43.175150">
+        <ns0:ele>8.9</ns0:ele>
+        <ns0:time>2026-04-11T04:10:48Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.905250" lon="-43.175000">
+        <ns0:ele>9.3</ns0:ele>
+        <ns0:time>2026-04-11T04:10:56Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.903850" lon="-43.175450">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T04:11:04Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902850" lon="-43.176350">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T04:11:12Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.902350" lon="-43.177950">
+        <ns0:ele>7.3</ns0:ele>
+        <ns0:time>2026-04-11T04:11:20Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.903100" lon="-43.179250">
+        <ns0:ele>7.7</ns0:ele>
+        <ns0:time>2026-04-11T04:11:28Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.904650" lon="-43.180000">
+        <ns0:ele>8.1</ns0:ele>
+        <ns0:time>2026-04-11T04:11:36Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.906350" lon="-43.180300">
+        <ns0:ele>8.5</ns0:ele>
+        <ns0:time>2026-04-11T04:11:44Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.908150" lon="-43.180650">
+        <ns0:ele>8.9</ns0:ele>
+        <ns0:time>2026-04-11T04:11:52Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.910050" lon="-43.181000">
+        <ns0:ele>9.3</ns0:ele>
+        <ns0:time>2026-04-11T04:12:00Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.912050" lon="-43.181300">
+        <ns0:ele>6.5</ns0:ele>
+        <ns0:time>2026-04-11T04:12:08Z</ns0:time>
+      </ns0:trkpt>
+      <ns0:trkpt lat="-22.913450" lon="-43.181550">
+        <ns0:ele>6.9</ns0:ele>
+        <ns0:time>2026-04-11T04:12:16Z</ns0:time>
+      </ns0:trkpt>
+    </ns0:trkseg>
+  </ns0:trk>
+</ns0:gpx>

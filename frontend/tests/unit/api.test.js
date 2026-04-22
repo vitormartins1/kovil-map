@@ -699,6 +699,27 @@ describe("API methods", () => {
       expect.objectContaining({ method: "DELETE" })
     );
 
+    await API.getDemoDataStatus();
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://127.0.0.1:8000/api/maintenance/demo"
+    );
+
+    await API.installDemoData({ profile_id: "showcase-core-v5", frontend_state: { lists: { targets: [] } } });
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://127.0.0.1:8000/api/maintenance/demo/install",
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile_id: "showcase-core-v5", frontend_state: { lists: { targets: [] } } }),
+      })
+    );
+
+    await API.removeDemoData();
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://127.0.0.1:8000/api/maintenance/demo",
+      expect.objectContaining({ method: "DELETE" })
+    );
+
     await API.extractFingerprint("capture.pcap", true);
     expect(fetch).toHaveBeenLastCalledWith(
       "http://127.0.0.1:8000/api/fingerprint/extract",

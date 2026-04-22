@@ -90,6 +90,11 @@ function normalizeCrackingAccordionMode(value) {
     return CRACKING_ACCORDION_MODE_ALLOWED.has(normalized) ? normalized : 'multi';
 }
 
+function normalizeCrackingAttackPanelMode(value) {
+    const normalized = String(value || 'multi').trim().toLowerCase();
+    return CRACKING_ACCORDION_MODE_ALLOWED.has(normalized) ? normalized : 'multi';
+}
+
 function normalizeWardriveReplaySpeedDefault(value) {
     const normalized = String(value || '1').trim();
     return REPLAY_SPEED_ALLOWED.has(normalized) ? normalized : '1';
@@ -427,6 +432,37 @@ function setBruceProbeStatus(message = '', tone = 'neutral') {
     if (!node) return;
     node.textContent = message || '';
     node.dataset.state = tone || 'neutral';
+}
+
+export function renderDemoDataStatus(status = null) {
+    const badge = document.getElementById('demo-data-status');
+    const summary = document.getElementById('demo-data-summary');
+    const installButton = document.getElementById('btn-install-demo-data');
+    const removeButton = document.getElementById('btn-remove-demo-data');
+    const payload = status && typeof status === 'object' ? status : {};
+    const isActive = !!payload.active;
+    const activeLabel = String(payload.active_profile_label || payload.active_profile_id || 'showcase-core-v5');
+    const metrics = payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
+
+    if (badge) {
+        badge.textContent = isActive ? `DEMO DATA: ACTIVE (${activeLabel})` : 'DEMO DATA: INACTIVE';
+        badge.dataset.tone = isActive ? 'active' : 'idle';
+    }
+    if (summary) {
+        if (isActive) {
+            const networks = Number(metrics.networks_total || 0);
+            const wardrive = Number(metrics.wardrive_sessions || 0);
+            const raw = Number(metrics.raw_files || 0);
+            const snapshotNote = payload.snapshot_available
+                ? ' Previous runtime data will be restored when demo mode is removed.'
+                : '';
+            summary.textContent = `Synthetic showcase pack loaded with ${networks} networks, ${wardrive} Wardrive sessions and ${raw} RAW captures.${snapshotNote}`;
+        } else {
+            summary.textContent = 'Optional synthetic showcase data for onboarding, screenshots and feature walkthroughs. Real runtime data stays untouched until you install the pack.';
+        }
+    }
+    if (installButton) installButton.disabled = isActive;
+    if (removeButton) removeButton.disabled = !isActive;
 }
 
 function formatM5ProbeFeedback(result = {}) {
@@ -814,6 +850,7 @@ export function applyClientConfig(config = {}, options = {}) {
     applyWardriveColor(uiConfig.wardriveColor);
     applyLayoutSettings(config);
     root.dataset.crackingAccordionMode = normalizeCrackingAccordionMode(config.ui_cracking_accordion_mode);
+    root.dataset.crackingAttackPanelMode = normalizeCrackingAttackPanelMode(config.ui_cracking_attack_panel_mode);
     setMarkerIcons(
         uiConfig.iconPwned,
         uiConfig.iconLocked,
@@ -837,6 +874,7 @@ export function applyClientConfig(config = {}, options = {}) {
                 ui_sidebar_preset: normalizeSidebarPreset(config.ui_sidebar_preset),
                 ui_font_scale: normalizeFontScale(config.ui_font_scale),
                 ui_cracking_accordion_mode: normalizeCrackingAccordionMode(config.ui_cracking_accordion_mode),
+                ui_cracking_attack_panel_mode: normalizeCrackingAttackPanelMode(config.ui_cracking_attack_panel_mode),
                 ui_wardrive_replay_speed_default: normalizeWardriveReplaySpeedDefault(config.ui_wardrive_replay_speed_default),
                 ui_wardrive_replay_follow_camera_default: !!config.ui_wardrive_replay_follow_camera_default,
                 ui_wardrive_sessions_sort_by: normalizeWardriveSessionsSortBy(config.ui_wardrive_sessions_sort_by),
@@ -867,10 +905,12 @@ export async function openSettings() {
     if (advanced) advanced.open = false;
     
     try {
-        const [config, devices] = await Promise.all([
+        const [config, devices, demoStatus] = await Promise.all([
             API.getConfig(),
-            API.getHashcatDevices()
+            API.getHashcatDevices(),
+            API.getDemoDataStatus().catch(() => null),
         ]);
+        renderDemoDataStatus(demoStatus);
         setInputValue('conf-ip', config.pwn_host, '');
         setInputValue('conf-port', config.pwn_port ?? 22, '22');
         setInputValue('conf-user', config.pwn_user, '');
@@ -1001,10 +1041,12 @@ export async function openSettings() {
         setSelectValue('conf-ui-sidebar-preset', normalizeSidebarPreset(config.ui_sidebar_preset), 'standard');
         setSelectValue('conf-ui-font-scale', normalizeFontScale(config.ui_font_scale), '100');
         setSelectValue('conf-ui-cracking-accordion-mode', normalizeCrackingAccordionMode(config.ui_cracking_accordion_mode), 'multi');
+        setSelectValue('conf-ui-cracking-attack-panel-mode', normalizeCrackingAttackPanelMode(config.ui_cracking_attack_panel_mode), 'multi');
         applyLayoutSettings(config);
         
     } catch (e) {
         log("Failed to load config from backend", "error");
+        renderDemoDataStatus(null);
     }
 }
 
@@ -1076,6 +1118,9 @@ export async function saveSettings() {
         ui_font_scale: normalizeFontScale(document.getElementById('conf-ui-font-scale')?.value),
         ui_cracking_accordion_mode: normalizeCrackingAccordionMode(
             document.getElementById('conf-ui-cracking-accordion-mode')?.value
+        ),
+        ui_cracking_attack_panel_mode: normalizeCrackingAttackPanelMode(
+            document.getElementById('conf-ui-cracking-attack-panel-mode')?.value
         ),
         ui_wardrive_replay_speed_default: normalizeWardriveReplaySpeedDefault(
             document.getElementById('conf-wardrive-replay-speed-default')?.value
@@ -1151,6 +1196,7 @@ export const __testUiSettingsHelpers = {
     setPwnProbeStatus,
     setM5ProbeStatus,
     setBruceProbeStatus,
+    renderDemoDataStatus,
     formatPwnProbeFeedback,
     formatM5ProbeFeedback,
     formatBruceProbeFeedback,

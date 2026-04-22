@@ -1,0 +1,28 @@
+{
+  "bssid": "F2:B4:AF:F4:07:FC",
+  "classification": {
+    "confidence": 0.75,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 5,
+    "frequency_mhz": 2432
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "BOTAFOGO_KIOSK_0842",
+  "vendor": "Botafogo Retail",
+  "wps": {
+    "present": false
+  }
+}

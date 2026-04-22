@@ -1,0 +1,28 @@
+{
+  "bssid": "06:2A:5E:6A:BD:52",
+  "classification": {
+    "confidence": 0.79,
+    "type": "kiosk_hotspot"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "2.4GHz",
+    "channel": 1,
+    "frequency_mhz": 2412
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "IPANEMA_LINK_0098",
+  "vendor": "Orla Telecom",
+  "wps": {
+    "present": false
+  }
+}

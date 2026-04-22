@@ -15,12 +15,20 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 
 ## Tactical Map
 
+<p align="center">
+  <img src="docs/assets/screenshots/t-map.gif" alt="KOVIL TATICAL MAP" />
+</p>
+
 - map-first cockpit for known networks, cluster review, popup actions, and rapid target triage
 - spatial overlays for conquered, to-conquer, discovered, and intelligence-driven zone layers
 - search and status-driven review across dense local datasets with source-aware context
 - direct pivot points into cracking, Recon, and route review from the same operational surface
 
 ## No-GPS
+
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/no-gps-interface-close.png" alt="KOVIL MAP NO-GPS workspace" />
+</p>
 
 - dedicated workspace for networks that do not yet have usable coordinates on the tactical map
 - filters for SSID or MAC search, source device, status, name visibility, and artifact presence
@@ -29,6 +37,10 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 
 ## Batch
 
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/batch-interface-close.png" alt="KOVIL MAP BATCH workspace" />
+</p>
+
 - high-throughput workspace for building a single crack job from many networks and handshake artifacts
 - operator filters for search, location, source, and artifact presence before creating the batch
 - generated-batch inventory plus batch-contents review so work packages stay inspectable after creation
@@ -36,15 +48,19 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 
 ## Recon Center
 
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/recon-intel-interface-close.png" alt="KOVIL Recon Center workspace" />
+</p>
+
 - unified intelligence workspace across SURFACE, INTEL, OPS, GEO, SIGINT, REPORT, and COMMS
 - cache-first tab hydration so dense analysis views reopen faster without eager full-workspace loading
 - COMMS cluster intelligence and map-facing Intelligence Zones for geospatial relationship review
 - target-level drilldown for attack surface, threat analysis, signal intelligence, and operational planning
 
-## WarDrive Workspace
+## Wardrive Workspace
 
 <p align="center">
-  <img src="docs/assets/screenshots/wardrive/wardrive-workspace-rio-de-janeiro.png" alt="KOVIL MAP WarDrive workspace replaying a session in Rio de Janeiro" />
+  <img src="docs/assets/screenshots/wardrive-sessions.gif" alt="KOVIL MAP WarDrive workspace replaying a session in Rio de Janeiro" />
 </p>
 
 - session hierarchy and region drilldown for large CSV-derived route datasets
@@ -54,6 +70,10 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 - local-first route review that lets operators move from wardrive sessions back into the tactical map and the wider target workflow
 
 ## Raw Sniffer
+
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/sniffer-interface-close.png" alt="KOVIL MAP NO-GPS workspace" />
+</p>
 
 - source-aware RAW capture workspace for Bruce and M5Evil ingest, metadata, and cleanup flows
 - review of cache state, capture metadata, generated hashes, and capture-scoped RAW analysis reports

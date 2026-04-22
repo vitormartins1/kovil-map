@@ -1,0 +1,28 @@
+{
+  "bssid": "9A:C0:24:6C:C5:6D",
+  "classification": {
+    "confidence": 0.94,
+    "type": "mobile_router"
+  },
+  "demo": {
+    "category": "already_cracked",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "5GHz",
+    "channel": 36,
+    "frequency_mhz": 5180
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "PORTO_MAUA_CRACKED_02",
+  "vendor": "Port District Fiber",
+  "wps": {
+    "present": false
+  }
+}

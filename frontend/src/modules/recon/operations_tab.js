@@ -476,18 +476,16 @@ export function createOperationsRenderer(deps) {
                 const mac = normalizeMac(pos?.mac);
                 if (!isMac(mac)) continue;
                 if (byMac.has(mac)) continue;
-                const handshakeFiles = Array.isArray(pos?.handshake_files) ? pos.handshake_files : [];
-                const hasHashArtifacts = handshakeFiles.some((f) => String(f || '').toLowerCase().endsWith('.22000'));
-                const hasPcapArtifacts = handshakeFiles.some((f) => String(f || '').toLowerCase().endsWith('.pcap'));
-                const hasRawHash = Number(pos?.raw_pmkid_count || 0) > 0 || Number(pos?.raw_eapol_count || 0) > 0;
-                const cracked = !!pos?.pass;
-                const attackable = !cracked && (hasHashArtifacts || hasPcapArtifacts || hasRawHash);
+                const state = String(pos?.network_state || '').trim().toLowerCase();
+                const cracked = !!(pos?.cracked || pos?.pass || state === 'cracked');
+                const attackable = !!pos?.attackable || state === 'locked' || state === 'no_gps_locked' || state === 'not_ready';
                 byMac.set(mac, {
                     mac,
                     ssid: String(pos?.ssid || 'HIDDEN'),
                     encryption: String(pos?.encryption || 'UNKNOWN').toUpperCase(),
                     cracked,
                     attackable,
+                    networkState: state || 'unknown',
                 });
             }
             return [...byMac.values()].sort((a, b) => {
@@ -505,7 +503,7 @@ export function createOperationsRenderer(deps) {
             const inTargetList = new Set((STATE.lists?.targets || []).map((m) => normalizeMac(m)));
             const candidates = collectPickerCandidates()
                 .filter((row) => (scope === 'all' ? true : row.attackable))
-                .filter((row) => (!q ? true : `${row.mac} ${row.ssid} ${row.encryption}`.toLowerCase().includes(q)));
+                .filter((row) => (!q ? true : `${row.mac} ${row.ssid} ${row.encryption} ${row.networkState}`.toLowerCase().includes(q)));
 
             visiblePickerTargets = candidates.map((row) => row.mac).filter((mac) => !inPlanner.has(mac));
 

@@ -14,6 +14,7 @@ from app.core.config import (
 )
 from app.utils.handshake_artifacts import (
     get_capture_artifact_path,
+    get_source_sidecar_path,
     list_capture_artifacts,
     list_combined_candidates,
     read_json,
@@ -403,11 +404,13 @@ def _build_capture_record(
     capture_id = _make_capture_id(source, role, filename)
     base_name = os.path.basename(filename).rsplit(".", 1)[0]
     capture_artifacts = list_capture_artifacts(
-        capture_id, handshakes_dir=HANDSHAKES_DIR
+        capture_id, handshakes_dir=HANDSHAKES_DIR, source_path=full_path
     )
     details_payload = read_json(
+        get_source_sidecar_path(full_path, "details")
+    ) or read_json(
         get_capture_artifact_path(capture_id, "details", handshakes_dir=HANDSHAKES_DIR)
-    ) or _safe_read_json(os.path.join(HANDSHAKES_DIR, f"{base_name}.details"))
+    )
     resolved_ssid = ""
     if isinstance(details_payload, dict):
         resolved_ssid = str(details_payload.get("ssid") or "").strip()
@@ -426,12 +429,6 @@ def _build_capture_record(
     if not pcap_artifact:
         return None
 
-    related_artifacts = _find_related_legacy_artifacts(
-        base_name,
-        capture_id,
-        source,
-        device_label,
-    )
     artifacts_by_type: dict[str, Any] = {
         "pcap": pcap_artifact,
         "details": list(capture_artifacts.get("details") or []),
@@ -442,20 +439,6 @@ def _build_capture_record(
     }
     for item in artifacts_by_type["hash_22000"]:
         item["valid_hash_lines"] = _count_valid_hash_lines(item["path"])
-    for artifact in related_artifacts:
-        artifact_type = artifact.get("type")
-        if artifact_type == "details":
-            artifacts_by_type["details"].append(artifact)
-        elif artifact_type == "22000":
-            artifact = dict(artifact)
-            artifact["valid_hash_lines"] = _count_valid_hash_lines(artifact["path"])
-            artifacts_by_type["hash_22000"].append(artifact)
-        elif artifact_type == "cracked":
-            artifacts_by_type["cracked"].append(artifact)
-        elif artifact_type == "try":
-            artifacts_by_type["history"].append(artifact)
-        elif artifact_type != "pcap":
-            artifacts_by_type["other"].append(artifact)
 
     capture = {
         "capture_id": capture_id,

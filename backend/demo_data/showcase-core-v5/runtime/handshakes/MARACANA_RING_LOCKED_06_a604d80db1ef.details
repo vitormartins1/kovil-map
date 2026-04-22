@@ -1,0 +1,28 @@
+{
+  "bssid": "A6:04:D8:0D:B1:EF",
+  "classification": {
+    "confidence": 0.86,
+    "type": "router_ap"
+  },
+  "demo": {
+    "category": "locked_showcase",
+    "profile_id": "showcase-core-v5",
+    "source": "pwnagotchi"
+  },
+  "radio": {
+    "band": "5GHz",
+    "channel": 149,
+    "frequency_mhz": 5745
+  },
+  "security": {
+    "auth_mode": "[WPA2-PSK-CCMP][ESS]",
+    "handshake_available": true,
+    "pmkid_available": true,
+    "wpa_version": "WPA2"
+  },
+  "ssid": "MARACANA_RING_LOCKED_06",
+  "vendor": "Arena Ops Network",
+  "wps": {
+    "present": false
+  }
+}

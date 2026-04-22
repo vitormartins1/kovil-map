@@ -6,6 +6,7 @@ from app.core.config import HANDSHAKES_DIR
 from app.services.data_loader import reload_data
 from app.services.rawsniffer_service import rawsniffer_service
 from app.services.analytics_service import analytics_service
+from app.services.demo_data_service import demo_data_service
 from app.services.packet_analysis_service import packet_analysis_service
 from app.services.probe_service import probe_service
 from app.services.recon_runtime_service import clear_recon_runtime_cache
@@ -22,6 +23,23 @@ def _clear_recon_runtime_cache() -> None:
 
 
 class MaintenanceService:
+    def get_demo_status(self) -> dict:
+        return demo_data_service.get_status()
+
+    def start_demo_install(
+        self,
+        *,
+        profile_id: str = "showcase-core-v5",
+        frontend_state: dict | None = None
+    ) -> dict:
+        return demo_data_service.start_install(
+            profile_id=profile_id,
+            frontend_state=frontend_state,
+        )
+
+    def start_demo_remove(self) -> dict:
+        return demo_data_service.start_remove()
+
     def clear_details_files(self) -> dict:
         deleted = 0
         failed = 0

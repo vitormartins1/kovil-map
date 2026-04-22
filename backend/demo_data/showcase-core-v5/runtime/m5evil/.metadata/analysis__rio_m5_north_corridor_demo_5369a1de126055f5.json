@@ -1,0 +1,89 @@
+{
+  "capture": {
+    "clients_count": 3,
+    "duration_s": 95.0,
+    "frame_totals": {
+      "beacons": 72,
+      "eapol": 8,
+      "probe_requests": 12
+    },
+    "networks_count": 3,
+    "warnings": []
+  },
+  "demo_profile": "showcase-core-v5",
+  "device_label": "M5Evil",
+  "highlights": {
+    "handshake_candidate_count": 3,
+    "handshake_candidates": [
+      {
+        "bssid": "06:DD:11:22:33:51",
+        "eapol_count": 4,
+        "ssid": "MARACANA_MEDIA_BUS",
+        "tier": "ready"
+      },
+      {
+        "bssid": "0A:DD:11:22:33:52",
+        "eapol_count": 4,
+        "ssid": "ENGENHAO_OPS_MESH",
+        "tier": "ready"
+      },
+      {
+        "bssid": "02:F0:11:22:33:5C",
+        "eapol_count": 0,
+        "ssid": "",
+        "tier": "watch"
+      }
+    ],
+    "hidden_network_count": 1,
+    "noisy_capture": false,
+    "revealed_hidden_count": 0,
+    "top_clients": [
+      {
+        "eapol_count": 4,
+        "mac": "7A:8B:9C:AD:BE:C0",
+        "network_count": 1,
+        "total_frames": 20
+      },
+      {
+        "eapol_count": 4,
+        "mac": "7A:8B:9C:AD:BE:C1",
+        "network_count": 1,
+        "total_frames": 27
+      },
+      {
+        "eapol_count": 0,
+        "mac": "7A:8B:9C:AD:BE:C2",
+        "network_count": 1,
+        "total_frames": 34
+      }
+    ],
+    "top_networks": [
+      {
+        "beacon_count": 18,
+        "bssid": "06:DD:11:22:33:51",
+        "client_count": 1,
+        "ssid": "MARACANA_MEDIA_BUS"
+      },
+      {
+        "beacon_count": 24,
+        "bssid": "0A:DD:11:22:33:52",
+        "client_count": 2,
+        "ssid": "ENGENHAO_OPS_MESH"
+      },
+      {
+        "beacon_count": 30,
+        "bssid": "02:F0:11:22:33:5C",
+        "client_count": 3,
+        "ssid": ""
+      }
+    ]
+  },
+  "processed_at": "2026-04-15T00:00:00Z",
+  "raw_item_id": "raw::pcap::5369a1de126055f5",
+  "schema_version": 1,
+  "source": "m5evil",
+  "source_file": "rio_m5_north_corridor_demo.pcap",
+  "source_mtime": 1776814568.8908024,
+  "source_path_role": "rawsniffer",
+  "source_size": 2065
+}
