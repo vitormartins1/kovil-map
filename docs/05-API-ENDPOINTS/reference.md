@@ -151,7 +151,7 @@ If `KOVIL_API_TOKEN` is set, send it as:
 - `POST /api/sync/trust-host-key` is part of the Pwnagotchi SSH flow; M5Evil uses `Admin WebUI` instead
 - handshake discovery now has two read models: `/files` for compatibility and `/set` for grouped handshake captures with quality scoring
 - conversion, fingerprint extraction, and Aircrack operations can target a capture by `capture_id` instead of only by filename
-- new derived handshake artifacts prefer capture-scoped storage under `backend/data/handshakes/captures/<capture_id>/`
+- new derived handshake artifacts are resolved by `capture_id` but written beside the source PCAP using the source basename
 - manual combined one-BSSID candidates are exposed through `/api/handshakes/{mac}/combine-captures` and resolved through `combined_build_id`
 - the legacy public geolocation endpoint is not part of the mounted router surface anymore
 - hotspot generation is adaptive; `cell_size_m` is still accepted for compatibility on some analytics routes but is no longer the controlling UI concept for hotspots

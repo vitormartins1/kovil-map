@@ -1,7 +1,7 @@
 # KOVIL MAP - BACKLOG
 
-**Última atualização:** 7 de Abril de 2026  
-**Iniciativas em aberto:** 25
+**Última atualização:** 22 de Abril de 2026  
+**Iniciativas rastreadas:** 29
 
 Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e tarefas de release sob responsabilidade dos mantenedores, mas nao deve conter segredos, detalhes pessoais de infraestrutura ou notas operacionais privadas.
 
@@ -30,12 +30,17 @@ Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e
 ### Artefatos derivados por captura
 
 - Prioridade: `ALTA`
-- Status: `TODO`
+- Status: `DONE`
 - Estimativa: `12-16h`
 - Complexidade: `Alta`
-- Objetivo: concluir o redesign de handshake sets migrando os artefatos derivados do modelo legado compartilhado em `backend/data/handshakes/` para um modelo por captura.
+- Objetivo: concluir o redesign de handshake sets migrando os artefatos derivados do modelo legado compartilhado em `backend/data/handshakes/` para sidecars específicos por captura, resolvidos por `capture_id`.
+- Estado atual:
+  - os artefatos derivados usam o basename do PCAP original ao lado da captura, por exemplo `<pcap-basename>.details`, `.22000`, `.try` e `.cracked`
+  - artefatos legados/compartilhados continuam legíveis como fallback, mas não aparecem mais como seção principal no Cracking Operations
+  - API e UI já expõem proveniência e seleção por captura
+  - há cobertura de regressão para `capture_id` e handshakes cross-source
 - Requisitos:
-  - `.details`, `.22000`, `.try` e `.cracked` com namespace por captura
+  - `.details`, `.22000`, `.try` e `.cracked` baseados no basename do PCAP por captura
   - compatibilidade de leitura com artefatos legados/compartilhados
   - API e UI deixando claro o que é artefato específico da captura vs compartilhado
   - testes de regressão para colisões de basename entre Brucegotchi e M5 Evil
@@ -43,10 +48,14 @@ Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e
 ### Build combinado opcional para um mesmo BSSID
 
 - Prioridade: `MÉDIA`
-- Status: `TODO`
+- Status: `DONE`
 - Estimativa: `10-14h`
 - Complexidade: `Alta`
 - Objetivo: permitir que o operador combine manualmente múltiplas capturas válidas do mesmo handshake set para aumentar as chances de cracking, sem trocar o fluxo padrão baseado na captura preferida.
+- Estado atual:
+  - Cracking Operations expõe `COMBINED CANDIDATES` quando há capturas elegíveis
+  - builds combinados ficam sob `backend/data/handshakes/combined/<mac_clean>/<build_id>/`
+  - seleção por `combined_build_id` preserva proveniência sem alterar o fluxo padrão
 - Requisitos:
   - ação manual no painel de cracking
   - deduplicação determinística e manifesto de proveniência
@@ -145,10 +154,16 @@ Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e
 ### Cleanup e dados mock
 
 - Prioridade: `CRÍTICA`
-- Status: `TODO`
+- Status: `DONE`
 - Estimativa: `16-20h`
 - Complexidade: `Alta`
 - Objetivo: preparar a codebase para publicação pública com dados seguros e um modo demo utilizável.
+- Estado atual:
+  - código, config pública, docs e histórico Git foram saneados para o repositório público
+  - dados reais de runtime não são versionados na árvore pública
+  - o demo público atual usa o pack `backend/demo_data/showcase-core-v5/`
+  - instalação/remoção do demo está disponível em `System Settings > Maintenance`
+  - o snapshot de restauração é temporário e existe apenas enquanto o modo demo está ativo
 - Tarefas:
   - remover paths absolutos pessoais
   - remover IPs privados, hostnames, tokens e credenciais
@@ -159,10 +174,14 @@ Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e
 ### Revisão de sensibilidade antes de publicar
 
 - Prioridade: `CRÍTICA`
-- Status: `TODO`
+- Status: `DONE`
 - Estimativa: `10-12h`
 - Complexidade: `Alta`
 - Objetivo: fazer uma auditoria ampla de dados sensíveis antes de qualquer release pública.
+- Estado atual:
+  - `.gitignore` cobre dados reais de handshakes, WarDrive, BrucePCAP, M5Evil, AIROLIB e backups
+  - `backend/config.json` local deve continuar tratado como sensível e fora de commits
+  - o review final ainda deve checar `git status`, `git diff --stat` e buscas direcionadas antes de cada release
 - Áreas de auditoria:
   - arquivos-fonte
   - arquivos de configuração
@@ -414,6 +433,52 @@ Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e
   4. **Indicador de duplicata** — na lista de sessões, marcar sessões que são 100% subsets de uma sessão mergeada (todos os MACs já existem em um arquivo mergeado)
   5. **Filtro por origem** — adicionar chips de filtro rápido para cada tipo de origem no header do painel de sessões
 
+## Follow-ups de Documentação e Polimento de Produto
+
+### Manutenção de IA de documentação e glossário
+
+- Categoria: `doc gap`
+- Prioridade: `MÉDIA`
+- Status: `TODO`
+- Objetivo: manter a documentação voltada ao operador alinhada conforme telas e fluxos de artefatos evoluem.
+- Follow-ups:
+  - manter README, Product Overview, Current Product Surface e Workflows by Objective sincronizados após mudanças grandes de UI
+  - manter um glossário curto para estados como `locked`, `no_gps_locked`, `not_ready`, `cracked`, `canonical`, `combined` e `WDRS`
+  - evitar descrever nomes internos de implementação como superfícies principais do produto
+
+### Atualização de screenshots e mídia
+
+- Categoria: `release blocker`
+- Prioridade: `ALTA`
+- Status: `TODO`
+- Objetivo: substituir mídias pesadas ou desatualizadas dos READMEs/docs antes do próximo release público.
+- Follow-ups:
+  - substituir GIFs grandes por assets menores ou por um walkthrough otimizado regravado
+  - verificar que screenshots usam apenas dados demo/sintéticos
+  - manter seções de mídia equivalentes entre README e README PT-BR
+
+### Hints de fluxo operacional na UI
+
+- Categoria: `UX improvement`
+- Prioridade: `MÉDIA`
+- Status: `TODO`
+- Objetivo: fazer a UI ensinar o ciclo do produto sem exigir que o operador leia todas as páginas de documentação primeiro.
+- Follow-ups:
+  - adicionar orientação leve em empty states do Tactical Map, No-GPS, Batch, Recon, WarDrive e Raw Sniffer
+  - linkar demo mode e first-run actions em empty states quando fizer sentido
+  - manter hints curtos e dispensáveis para não atrapalhar operadores avançados
+
+### Checks contra drift entre documentação e código
+
+- Categoria: `technical debt`
+- Prioridade: `MÉDIA`
+- Status: `TODO`
+- Objetivo: detectar docs públicas obsoletas mais cedo quando APIs, nomes de artefatos ou workspaces mudarem.
+- Follow-ups:
+  - adicionar checks direcionados de CI para frases obsoletas como artefatos `capture.*` em pasta, nomes de demo pack removidos e telas aposentadas
+  - documentar o checklist de atualização de docs quando Cracking Operations, Demo Mode, WarDrive ou Recon mudarem
+  - considerar um smoke test simples de docs para validar paths de imagens dos READMEs e links de entrada principais
+
 ## Resumo
 
 | Área | Count | Faixa de prioridade |
@@ -427,7 +492,8 @@ Este backlog e publico. Ele pode misturar itens de roadmap para contribuidores e
 | Inteligência ofensiva — Tier 1 | 8 | Alta / Média / Baixa |
 | Geração de wordlists customizadas | 1 | Alta (TBD) |
 | Inteligência de origem & gestão de sessões | 5 | Alta / Média |
+| Documentação e polimento de produto | 4 | Alta / Média |
 
-**Esforço total estimado:** `~217-289h`
+**Esforço total estimado:** `~233-313h`
 
 **Owner:** Vitor Martins

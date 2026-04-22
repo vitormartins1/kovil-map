@@ -4,7 +4,7 @@ Tactical Analytics is the geospatial intelligence layer behind heatmaps, hotspot
 
 ## Current Product Behavior
 
-In the current product, operators consume this intelligence through the tactical map and Recon-led workflows rather than a separate top-level Analytics screen.
+In the current product, operators consume this intelligence through the tactical map and Recon-led workflows.
 
 - adaptive hotspots and heatmap payloads remain part of the backend/domain model
 - the operator-facing intelligence workspace is Recon Center

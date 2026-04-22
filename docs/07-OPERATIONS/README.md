@@ -7,20 +7,19 @@ This section explains the main operational workflows in KOVIL MAP.
 ### [Workflows by Objective](workflows-by-objective.md)
 
 - start from a goal instead of a module name
-- choose the shortest path through map, Recon, WarDrive, Raw Sniffer, and cracking flows
+- choose the shortest path through demo data, sync, map, Recon, WarDrive, Raw Sniffer, No-GPS, batch, and cracking flows
 
 ### [Map Operations](map-operations.md)
 
 - navigate the map
 - filter networks
-- add notes
-- export data
+- inspect popups, zones, overlays, targets, favorites, and workspace handoffs
 
 ### [Cracking Workflow](cracking-workflow.md)
 
 - select a network
-- load a handshake
-- choose an attack mode
+- inspect capture artifacts
+- choose an attack mode or helper flow
 - track progress and results
 
 ### [Remote Sync How-To](remote-sync-howto.md)
@@ -32,9 +31,9 @@ This section explains the main operational workflows in KOVIL MAP.
 
 ### [Batch Cracking How-To](batch-cracking-howto.md)
 
-- queue multiple targets
-- prioritize jobs
-- track batch progress
+- create batch work packages
+- review batch manifests
+- run batch cracking through Cracking Operations
 
 ### [Troubleshooting](troubleshooting.md)
 
@@ -56,15 +55,15 @@ This section explains the main operational workflows in KOVIL MAP.
 6. Queue cracking jobs.
 7. Watch results in real time.
 
-### Post-run wardriving with a WiGLE CSV
+### Post-run WarDrive review with a WiGLE-like CSV
 
 1. Download or export a WiGLE CSV.
 2. Open KOVIL MAP.
 3. Import the CSV and let spatial normalization run.
 4. Review the clusters on the map.
-5. Tag interesting networks.
-6. Create a batch job.
-7. Review the cracked results.
+5. Open the WarDrive workspace for replay, active-region context, and session tags.
+6. Move interesting locked networks into Targets.
+7. Create a batch job or return to Recon Center for analysis.
 
 ### Pulling from an M5Evil Cardputer
 
@@ -88,19 +87,6 @@ This section explains the main operational workflows in KOVIL MAP.
 2. Apply filters.
 3. Review the Tactical Map and move into Recon Center.
 4. Export or summarize the resulting findings.
-
----
-
-## Keyboard Shortcuts
-
-| Shortcut | Action |
-|---|---|
-| `Ctrl+I` | import data |
-| `Ctrl+E` | export data |
-| `Ctrl+F` | filter networks |
-| `Ctrl+C` | copy SSID |
-| double click | focus a network on the map |
-| right click | open the context menu |
 
 ---
 

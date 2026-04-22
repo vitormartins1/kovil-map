@@ -15,6 +15,7 @@ This is the canonical documentation index for the repository. Use `docs/` as the
 ### Getting Started
 
 - [`00-GETTING_STARTED/README.md`](00-GETTING_STARTED/README.md)
+- [`00-GETTING_STARTED/product-overview.md`](00-GETTING_STARTED/product-overview.md)
 - [`00-GETTING_STARTED/installation.md`](00-GETTING_STARTED/installation.md)
 - [`00-GETTING_STARTED/first-run.md`](00-GETTING_STARTED/first-run.md)
 - [`00-GETTING_STARTED/current-product-surface.md`](00-GETTING_STARTED/current-product-surface.md)
@@ -33,6 +34,7 @@ This is the canonical documentation index for the repository. Use `docs/` as the
 
 ### Features
 
+- [`02-FEATURES/README.md`](02-FEATURES/README.md)
 - [`02-FEATURES/spatial-normalization.md`](02-FEATURES/spatial-normalization.md)
 - [`02-FEATURES/wardrive-import.md`](02-FEATURES/wardrive-import.md)
 - [`02-FEATURES/raw-sniffer.md`](02-FEATURES/raw-sniffer.md)
@@ -97,6 +99,12 @@ This is the canonical documentation index for the repository. Use `docs/` as the
 - [`09-ROADMAP/`](09-ROADMAP/)
 
 ## Recommended Launch Paths
+
+### Understand the product first
+
+- [`00-GETTING_STARTED/product-overview.md`](00-GETTING_STARTED/product-overview.md)
+- [`00-GETTING_STARTED/current-product-surface.md`](00-GETTING_STARTED/current-product-surface.md)
+- [`07-OPERATIONS/workflows-by-objective.md`](07-OPERATIONS/workflows-by-objective.md)
 
 ### Manual development
 

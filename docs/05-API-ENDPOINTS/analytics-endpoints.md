@@ -93,4 +93,4 @@ Historically, the frontend used these endpoints like this:
 - draw hotspot highlight only after a user click
 - use `candidate_macs` for `ADD TO TARGETS`
 
-The current operator-facing nomenclature is Recon Center plus the tactical map rather than a separate top-level Analytics screen.
+The current operator-facing nomenclature is Recon Center plus the tactical map; these endpoints remain the analytics domain behind those surfaces.

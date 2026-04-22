@@ -2,6 +2,8 @@
 
 KOVIL MAP supports WiGLE-compatible Wardrive CSV imports and exposes them through a dedicated WarDrive workspace instead of treating them as a flat data dump.
 
+In the larger product flow, WarDrive data gives GPS and route context to the map. It also feeds regions, zones, transport summaries, and route replay so operators can understand where evidence was observed before pivoting into Recon, Targets, Batch, or Cracking Operations.
+
 ## Data Entry Point
 
 Drop CSV files into:

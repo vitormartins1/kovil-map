@@ -16,7 +16,7 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 ## Tactical Map
 
 <p align="center">
-  <img src="docs/assets/screenshots/t-map.gif" alt="KOVIL TATICAL MAP" />
+  <img src="docs/assets/screenshots/t-map.gif" alt="KOVIL Tactical Map" />
 </p>
 
 - map-first cockpit for known networks, cluster review, popup actions, and rapid target triage
@@ -72,7 +72,7 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 ## Raw Sniffer
 
 <p align="center">
-  <img src="docs/assets/screenshots/map-interface/sniffer-interface-close.png" alt="KOVIL MAP NO-GPS workspace" />
+  <img src="docs/assets/screenshots/map-interface/sniffer-interface-close.png" alt="KOVIL MAP Raw Sniffer workspace" />
 </p>
 
 - source-aware RAW capture workspace for Bruce and M5Evil ingest, metadata, and cleanup flows
@@ -131,6 +131,7 @@ npm start
 Recommended docs:
 
 - [Installation Guide](docs/00-GETTING_STARTED/installation.md)
+- [Product Overview](docs/00-GETTING_STARTED/product-overview.md)
 - [First Run Guide](docs/00-GETTING_STARTED/first-run.md)
 - [Current Product Surface](docs/00-GETTING_STARTED/current-product-surface.md)
 - [Runtime Modes](docs/00-GETTING_STARTED/runtime-modes.md)
@@ -160,6 +161,7 @@ Start with the canonical docs hub: [docs/INDEX.md](docs/INDEX.md)
 High-value entry points:
 
 - [Getting Started](docs/00-GETTING_STARTED/README.md)
+- [Product Overview](docs/00-GETTING_STARTED/product-overview.md)
 - [Current Product Surface](docs/00-GETTING_STARTED/current-product-surface.md)
 - [Runtime Modes](docs/00-GETTING_STARTED/runtime-modes.md)
 - [Architecture](docs/01-ARCHITECTURE/README.md)

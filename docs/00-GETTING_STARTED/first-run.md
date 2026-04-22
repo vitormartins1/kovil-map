@@ -10,6 +10,8 @@ When you open the app for the first time:
 2. The app creates the local directory structure under `backend/data/` if it does not already exist.
 3. The map loads. It may start empty or centered on the default location if no data is available.
 
+If you want to understand the full product loop before importing data, read [Product Overview and Operator Mental Model](product-overview.md).
+
 ---
 
 ## 2. Essential Settings
@@ -77,12 +79,14 @@ For the canonical naming of the current UI surfaces, see [Current Product Surfac
   - blue/green: open network or no handshake
   - purple: wardrive CSV import
 
-### Side Panels
+### Supporting Panels
 
-- **Networks:** all visible networks
-- **Handshakes:** only networks with captured handshakes
-- **Cracked:** networks whose password is known
-- **No GPS:** networks without location data
+- **Zones:** conquered, to-conquer, discovered, and intelligence overlays.
+- **Targets:** a temporary mission list for analysis, cracking, or batch work.
+- **Favorites:** a persistent shortlist of networks or places worth revisiting.
+- **Cracking Operations:** artifact-aware actions for PCAPs, RAW PCAPs, hashes, details, combined candidates, batches, and history.
+- **Processes:** long-running sync, scan, analysis, conversion, and cracking progress.
+- **Logs:** local feedback for troubleshooting.
 
 ### Example Workspace View
 
@@ -111,6 +115,7 @@ To verify everything works:
 
 ## Next Steps
 
+- [Product Overview and Operator Mental Model](product-overview.md)
 - [Current Product Surface](current-product-surface.md)
 - [Runtime Modes](runtime-modes.md)
 - [Map Operations](../07-OPERATIONS/map-operations.md)

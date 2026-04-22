@@ -1,134 +1,67 @@
 # Features Guide
 
-This section documents the core features of KOVIL MAP.
+This section documents KOVIL MAP by operator journey instead of only by module name.
 
-## Available Features
+For the product-level mental model, read [Product Overview and Operator Mental Model](../00-GETTING_STARTED/product-overview.md).
 
-### 1. [Spatial Normalization](spatial-normalization.md)
-Smart GPS coordinate normalization.
+## Collect and Import Evidence
 
-- visual separation for networks that share the same location
-- deterministic jitter so repeated loads stay stable
-- support for wardrive CSV imports
-- tunable spread settings
-
-### 2. [Wardrive Import](wardrive-import.md)
-WiGLE and wardriving data import.
-
-- WiGLE CSV support
-- automatic deduplication
-- spatial normalization applied on import
-- designed for large datasets
-- replay controls with compare mode, camera follow, timing modes, and configurable pace/zoom
-- large-session workspace shell with Replay Dock, Active Region, Workspace Explorer, and skeleton loading
-
-### 3. [Cracking Engine](cracking-engine.md)
-Integrated cracking engine.
-
-- Hashcat integration
-- Aircrack-ng integration
-- dictionary attacks
-- masks, rules, and incremental strategies
-- handshake sets across Pwnagotchi, Brucegotchi, and M5Evil with quality scoring, combined candidates, and source-aware accordions
-
-### 4. [Batch Cracking](batch-cracking.md)
-Batch attacks across many networks.
-
-- queueing and orchestration
-- progress tracking
-- prioritization
-- resume on failure
-
-### 5. [Raw Sniffer](raw-sniffer.md)
-Raw capture ingestion and enrichment.
-
-- live capture or PCAP parsing
-- source-aware Bruce and M5Evil RAW integration
-- separate semantics for M5Evil RAW Sniffer and M5Evil Master Sniffer captures
-- network-scoped RAW details for one selected BSSID
-- capture-wide RAW Analysis reports
-- canonical WDRS hash preparation
-- delete flow for selected RAW captures and their generated sidecars
-
-### 6. [Sync Remote](sync-remote.md)
-Remote synchronization with mixed transports.
-
-- SSH/SFTP and WebUI transports
-- automatic updates
-- per-target host-key trust
-- one-click sync for Pwnagotchi, M5Evil Cardputer, and Bruce
-- Wardrive CSV ingest for M5Evil Cardputer and Bruce
-
-### 7. [TargetList & Favorites](targetlist-favorites.md)
-Operational prioritization for networks.
-
-- favorite networks
-- target lists
-- priority scores
-- tags and annotations
-
-### 8. [Tactical Analytics](tactical-analytics.md)
-Geospatial intelligence and tactical analysis.
-
-- heatmaps and adaptive hotspots
-- opportunity scoring
-- channel intelligence
-- multidimensional filtering
-
-### 9. [Recon Center](recon-center.md)
-Unified offensive intelligence workspace.
-
-- PMKID optimizer with hash type classification
-- COMMS intelligence with relationship graph, device fingerprints, and Cluster Intelligence
-- cache-first lazy loading per tab, per section, and per selected target
-- richer COMMS cards with security/origin/device mini-bars and a full-width Communication Graph
-- Intelligence Zones projected from COMMS clusters back onto the tactical map
-- probe request intelligence (SIGINT) with Likely Device Groups and Probe Geocorrelation
-- advanced packet analysis with deauth/disassoc threat detection
-- severity filter chips for Intel vulnerability flags
-- Attack Planner with backend wordlist selection in OPS
-- PMK database for accelerated cracking
-- WPS PIN brute-force with Pixie Dust support
-- reusable hints/tooltips for intelligence metrics and cards
-- drawer-based Target Details where applicable and full-width tabs elsewhere
-
----
-
-## Which Feature Should I Use?
-
-| Use case | Feature |
+| Feature | What it does |
 |---|---|
-| "Networks are clustered together on the map" | Spatial Normalization |
-| "I want to import WiGLE data" | Wardrive Import |
-| "I have a handshake and want to crack it" | Cracking Engine |
-| "I want to attack 100 networks at once" | Batch Cracking |
-| "I have data from my ESP32" | Raw Sniffer |
-| "I want data from a remote Pwnagotchi, M5Evil Cardputer, or Bruce" | Sync Remote |
-| "I want to focus on specific networks" | TargetList & Favorites |
-| "I want to understand attack patterns and hotspots" | Tactical Analytics |
-| "I need to prioritize targets by opportunity" | Tactical Analytics |
-| "I want to map my attack surface and find PMKID targets" | Recon Center |
-| "I want to analyze probe requests from captures" | Recon Center (SIGINT) |
-| "I want to detect deauth attacks in my PCAPs" | Recon Center (INTEL) |
-| "I want to pre-compute PMK hashes for faster cracking" | Recon Center (PMK Database) |
-| "I want to brute-force a WPS PIN" | Recon Center (WPS Attack) |
+| [Sync Remote](sync-remote.md) | pulls Pwnagotchi, Bruce, and M5Evil data through SSH/SFTP or WebUI flows |
+| [Wardrive Import](wardrive-import.md) | loads WiGLE-like CSV sessions, route metadata, transport tags, and session inventory |
+| [Raw Sniffer](raw-sniffer.md) | ingests Bruce and M5Evil RAW PCAPs for metadata, RAW Analysis, and hash preparation |
+| [Spatial Normalization](spatial-normalization.md) | keeps dense GPS observations readable on the map without changing raw route data |
 
----
+## Organize and Understand the Map
+
+| Feature | What it does |
+|---|---|
+| [Tactical Analytics](tactical-analytics.md) | powers heatmaps, adaptive hotspots, opportunity scoring, and channel summaries |
+| [TargetList & Favorites](targetlist-favorites.md) | separates mission targets from persistent revisit shortcuts |
+| WarDrive regions and zones | connect route observations to administrative regions and zone overlays |
+| Intelligence Zones | project Recon COMMS clusters back onto the Tactical Map |
+
+## Analyze and Prioritize
+
+| Feature | What it does |
+|---|---|
+| [Recon Center](recon-center.md) | unifies attack surface, INTEL, OPS, GEO, SIGINT, REPORT, and COMMS workflows |
+| [Raw Sniffer](raw-sniffer.md) | adds EAPOL, PMKID, beacon, probe, and capture-quality evidence |
+| [Tactical Analytics](tactical-analytics.md) | ranks opportunity and hotspot candidates for action |
+
+## Crack and Validate
+
+| Feature | What it does |
+|---|---|
+| [Cracking Engine](cracking-engine.md) | handles capture grouping, conversion, Hashcat, Aircrack-ng, PMK, WPS, history, and attack insight |
+| [Batch Cracking](batch-cracking.md) | turns many targets into a single crackable work package |
+| Combined candidates | merge eligible same-BSSID capture hashes without changing the default preferred-capture flow |
+| Canonical RAW/WDRS hashes | turn RAW context into a visible `__wdrs__.22000` target when enough evidence exists |
+
+## Demonstrate Safely
+
+| Feature | What it does |
+|---|---|
+| [Demo Mode](../00-GETTING_STARTED/demo-mode.md) | temporarily swaps runtime data for synthetic `showcase-core-v5` data |
+| Demo wordlists and UI seed | make screenshots, onboarding, targets, favorites, No-GPS, WarDrive, Recon, Raw Sniffer, and cracking flows non-empty |
+
+## Which Path Should I Follow?
+
+| Starting point | Recommended path |
+|---|---|
+| No devices yet | Demo Mode -> Tactical Map -> Workflows by Objective |
+| Pwnagotchi, Bruce, or M5Evil | Sync Remote -> Tactical Map -> Recon Center or Cracking Operations |
+| WarDrive CSV | Wardrive Import -> WarDrive Workspace -> Map zones |
+| RAW PCAP | Raw Sniffer -> RAW context -> Cracking Operations |
+| One locked network | Map or No-GPS -> Cracking Engine |
+| Many locked networks | Targets -> Batch Cracking |
+| Analysis-only task | Tactical Map -> Recon Center -> Intelligence Zones |
 
 ## Next Steps
 
-1. Pick the feature that matches your workflow
-2. Read its full documentation
-3. If you think in tasks instead of modules, read [Workflows by Objective](../07-OPERATIONS/workflows-by-objective.md)
-4. Browse examples in [06-CODE-EXAMPLES](../06-CODE-EXAMPLES/)
-5. Check the operational guides in [07-OPERATIONS](../07-OPERATIONS/)
-
----
-
-## Tip
-
-Many features work well together:
-
-- **Wardrive CSV** + **Spatial Normalization** = clear cluster visualization
-- **Raw Sniffer** + **Batch Cracking** = a full pentest workflow
-- **Sync Remote** + **Raw Sniffer** = near-real-time remote ingest with downstream RAW enrichment
+1. Read [Product Overview and Operator Mental Model](../00-GETTING_STARTED/product-overview.md).
+2. Pick a flow from [Workflows by Objective](../07-OPERATIONS/workflows-by-objective.md).
+3. Open the feature page that matches the flow.
+4. Use [Manual Import Layout](../00-GETTING_STARTED/manual-import-layout.md) when placing files by hand.
+5. Use [API Reference](../05-API-ENDPOINTS/reference.md) when integrating or extending the backend.

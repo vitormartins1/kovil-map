@@ -26,6 +26,10 @@ def _service_with_dirs(tmp_path, monkeypatch):
         str(tmp_path / "nonexistent_m5evil_raw"),
     )
     monkeypatch.setattr(
+        "app.services.rawsniffer_service.M5EVIL_DIR",
+        str(tmp_path / "m5evil"),
+    )
+    monkeypatch.setattr(
         "app.services.rawsniffer_service.M5EVIL_MASTERSNIFFER_DIR",
         str(tmp_path / "nonexistent_m5evil_master"),
     )

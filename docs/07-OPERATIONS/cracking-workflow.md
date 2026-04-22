@@ -10,14 +10,16 @@ This workflow covers the path from a captured handshake to a cracked password.
 
 ## Workflow
 
-1. Select a target from the map or the Handshakes list.
-2. Open the cracking panel.
-3. Let the app convert `.pcap` to `.22000` if needed.
-4. Review the attack hints and quality checks.
+1. Select a target from the map, No-GPS workspace, Targets, Batch, Raw Sniffer, or a handshake-set file list.
+2. Open Cracking Operations.
+3. Review source/device grouping, preferred capture quality, sidecars, attack hints, and history.
+4. Let the app convert `.pcap` to `.22000` if needed.
 5. Choose an attack mode:
    - Aircrack-ng for quick CPU validation
    - Hashcat Straight, Combinator, Mask, or Association
-6. Start the job and monitor progress in the active processes panel.
+   - PMK database when you want precomputed SSID+wordlist acceleration
+   - WPS attack when the target has WPS evidence and the required external tool is configured
+6. Start the job and monitor progress in the Process panel.
 
 ## Success Path
 
@@ -34,6 +36,14 @@ Use Association mode when the password likely comes from local context such as n
 ## Batch Cracking
 
 Use TargetList to group targets and create a batch job when you want to attack many networks at once.
+
+## RAW and Combined Candidates
+
+Cracking Operations can also target RAW-derived and combined artifacts:
+
+- RAW PCAP rows expose details extraction, hash generation, and canonical WDRS preparation.
+- RAW `.22000` rows can be cracked directly.
+- Combined candidates merge eligible same-BSSID captures into a manual one-BSSID candidate without changing the default preferred capture.
 
 ## Troubleshooting
 
