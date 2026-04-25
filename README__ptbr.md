@@ -15,10 +15,6 @@ O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Rec
 
 ## Mapa Tatico
 
-<p align="center">
-  <img src="docs/assets/screenshots/t-map.gif" alt="Mapa Tatico do KOVIL MAP" />
-</p>
-
 - cockpit principal para redes conhecidas, revisao de clusters, acoes de popup e triagem rapida de alvos
 - overlays espaciais para zonas conquistadas, a conquistar, descobertas e zonas de inteligencia
 - busca e revisao por status em datasets locais densos com contexto source-aware
