@@ -53,26 +53,26 @@ Typical contents:
 Notes:
 
 - this is the canonical home for classic handshake imports
-- it still stores shared legacy sidecars used by the handshake-set catalog as compatibility fallback
+- older shared sidecars may still be read as compatibility fallback, but new derived artifacts should use the source PCAP basename
 - GPS sidecars placed here can enrich networks with coordinates during loading
 
-### `backend/data/handshakes/captures/<capture_id>/`
+### Derived artifacts beside source captures
 
-This is the preferred home for new derived artifacts tied to one specific capture inside a handshake set.
+This is the preferred model for new derived artifacts tied to one specific capture inside a handshake set.
 
 Typical contents:
 
-- `capture.details`
-- `capture.22000`
-- `capture.try`
-- `capture.cracked`
-- `manifest.json`
+- `MyWiFi_AABBCCDDEEFF.pcap`
+- `MyWiFi_AABBCCDDEEFF.details`
+- `MyWiFi_AABBCCDDEEFF.22000`
+- `MyWiFi_AABBCCDDEEFF.try`
+- `MyWiFi_AABBCCDDEEFF.cracked`
 
 Notes:
 
 - the source `.pcap` remains in its original family folder
-- capture-scoped writes are used when cracking, conversion, fingerprint extraction, or Aircrack target a specific `capture_id`
-- older shared sidecars in `backend/data/handshakes/` remain readable but are no longer the preferred write target
+- conversion, fingerprint extraction, history, Aircrack, and Hashcat sidecars are written beside that PCAP with the same basename
+- `capture_id` remains the stable API selector, but it no longer implies a generic `capture.*` folder layout
 
 ### `backend/data/handshakes/combined/<mac_clean>/<build_id>/`
 

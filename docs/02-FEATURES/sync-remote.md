@@ -7,6 +7,8 @@
 3. `Bruce` over `WebUI`
 4. local reload and downstream planning
 
+In the operator flow, sync is the main bridge from field devices into the Tactical Map. Successful runs can update map data, WarDrive sessions, RAW inventory, handshake sets, Process entries, and downstream cracking readiness.
+
 ## Current Supported Targets
 
 ### Pwnagotchi

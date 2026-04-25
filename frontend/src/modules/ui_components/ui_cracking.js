@@ -1306,64 +1306,6 @@ function renderHandshakeSetList(list, handshakeSet, files, fileToSelectName = nu
         preferredKey = combinedRendered.selectedKey;
     }
 
-    if (standaloneFiles.length) {
-        const section = document.createElement('div');
-        section.className = 'capture-group capture-group-card capture-group-derived-root capture-group-standalone';
-        const expanded = standaloneFiles.some((file) => file.name === fileToSelectName);
-        const defaultFile = standaloneFiles[0] || null;
-        const header = document.createElement('button');
-        header.type = 'button';
-        header.className = 'capture-group-header capture-group-header-legacy';
-        header.innerHTML = `
-            <div class="capture-group-main">
-                <div class="capture-group-title-row">
-                    <div class="capture-group-name">LEGACY / SHARED ARTIFACTS</div>
-                    <div class="capture-group-badges">
-                        ${renderSemanticBadge('LEGACY', 'legacy-badge crack-legacy-badge-inline badge-role-state-legacy')}
-                        ${renderSemanticBadge('SHARED', 'capture-quality-badge badge-role-state-shared')}
-                    </div>
-                </div>
-                <div class="capture-group-meta">
-                    <span>${standaloneFiles.length} file(s)</span>
-                    <span>Compatibility view</span>
-                </div>
-            </div>
-            <i class="fa-solid fa-chevron-down capture-group-arrow ${expanded ? 'capture-group-arrow-open' : ''}"></i>
-        `;
-
-        const body = document.createElement('div');
-        body.className = 'capture-group-body';
-        body.hidden = !expanded;
-
-        standaloneFiles
-            .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { numeric: true, sensitivity: 'base' }))
-            .forEach((file) => {
-                body.appendChild(renderFileRow(file, itemByKey));
-                if (!preferredKey && fileToSelectName && file.name === fileToSelectName) {
-                    preferredKey = file.ui_key;
-                }
-            });
-
-        header.addEventListener('click', () => {
-            const nextHidden = !body.hidden;
-            if (!nextHidden) {
-                collapseSiblingAccordions(section);
-            }
-            body.hidden = nextHidden;
-            const arrow = header.querySelector('.capture-group-arrow');
-            if (arrow) {
-                arrow.classList.toggle('capture-group-arrow-open', !nextHidden);
-            }
-            if (!nextHidden) {
-                autoSelectGroupFile(defaultFile, itemByKey);
-            }
-        });
-
-        section.appendChild(header);
-        section.appendChild(body);
-        list.appendChild(section);
-    }
-
     return {
         itemByKey,
         selectedKey: preferredKey || preferredFile?.ui_key || null,

@@ -2,6 +2,8 @@
 
 The Recon Center is the unified offensive intelligence workspace. It consolidates attack surface analysis, target intelligence, communications intelligence, signal intelligence, geospatial clustering, and operational planning into a single tabbed interface.
 
+Recon is the analysis-first complement to the Tactical Map. Operators usually enter it after sync/import or map triage, then return its findings to map overlays, Intelligence Zones, Targets, Favorites, or Cracking Operations.
+
 ## Tabs Overview
 
 | Tab | Purpose | Right Panel |

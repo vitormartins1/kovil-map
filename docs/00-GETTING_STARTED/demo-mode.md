@@ -46,6 +46,8 @@ The data is designed to exercise:
 - Batch / No-GPS workflows
 - cracking demos with varied target difficulty
 
+For the full product loop that the demo pack is meant to showcase, see [Product Overview and Operator Mental Model](product-overview.md).
+
 ## How To Use It
 
 Use the built-in maintenance controls inside the app:

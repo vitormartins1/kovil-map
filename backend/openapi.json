@@ -2513,6 +2513,83 @@
         }
       }
     },
+    "/api/maintenance/demo": {
+      "get": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Get Demo Status",
+        "operationId": "get_demo_status_api_maintenance_demo_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Remove Demo Data",
+        "operationId": "remove_demo_data_api_maintenance_demo_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/maintenance/demo/install": {
+      "post": {
+        "tags": [
+          "Maintenance"
+        ],
+        "summary": "Install Demo Data",
+        "operationId": "install_demo_data_api_maintenance_demo_install_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemoInstallRequest",
+                "default": {
+                  "profile_id": "showcase-core-v5"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/wardrive/hierarchy": {
       "get": {
         "tags": [
@@ -4943,6 +5020,21 @@
             ],
             "title": "Ui Cracking Accordion Mode"
           },
+          "ui_cracking_attack_panel_mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "multi",
+                  "single"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ui Cracking Attack Panel Mode"
+          },
           "ui_wardrive_replay_speed_default": {
             "anyOf": [
               {
@@ -5226,6 +5318,29 @@
         },
         "type": "object",
         "title": "ConvertRequest"
+      },
+      "DemoInstallRequest": {
+        "properties": {
+          "profile_id": {
+            "type": "string",
+            "title": "Profile Id",
+            "default": "showcase-core-v5"
+          },
+          "frontend_state": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frontend State"
+          }
+        },
+        "type": "object",
+        "title": "DemoInstallRequest"
       },
       "HTTPValidationError": {
         "properties": {
@@ -6050,6 +6165,13 @@
           "type": {
             "type": "string",
             "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
         "type": "object",

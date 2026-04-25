@@ -5,8 +5,9 @@ This section helps you bring KOVIL MAP online quickly and points you to the next
 ## Start Here
 
 - [`installation.md`](installation.md) - system requirements and setup
+- [`product-overview.md`](product-overview.md) - what the product is, what data it uses, and how workflows connect
 - [`first-run.md`](first-run.md) - first launch, sync, and UI orientation
-- [`current-product-surface.md`](current-product-surface.md) - canonical names for the current UI surfaces and workspaces
+- [`current-product-surface.md`](current-product-surface.md) - current screens, workspaces, panels, counters, and handoffs
 - [`runtime-modes.md`](runtime-modes.md) - packaged release vs development behavior
 - [`manual-import-layout.md`](manual-import-layout.md) - current folder layout for manual imports
 - [`common-issues.md`](common-issues.md) - common local problems and fixes
@@ -47,6 +48,7 @@ npm start
 
 ## Suggested Next Steps
 
+- understand the product loop: [`product-overview.md`](product-overview.md)
 - explore the UI: [`first-run.md`](first-run.md)
 - lock in the current nomenclature: [`current-product-surface.md`](current-product-surface.md)
 - choose the right execution path: [`runtime-modes.md`](runtime-modes.md)

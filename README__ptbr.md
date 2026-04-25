@@ -15,12 +15,20 @@ O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Rec
 
 ## Mapa Tatico
 
+<p align="center">
+  <img src="docs/assets/screenshots/t-map.gif" alt="Mapa Tatico do KOVIL MAP" />
+</p>
+
 - cockpit principal para redes conhecidas, revisao de clusters, acoes de popup e triagem rapida de alvos
 - overlays espaciais para zonas conquistadas, a conquistar, descobertas e zonas de inteligencia
 - busca e revisao por status em datasets locais densos com contexto source-aware
 - pontos de handoff para cracking, Recon e revisao de rotas a partir da mesma superficie operacional
 
 ## No-GPS
+
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/no-gps-interface-close.png" alt="Workspace No-GPS do KOVIL MAP" />
+</p>
 
 - workspace dedicado para redes que ainda nao possuem coordenadas utilizaveis no mapa tatico
 - filtros por busca de SSID ou MAC, dispositivo de origem, status, visibilidade do nome e presenca de artefatos
@@ -29,12 +37,20 @@ O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Rec
 
 ## Batch
 
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/batch-interface-close.png" alt="Workspace Batch do KOVIL MAP" />
+</p>
+
 - workspace de alta vazao para montar um unico job de cracking a partir de varias redes e artefatos de handshake
 - filtros operacionais por busca, localizacao, origem e presenca de artefatos antes de gerar o batch
 - inventario de batches gerados e revisao do conteudo de cada batch depois da criacao
 - pensado para datasets grandes de wardrive e pentest, em que subir o cracking engine por alvo seria ineficiente
 
 ## Recon Center
+
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/recon-intel-interface-close.png" alt="Workspace Recon Center do KOVIL MAP" />
+</p>
 
 - workspace unificado de inteligencia com as abas SURFACE, INTEL, OPS, GEO, SIGINT, REPORT e COMMS
 - hidratacao cache-first por aba para reabrir views densas mais rapido sem recarregar tudo de uma vez
@@ -54,6 +70,10 @@ O produto se organiza em torno do Mapa Tatico e de workspaces dedicados para Rec
 - fluxo local-first para revisar sessoes de wardrive e depois voltar ao mapa tatico e ao restante da operacao
 
 ## Raw Sniffer
+
+<p align="center">
+  <img src="docs/assets/screenshots/map-interface/sniffer-interface-close.png" alt="Workspace Raw Sniffer do KOVIL MAP" />
+</p>
 
 - workspace source-aware para ingestao de capturas RAW de Bruce e M5Evil, metadados e limpeza de artefatos
 - revisao de estado de cache, metadados de captura, hashes gerados e relatorios completos de RAW analysis
@@ -111,6 +131,7 @@ npm start
 Documentos recomendados:
 
 - [Guia de Instalacao](docs/00-GETTING_STARTED/installation.md)
+- [Visao Geral do Produto](docs/00-GETTING_STARTED/product-overview.md)
 - [Primeira Execucao](docs/00-GETTING_STARTED/first-run.md)
 - [Superficie Atual do Produto](docs/00-GETTING_STARTED/current-product-surface.md)
 - [Modos de Execucao](docs/00-GETTING_STARTED/runtime-modes.md)
@@ -140,6 +161,7 @@ Comece pelo hub canonico: [docs/INDEX.md](docs/INDEX.md)
 Entradas principais:
 
 - [Getting Started](docs/00-GETTING_STARTED/README.md)
+- [Visao Geral do Produto](docs/00-GETTING_STARTED/product-overview.md)
 - [Superficie Atual do Produto](docs/00-GETTING_STARTED/current-product-surface.md)
 - [Modos de Execucao](docs/00-GETTING_STARTED/runtime-modes.md)
 - [Architecture](docs/01-ARCHITECTURE/README.md)

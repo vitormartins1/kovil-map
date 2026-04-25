@@ -1,7 +1,7 @@
 # KOVIL MAP Backlog
 
-**Last updated:** April 11, 2026  
-**Tracked initiatives:** 25
+**Last updated:** April 22, 2026  
+**Tracked initiatives:** 29
 
 This backlog is public-facing. It may include both contributor-friendly roadmap items and maintainer-owned release/readiness work, but it should not contain secrets, personal infrastructure details, or private operational notes.
 
@@ -33,14 +33,14 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 - Status: `DONE`
 - Estimate: `12-16h`
 - Complexity: `High`
-- Goal: finish the handshake-set redesign by moving derived artifacts away from the current shared legacy model in `backend/data/handshakes/` and toward capture-scoped storage.
+- Goal: finish the handshake-set redesign by moving derived artifacts away from the current shared legacy model in `backend/data/handshakes/` and toward capture-specific sidecars resolved by `capture_id`.
 - Current state:
-  - capture-scoped artifacts ship under `backend/data/handshakes/captures/<capture_id>/`
-  - legacy/shared artifacts remain readable for compatibility
+  - derived artifacts now use the source PCAP basename beside the original capture, for example `<pcap-basename>.details`, `.22000`, `.try`, and `.cracked`
+  - legacy/shared artifacts remain readable as fallback compatibility, but are no longer shown as a main Cracking Operations section
   - API and UI already expose capture-aware provenance and selection flows
   - regression coverage exists for capture-id and cross-source handshake handling
 - Requirements:
-  - namespaced `.details`, `.22000`, `.try`, and `.cracked` per capture
+  - basename-based `.details`, `.22000`, `.try`, and `.cracked` per capture
   - read compatibility for existing legacy/shared artifacts
   - API and UI provenance that clearly distinguishes capture-specific vs shared artifacts
   - regression coverage for Brucegotchi and M5 Evil basename collisions
@@ -173,9 +173,9 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 - Current state:
   - tracked source, config, docs, and Git history were already sanitized for the public repository
   - live runtime capture data is no longer versioned in the public tree
-  - public demo dataset flow is now implemented with a versioned pack under `backend/demo_data/showcase-core-v1/`
+  - public demo dataset flow is now implemented with the current versioned pack under `backend/demo_data/showcase-core-v5/`
   - demo install/remove is available from `System Settings > Maintenance`
-  - runtime snapshots are stored under `backend/data_backups/demo/` and real/demo datasets are not mixed in v1
+  - demo install uses a temporary active snapshot only while demo mode is active, and real/demo datasets are not mixed
 - Tasks:
   - keep personal absolute paths, credentials, and local artifacts out of tracked files
   - keep public examples and starter config sanitized
@@ -444,6 +444,52 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
   4. **Duplicate indicator** — in the session list, flag sessions that are 100% subsets of a merged session (all their MACs already exist in a merged file)
   5. **Filter by origin** — add quick filter chips for each origin type in the session panel header
 
+## Documentation and Product Polish Follow-ups
+
+### Documentation IA and glossary maintenance
+
+- Category: `doc gap`
+- Priority: `MEDIUM`
+- Status: `TODO`
+- Goal: keep operator-facing docs aligned as screens and artifact flows evolve.
+- Follow-ups:
+  - keep README, Product Overview, Current Product Surface, and Workflows by Objective synchronized after major UI changes
+  - maintain a short glossary for states such as `locked`, `no_gps_locked`, `not_ready`, `cracked`, `canonical`, `combined`, and `WDRS`
+  - avoid describing implementation-only names as top-level product surfaces
+
+### Screenshot and media refresh
+
+- Category: `release blocker`
+- Priority: `HIGH`
+- Status: `TODO`
+- Goal: replace large or outdated README/docs media before the next public release.
+- Follow-ups:
+  - replace heavyweight GIFs with smaller assets or a newly recorded optimized walkthrough
+  - verify screenshots use demo/synthetic data only
+  - keep README and PT-BR README media sections equivalent
+
+### Operator workflow hints in UI
+
+- Category: `UX improvement`
+- Priority: `MEDIUM`
+- Status: `TODO`
+- Goal: make the UI teach the product loop without requiring operators to read every doc page first.
+- Follow-ups:
+  - add lightweight empty-state guidance for Tactical Map, No-GPS, Batch, Recon, WarDrive, and Raw Sniffer
+  - link demo mode and first-run actions from empty states where appropriate
+  - keep hints concise and removable so advanced operators are not slowed down
+
+### Documentation/code drift checks
+
+- Category: `technical debt`
+- Priority: `MEDIUM`
+- Status: `TODO`
+- Goal: catch outdated public docs earlier when APIs, artifact naming, or workspaces change.
+- Follow-ups:
+  - add targeted CI search checks for obsolete phrases such as `capture.*` folder artifacts, removed demo pack names, and retired screen names
+  - document the checklist for updating docs when Cracking Operations, Demo Mode, WarDrive, or Recon changes
+  - consider a small docs smoke test that verifies key README image paths and docs entrypoint links
+
 ## Summary
 
 | Area | Count | Priority band |
@@ -457,7 +503,8 @@ This backlog is public-facing. It may include both contributor-friendly roadmap 
 | Offensive intelligence — Tier 1 | 8 | High / Medium / Low |
 | Custom wordlist generation | 1 | High (TBD) |
 | Source origin intelligence & session mgmt | 5 | High / Medium |
+| Documentation and product polish | 4 | High / Medium |
 
-**Estimated total effort:** `~217-289h`
+**Estimated total effort:** `~233-313h`
 
 **Owner:** Vitor Martins

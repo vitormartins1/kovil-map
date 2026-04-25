@@ -43,8 +43,8 @@ Current folder semantics:
 - new Brucegotchi handshake imports should go to `backend/data/BrucePCAP/handshakes/`
 - new M5Evil handshake imports should go to `backend/data/m5evil/handshakes/`
 - classic Pwnagotchi-style `.pcap` plus GPS sidecars still belong in `backend/data/handshakes/`
-- new derived artifacts now prefer capture-scoped storage in `backend/data/handshakes/captures/<capture_id>/`
-- shared legacy sidecars in `backend/data/handshakes/` remain readable as fallback compatibility artifacts
+- new derived artifacts are written beside the resolved source PCAP with the same basename and a new extension
+- older shared sidecars in `backend/data/handshakes/` remain readable as fallback compatibility artifacts, but they are not part of the primary Cracking Operations layout
 
 Each capture receives:
 
@@ -55,16 +55,17 @@ Each capture receives:
 
 Current artifact write model:
 
-- `capture.details`
-- `capture.22000`
-- `capture.try`
-- `capture.cracked`
-- `manifest.json`
+- `<pcap-basename>.details`
+- `<pcap-basename>.22000`
+- `<pcap-basename>.try`
+- `<pcap-basename>.cracked` or `<pcap-basename>.pcap.cracked`, depending on the cracking source
 
-These live under:
+These live next to the selected source PCAP, for example:
 
 ```text
-backend/data/handshakes/captures/<capture_id>/
+backend/data/BrucePCAP/handshakes/HS_AABBCCDDEEFF.pcap
+backend/data/BrucePCAP/handshakes/HS_AABBCCDDEEFF.details
+backend/data/BrucePCAP/handshakes/HS_AABBCCDDEEFF.22000
 ```
 
 This lets cracking, history, and fingerprint flows stay capture-specific even when multiple devices saw the same BSSID.
@@ -89,10 +90,9 @@ Depending on the selected file and network context, the panel may show:
 - a `COMBINED CANDIDATES` accordion for manual one-BSSID combined builds
 - quality score ordering and tier explanations
 - captured files
-- `RAW Sniffer` as a dedicated accordion above legacy/shared artifacts when the network has RAW context
+- `RAW Sniffer` as a dedicated accordion when the network has RAW context
 - file details / metadata
 - generate hash actions
-- legacy / shared artifacts in a separate collapsible section
 - cracking engine controls
 - attack insights
 - history

@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from typing import Dict, List, Tuple
 
 from app.services.data_loader import get_wardrive_sessions, load_real_data
+from app.services.network_state import classify_network_state
 from app.services.zones_service import cluster_points
 
 
@@ -404,7 +405,9 @@ class AnalyticsService:
         return mapped if mapped in self._ALLOWED_DEVICE_TYPES else "unknown"
 
     def _is_locked(self, item: Dict) -> bool:
-        return bool(item.get("locked"))
+        if "locked" in item:
+            return bool(item.get("locked"))
+        return bool(classify_network_state(item).get("locked"))
 
     @staticmethod
     def _normalize_sources(sources: List[str] | None) -> List[str]:

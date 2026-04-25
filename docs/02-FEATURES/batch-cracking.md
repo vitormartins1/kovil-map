@@ -79,8 +79,21 @@ This keeps the operator focused on batch quality and triage status before starti
 
 ---
 
+## How Batch Connects to the Rest of the App
+
+Batch is usually downstream from map triage:
+
+- `TARGETS` collects high-priority networks from popups, zones, No-GPS, or Recon.
+- `BATCH` filters and packages the selected artifacts.
+- Cracking Operations runs the selected batch file.
+- results distribute back to source artifacts, history, map status, and target review.
+
+Use single-target Cracking Operations when one network needs careful inspection. Use Batch when the target set is already curated and GPU startup overhead matters.
+
+---
+
 ## See Also
 
-- Batch Cracking How-To
-- TargetList & Favorites
-- Cracking Engine
+- [Batch Cracking How-To](../07-OPERATIONS/batch-cracking-howto.md)
+- [TargetList & Favorites](targetlist-favorites.md)
+- [Cracking Engine](cracking-engine.md)

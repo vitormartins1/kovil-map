@@ -90,7 +90,7 @@ Wardrive-only / GPS-only networks do not show the access section used for cracki
 
 - opens as the current intelligence workspace
 - centralizes attack surface, target intel, SIGINT, COMMS, GEO, OPS, and reports
-- contributes map-facing outputs such as Intelligence Zones instead of behaving like a separate analytics screen
+- contributes map-facing outputs such as Intelligence Zones
 
 ### WarDrive
 

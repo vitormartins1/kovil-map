@@ -47,7 +47,7 @@ Notes:
 - `backend/data/BrucePCAP/handshakes/` is reserved for Brucegotchi handshake captures, not RAW files
 - `backend/data/m5evil/handshakes/` is reserved for `HS_*.pcap` M5Evil handshake captures, not RAW files
 - RAW metadata cache lives in the source-specific `.metadata/` directory
-- generated handshake sidecars still remain centralized in `backend/data/handshakes/`
+- generated handshake sidecars for source captures use the source PCAP basename beside the resolved capture; canonical RAW/WDRS hashes remain visible in the handshake artifact flow
 
 Metadata caches are stored under the local RAW metadata directory and reused until the source file changes.
 

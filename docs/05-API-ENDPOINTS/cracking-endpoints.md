@@ -25,10 +25,10 @@ Body can target either the legacy filename flow or the new handshake-capture flo
 
 At least one of `filename` or `capture_id` is required.
 
-When `capture_id` is used, the generated `.22000` is written to the capture-scoped artifact folder:
+When `capture_id` is used, the backend resolves the original capture and writes the generated `.22000` beside that source PCAP, using the same basename:
 
 ```text
-backend/data/handshakes/captures/<capture_id>/capture.22000
+backend/data/<source-family>/.../<pcap-basename>.22000
 ```
 
 ### `POST /api/convert/hcx/batch`
@@ -66,7 +66,7 @@ Starts an Aircrack-ng job for a selected capture.
 
 The request supports `filename` or `capture_id`, which makes it possible to target a specific capture inside a multi-device handshake set.
 
-When a capture-scoped target is used, Aircrack writes derived outputs such as `.cracked` into the same capture folder.
+When a capture target is used, Aircrack writes derived outputs such as `.cracked` beside the resolved source capture.
 
 ## Handshake File Discovery
 
@@ -158,7 +158,7 @@ When `raw_item_id` is used for a RAW PCAP, the UI should also send the selected 
 
 `GET /api/fingerprint/details` remains sidecar-oriented and reads the generated `.details` file from `HANDSHAKES_DIR`.
 
-For capture-scoped details, the UI should pass `capture_id` back when reading the artifact so the backend can resolve the file from the correct capture folder.
+For capture-specific details, the UI should pass `capture_id` back when reading the artifact so the backend can resolve the sidecar next to the correct source PCAP.
 
 ## Hybrid RAW Preparation
 
@@ -261,4 +261,4 @@ Response:
 - `combined_build_id`
 - `mac`
 
-These optional selectors let the backend resolve capture-scoped and combined artifacts instead of only the legacy root folder.
+These optional selectors let the backend resolve capture-specific and combined artifacts instead of relying only on the root handshake folder.

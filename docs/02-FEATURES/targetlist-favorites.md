@@ -2,6 +2,8 @@
 
 KOVIL MAP includes two lightweight organization tools that help you manage hundreds or thousands of networks without losing focus.
 
+They are intentionally simple glue between map exploration, Recon findings, No-GPS triage, and Batch/Cracking Operations.
+
 ## Overview
 
 In large wardriving or pentest operations, most discovered access points are not equally relevant.
@@ -45,12 +47,12 @@ In large wardriving or pentest operations, most discovered access points are not
 
 ### 2. Managing the Lists
 
-Open the **Lists** area in the left sidebar or main menu.
+Open the `TARGETS` or `FAVORITES` supporting panel.
 
-- **Targets tab:** shows all selected targets
+- **Targets:** shows the current mission list
   - **Crack All** or **Create Batch** sends the selected networks to the cracking engine in one step
   - **Clear List** removes the target tag without deleting the underlying data
-- **Favorites tab:** manages the permanent favorite list
+- **Favorites:** manages the permanent shortlist
 
 ---
 
