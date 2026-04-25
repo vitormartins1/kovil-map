@@ -15,10 +15,6 @@ The product is organized around the Tactical Map plus dedicated workspaces for R
 
 ## Tactical Map
 
-<p align="center">
-  <img src="docs/assets/screenshots/t-map.gif" alt="KOVIL Tactical Map" />
-</p>
-
 - map-first cockpit for known networks, cluster review, popup actions, and rapid target triage
 - spatial overlays for conquered, to-conquer, discovered, and intelligence-driven zone layers
 - search and status-driven review across dense local datasets with source-aware context
